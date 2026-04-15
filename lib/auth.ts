@@ -1,51 +1,58 @@
-import NextAuth from "next-auth";
-import type { Provider } from "@auth/core/providers";
-import Google from "next-auth/providers/google";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { evaluatePasswordAttempt } from "@/lib/password-lockout";
 
-const ALLOWED_DOMAIN = "zapsign.com.br";
-const IS_DEV = process.env.NODE_ENV === "development";
+const SITE_PASSWORD = process.env.SITE_PASSWORD ?? "1234";
 
-const providers: Provider[] = [
-  Google({
-    authorization: {
-      params: {
-        hd: ALLOWED_DOMAIN,
-        prompt: "select_account",
-      },
-    },
-  }),
-];
+class LockedOutError extends CredentialsSignin {
+  code = "locked_out";
+}
 
-if (IS_DEV) {
-  providers.push(
-    Credentials({
-      id: "dev-bypass",
-      name: "Dev Bypass",
-      credentials: {},
-      authorize() {
-        return {
-          id: "dev-user",
-          name: "Dev User",
-          email: "dev@zapsign.com.br",
-          image: null,
-        };
-      },
-    })
-  );
+class InvalidCredentialsError extends CredentialsSignin {
+  code = "invalid_credentials";
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers,
+  providers: [
+    Credentials({
+      id: "credentials",
+      name: "Senha do site",
+      credentials: {
+        password: { label: "Senha", type: "password" },
+      },
+      async authorize(credentials, request) {
+        const password =
+          typeof credentials?.password === "string" ? credentials.password : "";
+
+        const expected = SITE_PASSWORD;
+        const passwordOk = password.length > 0 && password === expected;
+        const outcome = evaluatePasswordAttempt(request, passwordOk);
+
+        if (outcome === "locked") {
+          throw new LockedOutError();
+        }
+        if (outcome === "invalid") {
+          throw new InvalidCredentialsError();
+        }
+
+        return {
+          id: "site-access",
+          name: "Acesso Product Guidelines",
+          email: "product-guidelines@zapsign.com.br",
+          image: null,
+        };
+      },
+    }),
+  ],
   pages: {
     signIn: "/",
     error: "/",
   },
+  trustHost: true,
   callbacks: {
-    signIn({ account, profile }) {
-      if (account?.provider === "dev-bypass") return IS_DEV;
-      if (!profile?.email) return false;
-      return profile.email.endsWith(`@${ALLOWED_DOMAIN}`);
+    async signIn({ account }) {
+      if (account?.provider === "credentials") return true;
+      return false;
     },
     session({ session }) {
       return session;

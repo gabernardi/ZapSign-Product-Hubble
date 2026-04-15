@@ -5,7 +5,7 @@
   justify-content: center;
   min-height: 100dvh;
   padding: var(--sp-6);
-  background: var(--white);
+  background: var(--bg);
 }
 
 .card {
@@ -13,9 +13,19 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 340px;
+  max-width: 400px;
   width: 100%;
-  animation: entrance 600ms var(--ease-out) both;
+  padding: var(--sp-8) var(--sp-6);
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+  animation: entrance 300ms var(--ease-out) both;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-sm);
 }
 
 .logoMark {
@@ -61,5 +71,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: var(--sp-6) var(--sp-5);
   }
 }
