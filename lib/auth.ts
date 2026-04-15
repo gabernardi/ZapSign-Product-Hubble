@@ -1,4 +1,5 @@
-import NextAuth, { CredentialsSignin } from "next-auth";
+import NextAuth from "next-auth";
+import { CredentialsSignin } from "@auth/core/errors";
 import Credentials from "next-auth/providers/credentials";
 import { evaluatePasswordAttempt } from "@/lib/password-lockout";
 
@@ -54,8 +55,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (account?.provider === "credentials") return true;
       return false;
     },
-    session({ session }) {
-      return session;
+    jwt({ token, account }) {
+      if (account?.provider === "credentials") {
+        token.passwordGate = true;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      return {
+        ...session,
+        passwordGate: token.passwordGate === true,
+      };
     },
   },
 });
+
+declare module "next-auth" {
+  interface Session {
+    passwordGate: boolean;
+  }
+}
