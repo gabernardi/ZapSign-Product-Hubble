@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap 2T26 — ZapSign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --blue-mid: #AECBFA;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --teal: #0D7A6A;
+    --teal-lt: #E4F7F4;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.05);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 24px 32px 20px;
+    gap: 16px;
+  }
+
+  /* ─── Header ─── */
+  .hdr {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .hdr-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .hdr-left {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .hdr-q {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.015em; line-height: 1;
+    white-space: nowrap;
+  }
+  .hdr-period {
+    font-size: 12px; color: var(--ink-4); font-weight: 500; white-space: nowrap;
+  }
+  .hdr-summary {
+    font-size: 12px; color: var(--ink-3); line-height: 1.4;
+  }
+  .hdr-right {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .hdr-pills {
+    display: flex; gap: 8px;
+  }
+  .hdr-pill {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 4px 10px; border-radius: var(--r-full);
+  }
+  .hdr-pill--p { background: var(--blue-lt); color: var(--blue); }
+  .hdr-pill--b { background: var(--green-lt); color: var(--green); }
+  .hdr-pill--a { background: var(--amber-lt); color: var(--amber); }
+  .hdr-pill-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* ─── Main split ─── */
+  .main {
+    display: flex; gap: 16px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ─── Gantt (left) ─── */
+  .gantt-wrap {
+    flex: 1;
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .g-legend {
+    display: flex; gap: 16px; padding: 12px 16px;
+    border-bottom: 1px solid var(--border-lt);
+    font-size: 10.5px; color: var(--ink-4); font-weight: 500;
+    align-items: center; flex-shrink: 0;
+  }
+  .leg { display: flex; align-items: center; gap: 5px; }
+  .leg-b { width: 20px; height: 6px; border-radius: 3px; }
+  .leg-ds { background: var(--blue); }
+  .leg-us { background: transparent; border: 1.5px dashed var(--blue); }
+  .leg-st { display: flex; gap: 6px; margin-left: 8px; }
+
+  .g-table {
+    flex: 1; display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+
+  .g-head {
+    display: grid; grid-template-columns: 260px 1fr;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0; height: 40px;
+    position: sticky; top: 0; background: var(--white); z-index: 2;
+  }
+  .g-head-lbl {
+    border-right: 1px solid var(--border-lt);
+  }
+  .g-quarters {
+    display: grid; grid-template-columns: repeat(3,1fr);
+  }
+  .g-qt {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    color: var(--ink-4); letter-spacing: 0.06em;
+    line-height: 40px;
+    border-right: 1px solid var(--border-lt);
+  }
+  .g-qt:last-child { border-right: none; }
+  .g-qt--active {
+    color: var(--blue); background: var(--blue-lt);
+  }
+
+  .g-body {
+    flex: 1;
+    display: flex; flex-direction: column;
+  }
+
+  .g-sec {
+    border-bottom: 1px solid var(--border-lt);
+    display: flex; flex-direction: column;
+    flex: 1;
+  }
+  .g-sec:last-child { border-bottom: none; }
+
+  .g-sec-hdr {
+    display: grid; grid-template-columns: 260px 1fr;
+    height: 36px; background: var(--bg);
+    flex-shrink: 0;
+  }
+  .g-sec-nm {
+    font-family: var(--font-display);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3); padding: 0 16px;
+    display: flex; align-items: center; gap: 6px;
+    border-right: 1px solid var(--border-lt);
+  }
+  .g-sec-d { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .g-sec-tl { display: grid; grid-template-columns: repeat(3,1fr); }
+  .g-sec-tl > div { border-right: 1px solid var(--border-lt); }
+  .g-sec-tl > div:last-child { border-right: none; }
+
+  .g-row {
+    display: grid; grid-template-columns: 260px 1fr;
+    flex: 1;
+    min-height: 40px;
+    border-top: 1px solid var(--bg-2);
+    transition: background 120ms var(--ease-out);
+  }
+  .g-row:first-child { border-top: none; }
+  .g-row:hover { background: var(--bg); }
+
+  .g-row-lbl {
+    font-size: 13px; color: var(--ink-2);
+    padding: 0 16px;
+    border-right: 1px solid var(--border-lt);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .g-row-lbl .status {
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 1px 6px; border-radius: var(--r-full);
+    flex-shrink: 0;
+  }
+  .status--dev { background: var(--blue-lt); color: var(--blue); }
+  .status--design { background: var(--purple-lt); color: var(--purple); }
+  .status--discovery { background: var(--teal-lt); color: var(--teal); }
+
+  .g-trk {
+    position: relative;
+    display: grid; grid-template-columns: repeat(3,1fr);
+  }
+  .g-trk > .ql { border-right: 1px solid var(--border-lt); }
+  .g-trk > .ql:last-child { border-right: none; }
+
+  .bar {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    height: 12px; border-radius: 6px;
+  }
+  .bar-ds { opacity: .75; }
+  .bar-us {
+    background: transparent!important;
+    border: 1.5px dashed;
+    height: 12px; opacity: .5;
+  }
+
+  /* ─── Right panel: Bets ─── */
+  .bets-wrap {
+    width: 280px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 0;
+  }
+
+  .bets-title {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .bets-sub {
+    font-size: 11px; color: var(--ink-4); font-weight: 400;
+    margin-left: 4px;
+  }
+
+  .bets-list {
+    flex: 1; display: flex; flex-direction: column; gap: 6px;
+    overflow-y: auto; padding-right: 4px;
+  }
+
+  .bc {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-sm);
+    padding: 10px 12px;
+    box-shadow: var(--shadow-xs);
+    transition: box-shadow 120ms var(--ease-out), transform 120ms var(--ease-out);
+  }
+  .bc:hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  .bc-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .bc-nm {
+    font-family: var(--font-display);
+    font-size: 12px; font-weight: 700; color: var(--ink);
+  }
+  .conf {
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: var(--r-full);
+  }
+  .conf-h { background: var(--green-lt); color: var(--green); }
+  .conf-m { background: var(--amber-lt); color: var(--amber); }
+  .conf-l { background: var(--red-lt); color: var(--red); }
+
+  .bc-desc {
+    font-size: 11px; color: var(--ink-3); line-height: 1.45;
+  }
+  .bc-type {
+    margin-top: 6px;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+
+  /* ─── Bottom: Takeaways ─── */
+  .footer {
+    display: flex; gap: 20px; align-items: baseline;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-lt);
+  }
+  .footer-label {
+    font-family: var(--font-display);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4); white-space: nowrap;
+  }
+  .footer-items {
+    display: flex; gap: 24px;
+  }
+  .footer-item {
+    font-size: 11px; color: var(--ink-3); line-height: 1.45;
+    position: relative; padding-left: 10px;
+  }
+  .footer-item::before {
+    content: ''; position: absolute; left: 0; top: 6px;
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--blue);
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 400ms var(--ease-out) both; }
+  .anim-1 { animation-delay: 0ms; }
+  .anim-2 { animation-delay: 60ms; }
+  .anim-3 { animation-delay: 120ms; }
+  .anim-4 { animation-delay: 180ms; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr anim anim-1">
+    <div class="hdr-row">
+      <div class="hdr-left">
+        <div class="hdr-q">Roadmap 2T26</div>
+        <div class="hdr-period">Abr — Jun 2026</div>
+      </div>
+      <div class="hdr-right">
+        <div class="hdr-pills">
+          <span class="hdr-pill hdr-pill--p"><span class="hdr-pill-dot"></span>Plataforma v2</span>
+          <span class="hdr-pill hdr-pill--b"><span class="hdr-pill-dot"></span>Background Check</span>
+          <span class="hdr-pill hdr-pill--a"><span class="hdr-pill-dot"></span>Apostas</span>
+        </div>
+        <div class="hdr-mark">ZapSign</div>
+      </div>
+    </div>
+    <div class="hdr-summary">Entrega dos fluxos core da Plataforma v2, investigação de Background Check e validação de apostas em LATAM e canais alternativos.</div>
+  </div>
+
+  <!-- Main: Gantt + Bets -->
+  <div class="main anim anim-2">
+
+    <!-- Gantt -->
+    <div class="gantt-wrap">
+      <div class="g-legend">
+        <div class="leg"><div class="leg-b leg-ds"></div>Downstream</div>
+        <div class="leg"><div class="leg-b leg-us"></div>Upstream</div>
+        <div class="leg-st">
+          <span class="status status--dev">Em desenvolvimento</span>
+          <span class="status status--design">Em design</span>
+          <span class="status status--discovery">Em discovery</span>
+        </div>
+      </div>
+      <div class="g-table">
+        <div class="g-head">
+          <div class="g-head-lbl"></div>
+          <div class="g-quarters">
+            <div class="g-qt">1T26</div>
+            <div class="g-qt g-qt--active">2T26</div>
+            <div class="g-qt">3T26</div>
+          </div>
+        </div>
+        <div class="g-body" id="gb"></div>
+      </div>
+    </div>
+
+    <!-- Bets -->
+    <div class="bets-wrap">
+      <div>
+        <span class="bets-title">Apostas</span>
+        <span class="bets-sub">alto impacto, incerteza proporcional</span>
+      </div>
+      <div class="bets-list">
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">Troca de pagamento</div><span class="conf conf-h">Alta</span></div>
+          <div class="bc-desc">Self-service para trocar método e desincentivar boleto.</div>
+          <div class="bc-type">Downstream</div>
+        </div>
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">Certificado digital LATAM</div><span class="conf conf-h">Alta</span></div>
+          <div class="bc-desc">Certificados locais para validade jurídica plena.</div>
+          <div class="bc-type">Downstream</div>
+        </div>
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">Expansão Chile</div><span class="conf conf-h">Alta</span></div>
+          <div class="bc-desc">Condicionada a deals enterprise.</div>
+          <div class="bc-type">Downstream</div>
+        </div>
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">Assinatura offline</div><span class="conf conf-m">Média</span></div>
+          <div class="bc-desc">Assinar sem internet via app mobile.</div>
+          <div class="bc-type">Upstream</div>
+        </div>
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">Assinatura via WhatsApp</div><span class="conf conf-m">Média</span></div>
+          <div class="bc-desc">Assinar sem sair do WhatsApp.</div>
+          <div class="bc-type">Upstream</div>
+        </div>
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">Planos LATAM</div><span class="conf conf-m">Média</span></div>
+          <div class="bc-desc">Reestruturação para mercados fora do Brasil.</div>
+          <div class="bc-type">Upstream</div>
+        </div>
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">México</div><span class="conf conf-l">Baixa</span></div>
+          <div class="bc-desc">E.firma e carimbo de tempo.</div>
+          <div class="bc-type">Upstream</div>
+        </div>
+        <div class="bc">
+          <div class="bc-top"><div class="bc-nm">E-mail domínio próprio</div><span class="conf conf-m">Média</span></div>
+          <div class="bc-desc">Envio usando o domínio do cliente.</div>
+          <div class="bc-type">Upstream</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer takeaways -->
+  <div class="footer anim anim-3">
+    <div class="footer-label">Resumo</div>
+    <div class="footer-items">
+      <div class="footer-item">Plataforma v2 é o centro de gravidade — fluxos core de assinatura, criação e gestão saem neste trimestre.</div>
+      <div class="footer-item">Background Check em investigação séria. Sem commitment, mas com investimento real em discovery.</div>
+      <div class="footer-item">LATAM ganha tração com certificados digitais e Chile; canais alternativos dependem de sinais.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const G = {
+  sections: [
+    { name: 'Plataforma v2', c: '#1A73E8', rows: [
+      { n:'Fluxo de assinatura',           t:'ds', s:0, e:2, st:'dev' },
+      { n:'Criação de documentos',         t:'ds', s:0, e:2, st:'dev' },
+      { n:'Listar documentos',             t:'ds', s:1, e:2, st:'design' },
+      { n:'Checkout',                      t:'ds', s:1, e:3, st:'design' },
+      { n:'Upgrade e Downgrade self-serve', t:'ds', s:1, e:2, st:'dev' },
+      { n:'Mudança de pagamento self-serve',t:'ds', s:2, e:3, st:'design' },
+      { n:'Planos e preços',               t:'us', s:1, e:3, st:'discovery' },
+    ]},
+  ]
+};
+
+const STATUS_MAP = {
+  dev:       { label: 'Dev', cls: 'status--dev' },
+  design:    { label: 'Design', cls: 'status--design' },
+  discovery: { label: 'Discovery', cls: 'status--discovery' },
+};
+
+function buildGantt() {
+  const b = document.getElementById('gb');
+  let h = '';
+  const qlines = `<div class="ql"></div><div class="ql"></div><div class="ql"></div>`;
+
+  for (const s of G.sections) {
+    h += `<div class="g-sec">`;
+    h += `<div class="g-sec-hdr"><div class="g-sec-nm"><span class="g-sec-d" style="background:${s.c}"></span>${s.name}</div><div class="g-sec-tl"><div></div><div></div><div></div></div></div>`;
+
+    for (const r of s.rows) {
+      const left = (r.s / 3) * 100;
+      const width = ((r.e - r.s) / 3) * 100;
+      const us = r.t === 'us';
+      const tc = us ? 'bar-us' : 'bar-ds';
+      const bg = us ? `border-color:${s.c}` : `background:${s.c}`;
+      const stInfo = STATUS_MAP[r.st];
+      const pad = 4;
+
+      h += `<div class="g-row">`;
+      h += `<div class="g-row-lbl"><span style="overflow:hidden;text-overflow:ellipsis">${r.n}</span>`;
+      if (stInfo) h += `<span class="status ${stInfo.cls}">${stInfo.label}</span>`;
+      h += `</div>`;
+      h += `<div class="g-trk">${qlines}<div class="bar ${tc}" style="left:calc(${left}% + ${pad}px);width:calc(${width}% - ${pad*2}px);${bg}"></div></div>`;
+      h += `</div>`;
+    }
+    h += '</div>';
+  }
+  b.innerHTML = h;
+}
+
+buildGantt();
+</script>
+
+</body>
+</html>

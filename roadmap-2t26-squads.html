@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap 2T26 por Squad — ZapSign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --teal: #0D7A6A;
+    --teal-lt: #E4F7F4;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 24px 32px 24px;
+    gap: 16px;
+  }
+
+  /* ─── Header ─── */
+  .hdr { display: flex; flex-direction: column; gap: 4px; }
+  .hdr-row { display: flex; align-items: center; justify-content: space-between; }
+  .hdr-left { display: flex; align-items: baseline; gap: 10px; }
+  .hdr-q {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.015em; line-height: 1;
+    white-space: nowrap;
+  }
+  .hdr-period { font-size: 12px; color: var(--ink-4); font-weight: 500; white-space: nowrap; }
+  .hdr-summary { font-size: 12px; color: var(--ink-3); line-height: 1.4; }
+  .hdr-right { display: flex; align-items: center; gap: 12px; }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .hdr-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .hdr-pill {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 3px 9px; border-radius: var(--r-full);
+  }
+  .hdr-pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* ─── Gantt ─── */
+  .gantt-wrap {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .g-legend {
+    display: flex; gap: 16px; padding: 10px 16px;
+    border-bottom: 1px solid var(--border-lt);
+    font-size: 10.5px; color: var(--ink-4); font-weight: 500;
+    align-items: center; flex-shrink: 0;
+  }
+  .leg { display: flex; align-items: center; gap: 5px; }
+  .leg-b { width: 20px; height: 6px; border-radius: 3px; }
+  .leg-ds { background: var(--ink-3); }
+  .leg-us { background: transparent; border: 1.5px dashed var(--ink-3); }
+  .leg-st { display: flex; gap: 6px; margin-left: 8px; }
+
+  .g-table { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .g-head {
+    display: grid; grid-template-columns: 380px 1fr;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0; height: 36px;
+    position: sticky; top: 0; background: var(--white); z-index: 2;
+  }
+  .g-head-lbl { border-right: 1px solid var(--border-lt); }
+  .g-quarters { display: grid; grid-template-columns: repeat(3,1fr); }
+  .g-qt {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    color: var(--ink-4); letter-spacing: 0.06em;
+    line-height: 36px;
+    border-right: 1px solid var(--border-lt);
+  }
+  .g-qt:last-child { border-right: none; }
+  .g-qt--active { color: var(--blue); background: var(--blue-lt); }
+
+  .g-body { flex: 1; display: flex; flex-direction: column; }
+
+  .g-sec {
+    border-bottom: 1px solid var(--border-lt);
+    display: flex; flex-direction: column;
+    flex: 1;
+  }
+  .g-sec:last-child { border-bottom: none; }
+
+  .g-sec-hdr {
+    display: grid; grid-template-columns: 380px 1fr;
+    height: 32px; background: var(--bg);
+    flex-shrink: 0;
+  }
+  .g-sec-nm {
+    font-family: var(--font-display);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3); padding: 0 16px;
+    display: flex; align-items: center; gap: 6px;
+    border-right: 1px solid var(--border-lt);
+  }
+  .g-sec-d { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .g-sec-tl { display: grid; grid-template-columns: repeat(3,1fr); }
+  .g-sec-tl > div { border-right: 1px solid var(--border-lt); }
+  .g-sec-tl > div:last-child { border-right: none; }
+
+  .g-row {
+    display: grid; grid-template-columns: 380px 1fr;
+    flex: 1;
+    min-height: 36px;
+    border-top: 1px solid var(--bg-2);
+    transition: background 120ms var(--ease-out);
+  }
+  .g-row:first-child { border-top: none; }
+  .g-row:hover { background: var(--bg); }
+
+  .g-row-lbl {
+    font-size: 12.5px; color: var(--ink-2);
+    padding: 0 16px;
+    border-right: 1px solid var(--border-lt);
+    display: flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+  }
+  .g-row-lbl .status {
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 1px 6px; border-radius: var(--r-full);
+    flex-shrink: 0;
+  }
+  .status--dev { background: var(--blue-lt); color: var(--blue); }
+  .status--design { background: var(--purple-lt); color: var(--purple); }
+  .status--discovery { background: var(--teal-lt); color: var(--teal); }
+  .status--ongoing { background: var(--bg-2); color: var(--ink-4); }
+
+  .g-trk {
+    position: relative;
+    display: grid; grid-template-columns: repeat(3,1fr);
+  }
+  .g-trk > .ql { border-right: 1px solid var(--border-lt); }
+  .g-trk > .ql:last-child { border-right: none; }
+
+  .bar {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    height: 10px; border-radius: 5px;
+  }
+  .bar-ds { opacity: .75; }
+  .bar-us {
+    background: transparent!important;
+    border: 1.5px dashed;
+    height: 10px; opacity: .5;
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 400ms var(--ease-out) both; }
+  .anim-1 { animation-delay: 0ms; }
+  .anim-2 { animation-delay: 60ms; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="hdr anim anim-1">
+    <div class="hdr-row">
+      <div class="hdr-left">
+        <div class="hdr-q">Roadmap 2T26</div>
+        <div class="hdr-period">por squad</div>
+      </div>
+      <div class="hdr-right">
+        <div class="hdr-pills">
+          <span class="hdr-pill" style="background:var(--blue-lt);color:var(--blue)"><span class="hdr-pill-dot"></span>Upmarket</span>
+          <span class="hdr-pill" style="background:var(--green-lt);color:var(--green)"><span class="hdr-pill-dot"></span>Expansion</span>
+          <span class="hdr-pill" style="background:var(--purple-lt);color:var(--purple)"><span class="hdr-pill-dot"></span>Growth</span>
+          <span class="hdr-pill" style="background:var(--amber-lt);color:var(--amber)"><span class="hdr-pill-dot"></span>Retenção</span>
+          <span class="hdr-pill" style="background:var(--red-lt);color:var(--red)"><span class="hdr-pill-dot"></span>Sustentação</span>
+        </div>
+        <div class="hdr-mark">ZapSign</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gantt-wrap anim anim-2">
+    <div class="g-legend">
+      <div class="leg"><div class="leg-b leg-ds"></div>Delivery</div>
+      <div class="leg"><div class="leg-b leg-us"></div>Discovery / Protótipo</div>
+      <div class="leg-st">
+        <span class="status status--dev">Dev</span>
+        <span class="status status--discovery">Discovery</span>
+        <span class="status status--ongoing">Ongoing</span>
+      </div>
+    </div>
+    <div class="g-table">
+      <div class="g-head">
+        <div class="g-head-lbl"></div>
+        <div class="g-quarters">
+          <div class="g-qt">1T26</div>
+          <div class="g-qt g-qt--active">2T26</div>
+          <div class="g-qt">3T26</div>
+        </div>
+      </div>
+      <div class="g-body" id="gb"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const G = {
+  sections: [
+    { name: 'Upmarket', c: '#1A73E8', rows: [
+      { n:'Logs de usuário',                t:'ds', s:1, e:2, st:'dev' },
+      { n:'Assinatura dentro do WhatsApp',  t:'ds', s:1, e:2, st:'dev' },
+      { n:'Assinatura offline',             t:'ds', s:1, e:2, st:'dev' },
+    ]},
+    { name: 'Expansion', c: '#1E8E3E', rows: [
+      { n:'Overage automático',                       t:'ds', s:1, e:2, st:'dev' },
+      { n:'Assinatura com certificado do Chile',      t:'ds', s:1, e:3, st:'dev' },
+      { n:'Discovery e protótipo Modelos & Formulários V2', t:'us', s:1, e:3, st:'discovery' },
+    ]},
+    { name: 'Growth', c: '#7B3FA0', rows: [
+      { n:'Experimentos para aumentar ticket médio',  t:'ds', s:1, e:2, st:'dev' },
+      { n:'Planos & preços Latam',                    t:'ds', s:1, e:2, st:'dev' },
+    ]},
+    { name: 'Retenção', c: '#E37400', rows: [
+      { n:'Desestimular o uso de boleto',             t:'ds', s:1, e:2, st:'dev' },
+      { n:'Discovery: formatos na criação de docs',   t:'us', s:1, e:3, st:'discovery' },
+      { n:'Discovery e protótipo de Antecedentes',    t:'us', s:1, e:3, st:'discovery' },
+    ]},
+    { name: 'Sustentação', c: '#D93025', rows: [
+      { n:'Violações de SLA em tickets de alta prioridade', t:'ds', s:0, e:3, st:'ongoing' },
+      { n:'Taxa de bugs por cliente pagante/mês',           t:'ds', s:0, e:3, st:'ongoing' },
+    ]},
+  ]
+};
+
+const STATUS_MAP = {
+  dev:       { label: 'Dev',       cls: 'status--dev' },
+  discovery: { label: 'Discovery', cls: 'status--discovery' },
+  ongoing:   { label: 'Ongoing',   cls: 'status--ongoing' },
+};
+
+function buildGantt() {
+  const b = document.getElementById('gb');
+  let h = '';
+  const qlines = `<div class="ql"></div><div class="ql"></div><div class="ql"></div>`;
+
+  for (const s of G.sections) {
+    h += `<div class="g-sec">`;
+    h += `<div class="g-sec-hdr"><div class="g-sec-nm"><span class="g-sec-d" style="background:${s.c}"></span>${s.name}</div><div class="g-sec-tl"><div></div><div></div><div></div></div></div>`;
+
+    for (const r of s.rows) {
+      const left = (r.s / 3) * 100;
+      const width = ((r.e - r.s) / 3) * 100;
+      const us = r.t === 'us';
+      const tc = us ? 'bar-us' : 'bar-ds';
+      const bg = us ? `border-color:${s.c}` : `background:${s.c}`;
+      const stInfo = STATUS_MAP[r.st];
+      const pad = 4;
+
+      h += `<div class="g-row">`;
+      h += `<div class="g-row-lbl"><span style="overflow:hidden;text-overflow:ellipsis">${r.n}</span>`;
+      if (stInfo) h += `<span class="status ${stInfo.cls}">${stInfo.label}</span>`;
+      h += `</div>`;
+      h += `<div class="g-trk">${qlines}<div class="bar ${tc}" style="left:calc(${left}% + ${pad}px);width:calc(${width}% - ${pad*2}px);${bg}"></div></div>`;
+      h += `</div>`;
+    }
+    h += '</div>';
+  }
+  b.innerHTML = h;
+}
+
+buildGantt();
+</script>
+
+</body>
+</html>

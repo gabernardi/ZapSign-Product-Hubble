@@ -1,0 +1,15 @@
+.note {
+  background: var(--blue-lt);
+  border-radius: var(--r-md);
+  padding: var(--sp-5) var(--sp-6);
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.note strong,
+.note :global(strong) {
+  font-weight: 600;
+  color: var(--ink);
+}

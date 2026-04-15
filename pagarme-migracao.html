@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagar.me — Migração · ZapSign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --blue-mid: #AECBFA;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --green-mid: #A8DAB5;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    padding: 24px 32px 16px;
+    gap: 14px;
+  }
+
+  /* ─── Header ─── */
+  .hdr { display: flex; align-items: center; justify-content: space-between; }
+  .hdr-left { display: flex; align-items: baseline; gap: 12px; }
+  .hdr-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1;
+  }
+  .hdr-sub { font-size: 13px; color: var(--ink-4); font-weight: 500; }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+
+  /* ─── Main grid: 2 columns ─── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    min-height: 0;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+    transition: box-shadow 200ms var(--ease-out);
+  }
+  .card:hover { box-shadow: var(--shadow-sm); }
+
+  .card-top {
+    padding: 16px 24px 12px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .card-hdr { display: flex; align-items: center; justify-content: space-between; }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .pill {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 10px; border-radius: var(--r-full);
+  }
+
+  /* ─── KPIs (hero size) ─── */
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi {
+    background: var(--bg);
+    border-radius: var(--r-md);
+    padding: 12px 16px;
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  .kpi-val {
+    font-family: var(--font-display);
+    font-size: 30px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .kpi-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-4); letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+  .kpi-sub { font-size: 11px; color: var(--ink-4); }
+
+  /* ─── Divider ─── */
+  .card-divider {
+    height: 1px; background: var(--border-lt);
+    margin: 0;
+  }
+
+  /* ─── Items section ─── */
+  .card-bottom {
+    padding: 10px 24px 16px;
+    display: flex; flex-direction: column; gap: 0;
+    flex: 1;
+  }
+  .section-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 6px;
+  }
+
+  .item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-lt);
+  }
+  .item:last-child { border-bottom: none; }
+  .item-ic {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .item-body { flex: 1; }
+  .item-text { font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+  .item-detail { font-size: 11.5px; color: var(--ink-4); line-height: 1.4; margin-top: 2px; }
+  .item-pill {
+    display: inline-block;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 8px; border-radius: var(--r-full);
+    margin-top: 4px;
+  }
+
+  /* ─── Progress bar ─── */
+  .prog { display: flex; flex-direction: column; gap: 6px; }
+  .prog-hdr { display: flex; justify-content: space-between; align-items: baseline; }
+  .prog-label { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+  .prog-pct {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+  }
+  .prog-track {
+    height: 10px; border-radius: 5px;
+    background: var(--bg-2); overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%; border-radius: 5px;
+    transition: width 800ms var(--ease-out);
+  }
+  .prog-legend {
+    display: flex; gap: 16px; font-size: 11px; color: var(--ink-4);
+  }
+  .leg-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 5px; vertical-align: middle;
+  }
+
+  /* ─── Donut chart ─── */
+  .donut-wrap {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .donut-svg { width: 70px; height: 70px; flex-shrink: 0; }
+  .donut-ring { fill: none; stroke: var(--bg-3); stroke-width: 8; }
+  .donut-fill {
+    fill: none; stroke-width: 8;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dasharray 1s var(--ease-out);
+  }
+  .donut-center {
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 700;
+    fill: var(--ink);
+  }
+  .donut-meta { display: flex; flex-direction: column; gap: 4px; }
+  .donut-val {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 700; line-height: 1;
+  }
+  .donut-label { font-size: 11px; color: var(--ink-4); font-weight: 500; }
+
+  /* ─── Next step banner ─── */
+  .next-step {
+    background: var(--blue-lt);
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--r-md);
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .ns-icon {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ns-icon svg { width: 14px; height: 14px; fill: var(--white); }
+  .ns-body { flex: 1; display: flex; align-items: center; gap: 16px; }
+  .ns-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--blue); white-space: nowrap;
+  }
+  .ns-text {
+    font-size: 14px; font-weight: 500;
+    color: #174EA6; line-height: 1.3;
+  }
+  .ns-date {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    color: var(--blue); white-space: nowrap;
+    padding: 5px 14px;
+    background: var(--white);
+    border-radius: var(--r-full);
+    border: 1px solid var(--blue-mid);
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--ink-4);
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 400ms var(--ease-out) both; }
+  .a1 { animation-delay: 0ms; }
+  .a2 { animation-delay: 60ms; }
+  .a3 { animation-delay: 120ms; }
+  .a4 { animation-delay: 180ms; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr anim a1">
+    <div class="hdr-left">
+      <div class="hdr-title">Pagar.me, Migração</div>
+      <div class="hdr-sub">Status update · Abril 2026</div>
+    </div>
+    <div class="hdr-mark">ZapSign</div>
+  </div>
+
+  <!-- Cards -->
+  <div class="main">
+
+    <!-- ═══ Novos usuários ═══ -->
+    <div class="card anim a2" style="grid-template-rows: auto 1px 1fr">
+      <div class="card-top">
+        <div class="card-hdr">
+          <div class="card-title">Novos usuários</div>
+          <span class="pill" style="background:var(--green-lt);color:var(--green)">Ativo desde 27/03</span>
+        </div>
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kpi-val" style="color:var(--green)">537</div>
+            <div class="kpi-label">Compras</div>
+            <div class="kpi-sub">em 10 dias</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-val" style="color:var(--ink)">~54</div>
+            <div class="kpi-label">Compras/dia</div>
+            <div class="kpi-sub">média</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-bottom">
+        <div class="section-label">Incidentes</div>
+        <div class="item">
+          <div class="item-ic" style="background:var(--green-lt)">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--green)"><path d="M6.5 12.5l-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4z"/></svg>
+          </div>
+          <div class="item-body">
+            <div class="item-text">Cobranças duplicadas em 9 clientes</div>
+            <span class="item-pill" style="background:var(--green-lt);color:var(--green)">Corrigido</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-ic" style="background:var(--amber-lt)">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--amber)"><path d="M8 1.5l7 13H1l7-13zm0 3.2L3.5 13h9L8 4.7zM7.25 8v2.5h1.5V8h-1.5zm0 3.5v1.5h1.5v-1.5h-1.5z"/></svg>
+          </div>
+          <div class="item-body">
+            <div class="item-text">Pagamento recusado impede cancelamento e nova compra pelo usuário</div>
+            <span class="item-pill" style="background:var(--amber-lt);color:var(--amber)">Pendente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Clientes antigos ═══ -->
+    <div class="card anim a3" style="grid-template-rows: auto 1px auto 1px 1fr">
+      <div class="card-top">
+        <div class="card-hdr">
+          <div class="card-title">Clientes antigos</div>
+          <span class="pill" style="background:var(--blue-lt);color:var(--blue)">Migrando</span>
+        </div>
+        <div class="donut-wrap">
+          <svg class="donut-svg" viewBox="0 0 40 40">
+            <circle class="donut-ring" cx="20" cy="20" r="16"/>
+            <circle class="donut-fill" id="donutFill" cx="20" cy="20" r="16"
+              stroke="var(--blue)" stroke-dasharray="0, 100.53"/>
+            <text class="donut-center" x="20" y="21.5" text-anchor="middle" dominant-baseline="middle">5%</text>
+          </svg>
+          <div class="donut-meta">
+            <div class="donut-val" style="color:var(--blue)">2.300</div>
+            <div class="donut-label">clientes migrados de ~55.000</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div style="padding: 10px 24px 10px;">
+        <div class="prog">
+          <div class="prog-hdr">
+            <span class="prog-label">Progresso</span>
+            <span class="prog-pct" style="color:var(--blue)">2.300 / ~55.000</span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-fill" id="progFill" style="background: linear-gradient(90deg, var(--blue), var(--blue-mid)); width: 0%;"></div>
+          </div>
+          <div class="prog-legend">
+            <span><span class="leg-dot" style="background:var(--blue)"></span>Migrados</span>
+            <span><span class="leg-dot" style="background:var(--bg-3)"></span>Restantes (~52.700)</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-bottom">
+        <div class="section-label">Blocker</div>
+        <div class="item">
+          <div class="item-ic" style="background:var(--amber-lt)">
+            <svg width="12" height="12" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--amber)" stroke-width="1.5"/><path d="M8 5v4M8 10.5v1" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <div class="item-body">
+            <div class="item-text">Desincronização entre backoffice e Pagar.me</div>
+            <div class="item-detail">Atrasos na migração por parte do Pagar.me + melhoria necessária no tratamento de erros</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Next step -->
+  <div class="next-step anim a4">
+    <div class="ns-icon">
+      <svg viewBox="0 0 16 16"><path d="M8 2v6h4.5l-5 6v-6H3l5-6z"/></svg>
+    </div>
+    <div class="ns-body">
+      <div class="ns-label">Próximo passo</div>
+      <div class="ns-text">Migrar 1.000 clientes para Pagar.me</div>
+    </div>
+    <div class="ns-date">07/04/2026</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div style="font-weight:500">Atualizado em 06/04/2026</div>
+    <div class="hdr-mark">ZapSign</div>
+  </div>
+
+</div>
+
+<script>
+requestAnimationFrame(() => {
+  setTimeout(() => {
+    document.getElementById('progFill').style.width = '5%';
+    const circ = 2 * Math.PI * 16;
+    document.getElementById('donutFill').setAttribute(
+      'stroke-dasharray', `${circ * 0.05}, ${circ}`
+    );
+  }, 300);
+});
+</script>
+
+</body>
+</html>

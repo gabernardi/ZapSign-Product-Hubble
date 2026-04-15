@@ -1,0 +1,29 @@
+.card {
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-4);
+  height: 100%;
+  border-left: 2px solid var(--blue-mid);
+}
+
+.num {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--blue);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--sp-3);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.35;
+  margin-bottom: var(--sp-2);
+}
+
+.body {
+  font-size: 13.5px;
+  color: var(--ink-3);
+  line-height: 1.7;
+}

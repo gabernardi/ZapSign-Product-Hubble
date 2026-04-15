@@ -1,0 +1,49 @@
+.bridge {
+  background: var(--bg);
+  border-radius: var(--r-xl);
+  padding: var(--sp-8) var(--sp-8);
+  margin: var(--sp-4) 0 var(--sp-4) 64px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-5);
+}
+
+.arrow {
+  width: 28px;
+  height: 28px;
+  background: var(--ink);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-4);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-1);
+}
+
+.text {
+  font-size: 14.5px;
+  color: var(--ink-3);
+  line-height: 1.7;
+}
+
+.text :global(strong) {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .bridge {
+    margin-left: 0;
+  }
+}

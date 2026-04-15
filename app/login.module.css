@@ -1,0 +1,65 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--sp-6);
+  background: var(--white);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+  animation: entrance 600ms var(--ease-out) both;
+}
+
+.logoMark {
+  margin-bottom: var(--sp-6);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--ink-4);
+  line-height: 1.6;
+  margin-top: var(--sp-2);
+}
+
+.divider {
+  width: 32px;
+  height: 1px;
+  background: var(--border-lt);
+  margin: var(--sp-10) 0;
+}
+
+.footer {
+  position: fixed;
+  bottom: var(--sp-8);
+  font-size: 12px;
+  color: var(--ink-4);
+  letter-spacing: 0.01em;
+}
+
+@keyframes entrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

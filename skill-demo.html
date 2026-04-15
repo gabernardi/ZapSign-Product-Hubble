@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prioritization Framework · ZapSign Product</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --white:      #FFFFFF;
+    --bg:         #F8F9FA;
+    --bg-2:       #F1F3F4;
+    --bg-3:       #E8EAED;
+    --ink:        #1A1A1A;
+    --ink-2:      #3C3C3C;
+    --ink-3:      #5F6368;
+    --ink-4:      #9AA0A6;
+    --border:     #DADCE0;
+    --border-lt:  #E8EAED;
+    --blue:       #1A73E8;
+    --blue-lt:    #E8F0FE;
+    --blue-mid:   #AECBFA;
+    --green:      #137333;
+    --green-lt:   #E6F4EA;
+    --green-mid:  #A8DAB5;
+    --amber:      #B06000;
+    --amber-lt:   #FEF7E0;
+    --amber-mid:  #FDD663;
+    --purple:     #6B3FA0;
+    --purple-lt:  #F3E8FD;
+    --purple-mid: #D4C2ED;
+    --teal:       #0D7A6A;
+    --teal-lt:    #E4F7F4;
+    --teal-mid:   #A1DED2;
+    --red:        #C5221F;
+    --red-lt:     #FCE8E6;
+    --red-mid:    #F5C8C6;
+    --r-sm:       8px;
+    --r-md:       12px;
+    --r-lg:       16px;
+    --r-xl:       20px;
+    --r-full:     9999px;
+    --shadow-xs:  0 1px 2px rgba(0,0,0,.04);
+    --shadow-sm:  0 1px 4px rgba(0,0,0,.06);
+    --shadow-md:  0 2px 8px rgba(0,0,0,.07);
+    --shadow-lg:  0 4px 20px rgba(0,0,0,.08);
+    --ease-out:   cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Google Sans Text', 'Google Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border-lt);
+    padding: 48px 48px 40px;
+  }
+  .header-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .header-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--blue-lt);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 4px 12px;
+    border-radius: var(--r-full);
+    margin-bottom: 16px;
+  }
+  .header-pill .dot { width: 5px; height: 5px; background: var(--blue); border-radius: 50%; }
+  h1 {
+    font-family: 'Google Sans', sans-serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -.025em;
+    max-width: 440px;
+  }
+  .header-desc {
+    font-size: 15px;
+    color: var(--ink-3);
+    margin-top: 10px;
+    line-height: 1.6;
+    max-width: 380px;
+  }
+  .header-meta {
+    font-size: 13px;
+    color: var(--ink-3);
+    text-align: right;
+    line-height: 1.65;
+    padding-bottom: 4px;
+  }
+  .header-meta strong {
+    display: block;
+    font-size: 13px;
+    color: var(--ink-2);
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 48px 112px;
+  }
+  @media (max-width: 640px) {
+    main   { padding: 32px 20px 80px; }
+    header { padding: 32px 20px 28px; }
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-lt);
+  }
+
+  /* ── PRINCIPLES ── */
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 680px) { .principles { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .principles { grid-template-columns: 1fr; } }
+
+  .p-card {
+    background: var(--white);
+    border-radius: var(--r-lg);
+    padding: 20px 18px;
+    border: 1px solid var(--border-lt);
+    box-shadow: var(--shadow-xs);
+    border-left: 3px solid var(--blue);
+    transition: box-shadow .2s var(--ease-out), transform .2s var(--ease-out);
+  }
+  .p-card:hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+  .p-num {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: .04em;
+    margin-bottom: 10px;
+  }
+  .p-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .p-body {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+
+  /* ── STARTING POINTS ── */
+  .starting-points {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 64px;
+  }
+  @media (max-width: 680px) { .starting-points { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .starting-points { grid-template-columns: 1fr; } }
+
+  .sp-card {
+    background: var(--white);
+    border-radius: var(--r-lg);
+    padding: 18px 16px 20px;
+    border: 1px solid var(--border-lt);
+    box-shadow: var(--shadow-xs);
+    transition: box-shadow .2s var(--ease-out), transform .2s var(--ease-out);
+  }
+  .sp-card:hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+  .sp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-bottom: 14px;
+  }
+  .dot-blue   { background: var(--blue); }
+  .dot-amber  { background: var(--amber); }
+  .dot-teal   { background: var(--teal); }
+  .dot-purple { background: var(--purple); }
+  .sp-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+  .sp-body {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .sp-focus {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-4);
+    line-height: 1.5;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-lt);
+  }
+  .sp-focus span {
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+
+  /* ── PHASE ── */
+  .phase-block { margin: 64px 0 32px; }
+  .phase-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .phase-chip {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    padding: 4px 12px;
+    border-radius: var(--r-full);
+    white-space: nowrap;
+  }
+  .chip-blue   { background: var(--blue-lt);  color: var(--blue); }
+  .chip-amber  { background: var(--amber-lt); color: var(--amber); }
+  .chip-green  { background: var(--green-lt); color: var(--green); }
+  .phase-line  { flex: 1; height: 1px; background: var(--border-lt); }
+  .phase-title-row {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .phase-sub {
+    font-size: 13px;
+    color: var(--ink-4);
+    letter-spacing: .01em;
+  }
+
+  /* ── STEP LAYOUT ── */
+  .step {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 4px;
+  }
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    flex-shrink: 0;
+    padding-top: 22px;
+  }
+  .step-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    font-family: 'Google Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-xs);
+    transition: border-color .2s, color .2s, box-shadow .2s;
+    position: relative;
+    z-index: 1;
+  }
+  .step:hover .step-num {
+    border-color: var(--blue);
+    color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-lt);
+  }
+  .step-connector {
+    flex: 1;
+    width: 1px;
+    background: var(--border-lt);
+    margin: 8px 0 0;
+    min-height: 20px;
+  }
+  .step-body { flex: 1; padding-bottom: 20px; }
+
+  /* ── STEP CARD ── */
+  .step-card {
+    background: var(--white);
+    border-radius: var(--r-xl);
+    border: 1px solid var(--border-lt);
+    padding: 24px 28px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .2s;
+  }
+  .step:hover .step-card { box-shadow: var(--shadow-md); }
+  .step-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .step-tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .step-time-chip {
+    background: var(--bg-2);
+    color: var(--ink-3);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+  }
+  .step-title {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -.015em;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .step-desc {
+    font-size: 14.5px;
+    color: var(--ink-3);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    max-width: 560px;
+  }
+
+  /* ── TEMPLATE BOX ── */
+  .template-box {
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .t-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-lt);
+  }
+  .template-row {
+    display: flex;
+    gap: 16px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-lt);
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .template-row:last-child { border-bottom: none; }
+  .t-key {
+    font-weight: 700;
+    color: var(--ink-2);
+    min-width: 110px;
+    flex-shrink: 0;
+    font-size: 13px;
+  }
+  .t-val { color: var(--ink-3); }
+
+  /* ── TWO-COL GRID ── */
+  .card-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 520px) { .card-cols { grid-template-columns: 1fr; } }
+
+  .col-box {
+    background: var(--bg);
+    border-radius: var(--r-md);
+    padding: 16px 18px;
+    border: 1px solid var(--border-lt);
+  }
+  .col-box.tb { background: var(--blue-lt);  border-color: var(--blue-mid); }
+  .col-box.tg { background: var(--green-lt); border-color: var(--green-mid); }
+  .col-box.ta { background: var(--amber-lt); border-color: var(--amber-mid); }
+
+  .col-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .col-label.bl { color: var(--blue); }
+  .col-label.gr { color: var(--green); }
+  .col-label.am { color: var(--amber); }
+
+  .col-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .col-list li {
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+  }
+  .col-list li::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  /* ── METRIC ROW ── */
+  .metric-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .metric-chip {
+    flex: 1;
+    min-width: 120px;
+    background: var(--bg);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+  }
+  .m-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .m-val {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 3px;
+  }
+  .m-desc {
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.45;
+  }
+
+  /* ── FIDELITY LADDER ── */
+  .fidelity-ladder {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .fid-step {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-md);
+    padding: 11px 12px;
+    text-align: center;
+    position: relative;
+  }
+  .fid-step::after {
+    content: '\2192';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--ink-4);
+    z-index: 1;
+  }
+  .fid-step:last-child::after { display: none; }
+  .fid-label { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+  .fid-desc  { font-size: 11px; color: var(--ink-3); }
+
+  /* ── SCALE LIST ── */
+  .scale-list { display: flex; flex-direction: column; gap: 8px; }
+  .scale-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.45;
+  }
+  .scale-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+  .s-badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--r-full);
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 60px;
+    text-align: center;
+  }
+  .s-sm { background: var(--green-lt); color: var(--green); border: 1px solid var(--green-mid); }
+  .s-md { background: var(--amber-lt); color: var(--amber); border: 1px solid var(--amber-mid); }
+  .s-lg { background: var(--red-lt);   color: var(--red);   border: 1px solid var(--red-mid); }
+
+  /* ── NOTE ── */
+  .step-note {
+    background: var(--blue-lt);
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+    font-size: 13.5px;
+    color: #174EA6;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+  .step-note strong { font-weight: 700; }
+
+  /* ── OUTPUT ── */
+  .step-output {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-lt);
+  }
+  .output-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--green-lt);
+    border: 1px solid var(--green-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .output-icon svg { width: 12px; height: 12px; }
+  .output-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  /* ── BRIDGE ── */
+  .bridge {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    padding: 16px 22px;
+    margin: 4px 0 4px 60px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: var(--shadow-xs);
+  }
+  .bridge-arrow {
+    width: 28px;
+    height: 28px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+    margin-top: 1px;
+  }
+  .bridge-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .bridge-text {
+    font-size: 14px;
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+  .bridge-text strong { color: var(--ink); font-weight: 700; }
+
+  /* ── ITERATION STRIP ── */
+  .iter-strip {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-xs);
+    margin: 4px 0 4px 60px;
+  }
+  .iter-header {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 11px 20px;
+    border-bottom: 1px solid var(--border-lt);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .iter-header::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+  }
+  .iter-items { display: flex; }
+  @media (max-width: 520px) { .iter-items { flex-wrap: wrap; } }
+  .iter-item {
+    flex: 1;
+    padding: 16px 16px 18px;
+    border-right: 1px solid var(--border-lt);
+    min-width: 88px;
+  }
+  .iter-item:last-child { border-right: none; }
+  .iter-n {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .iter-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .iter-desc { font-size: 11.5px; color: var(--ink-4); margin-top: 2px; }
+
+  /* ── DELIVERABLES ── */
+  .deliverables {
+    background: var(--ink);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    margin-top: 56px;
+    box-shadow: var(--shadow-lg);
+  }
+  .del-top {
+    padding: 36px 36px 28px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .del-chip {
+    display: inline-block;
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.5);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: var(--r-full);
+    margin-bottom: 14px;
+  }
+  .del-top h2 {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .del-top p {
+    font-size: 14px;
+    color: rgba(255,255,255,.38);
+    line-height: 1.6;
+  }
+  .del-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,.08);
+  }
+  @media (max-width: 520px) { .del-cards { grid-template-columns: 1fr; } }
+  .del-card {
+    padding: 28px 28px 32px;
+    background: var(--ink);
+    transition: background .15s;
+  }
+  .del-card:hover { background: #262626; }
+  .del-n {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(255,255,255,.08);
+    line-height: 1;
+    margin-bottom: 14px;
+    letter-spacing: -.02em;
+  }
+  .del-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .del-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,.38);
+    line-height: 1.6;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-lt);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .footer-quote {
+    font-size: 14px;
+    color: var(--ink-4);
+    max-width: 440px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .footer-brand {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-4);
+    letter-spacing: .05em;
+    white-space: nowrap;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim {
+    animation: fadeUp 400ms var(--ease-out) both;
+  }
+  .anim-1 { animation-delay: 0ms; }
+  .anim-2 { animation-delay: 60ms; }
+  .anim-3 { animation-delay: 120ms; }
+  .anim-4 { animation-delay: 180ms; }
+  .anim-5 { animation-delay: 240ms; }
+  .anim-6 { animation-delay: 300ms; }
+  .anim-7 { animation-delay: 360ms; }
+  .anim-8 { animation-delay: 420ms; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="anim anim-1">
+  <div class="header-inner">
+    <div>
+      <div class="header-pill"><span class="dot"></span> Strategy Guide · Product</div>
+      <h1>Prioritization</h1>
+      <p class="header-desc">How the product team decides what to build next — and what to leave behind.</p>
+    </div>
+    <div class="header-meta">
+      <strong>ZapSign · Product Team</strong>
+      Version 1.0 · April 2026
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══════════ PRINCIPLES ═══════════ -->
+  <div class="section-label anim anim-2">Principles</div>
+  <div class="principles anim anim-3">
+    <div class="p-card">
+      <div class="p-num">01</div>
+      <div class="p-title">Impact over effort</div>
+      <div class="p-body">The question is never "can we build this?" but "should we build this now?"</div>
+    </div>
+    <div class="p-card">
+      <div class="p-num">02</div>
+      <div class="p-title">Evidence before conviction</div>
+      <div class="p-body">Strong opinions held lightly. Data shifts priorities. Gut feeling does not.</div>
+    </div>
+    <div class="p-card">
+      <div class="p-num">03</div>
+      <div class="p-title">Say no to say yes</div>
+      <div class="p-body">Every yes to one thing is a no to everything else. Make the trade-off explicit.</div>
+    </div>
+    <div class="p-card">
+      <div class="p-num">04</div>
+      <div class="p-title">Reversibility beats perfection</div>
+      <div class="p-body">Favor decisions you can undo quickly. Reserve deep analysis for one-way doors.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ STARTING POINTS ═══════════ -->
+  <div class="section-label anim anim-4">When to use this framework</div>
+  <div class="starting-points anim anim-5">
+    <div class="sp-card">
+      <div class="sp-dot dot-blue"></div>
+      <div class="sp-title">Quarterly planning</div>
+      <div class="sp-body">The team has more ideas than capacity. You need a ranked list backed by evidence.</div>
+      <div class="sp-focus">Focus: <span>outcome alignment and resource fit</span></div>
+    </div>
+    <div class="sp-card">
+      <div class="sp-dot dot-amber"></div>
+      <div class="sp-title">Mid-cycle reprioritization</div>
+      <div class="sp-body">New data arrived. A competitor moved. A deal depends on a feature that wasn't planned.</div>
+      <div class="sp-focus">Focus: <span>cost of switching vs. cost of waiting</span></div>
+    </div>
+    <div class="sp-card">
+      <div class="sp-dot dot-teal"></div>
+      <div class="sp-title">Opportunity triage</div>
+      <div class="sp-body">Sales, CS, or research surfaced a new opportunity. You need to decide fast: now, later, or never.</div>
+      <div class="sp-focus">Focus: <span>signal strength and strategic fit</span></div>
+    </div>
+    <div class="sp-card">
+      <div class="sp-dot dot-purple"></div>
+      <div class="sp-title">Compliance mandate</div>
+      <div class="sp-body">Regulation or contractual obligation. Non-negotiable scope, but timing and approach are yours.</div>
+      <div class="sp-focus">Focus: <span>minimum viable compliance with least friction</span></div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ PHASE 01 ═══════════ -->
+  <div class="phase-block anim anim-6">
+    <div class="phase-row">
+      <div class="phase-chip chip-blue">Phase 01</div>
+      <div class="phase-line"></div>
+    </div>
+    <div class="phase-title-row">Gather and Frame</div>
+    <div class="phase-sub">Collect · Contextualize · Constrain</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step anim anim-7">
+    <div class="step-left">
+      <div class="step-num">1</div>
+      <div class="step-connector"></div>
+    </div>
+    <div class="step-body">
+      <div class="step-card">
+        <div class="step-meta">
+          <span class="step-tag">Step 01</span>
+          <span class="step-time-chip">2 — 3 days</span>
+        </div>
+        <div class="step-title">Build the Opportunity Backlog</div>
+        <p class="step-desc">Before ranking anything, make sure you have a complete list. Pull from every source: user research, support tickets, sales feedback, strategy bets, and compliance requirements. An incomplete list produces a biased ranking.</p>
+
+        <div class="template-box">
+          <div class="t-label">Minimum fields per opportunity</div>
+          <div class="template-row"><span class="t-key">Opportunity</span><span class="t-val">One sentence describing what this enables for the user.</span></div>
+          <div class="template-row"><span class="t-key">Source</span><span class="t-val">Where did this come from? User research, sales, support, strategy, compliance.</span></div>
+          <div class="template-row"><span class="t-key">Segment</span><span class="t-val">Which user segment benefits most? SMB, Mid-Market, Enterprise, All.</span></div>
+          <div class="template-row"><span class="t-key">Evidence</span><span class="t-val">What data supports this? Ticket volume, conversion rate, deal size, NPS verbatim.</span></div>
+          <div class="template-row"><span class="t-key">Confidence</span><span class="t-val">High, Medium, or Low — how sure are we that this will move the needle?</span></div>
+        </div>
+
+        <div class="card-cols">
+          <div class="col-box">
+            <span class="col-label">Signs the backlog is healthy</span>
+            <ul class="col-list">
+              <li>Includes items from at least 3 different sources</li>
+              <li>Every item has traceable evidence, not just opinions</li>
+              <li>The list contains things you will say no to</li>
+              <li>No item is described as a solution — only as an outcome</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <span class="col-label">Common pitfall</span>
+            <ul class="col-list">
+              <li>Collecting only items the loudest voice requested</li>
+              <li>Mixing solutions ("add SSO") with outcomes ("reduce onboarding drop-off")</li>
+              <li>Skipping compliance items because they feel mandatory</li>
+              <li>Starting to rank before the list is complete</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step-output">
+          <div class="output-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M13.3 4.7L6 12 2.7 8.7l1.1-1 2.2 2.2 6.3-6.3 1 1z" fill="#137333"/></svg></div>
+          <span class="output-label">Complete opportunity backlog with evidence and confidence levels</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step anim anim-8">
+    <div class="step-left">
+      <div class="step-num">2</div>
+    </div>
+    <div class="step-body">
+      <div class="step-card">
+        <div class="step-meta">
+          <span class="step-tag">Step 02</span>
+          <span class="step-time-chip">1 — 2 days</span>
+        </div>
+        <div class="step-title">Define the Scoring Criteria</div>
+        <p class="step-desc">A framework is only as good as its axes. Choose 3–4 criteria that reflect what your team values this quarter. Criteria change — and that's fine. What matters is that everyone agrees on them before scoring starts.</p>
+
+        <div class="metric-row">
+          <div class="metric-chip">
+            <div class="m-label">User impact</div>
+            <div class="m-val">How many users benefit?</div>
+            <div class="m-desc">Weighted by segment revenue contribution</div>
+          </div>
+          <div class="metric-chip">
+            <div class="m-label">Strategic alignment</div>
+            <div class="m-val">Does it move a company bet?</div>
+            <div class="m-desc">Mapped to current quarter OKRs</div>
+          </div>
+          <div class="metric-chip">
+            <div class="m-label">Effort estimate</div>
+            <div class="m-val">T-shirt size: S / M / L / XL</div>
+            <div class="m-desc">Engineering + design + QA combined</div>
+          </div>
+        </div>
+
+        <div class="col-box ta" style="margin-bottom:16px">
+          <span class="col-label am">Effort scale reference</span>
+          <div class="scale-list" style="margin-top:4px">
+            <div class="scale-item">
+              <div class="scale-item-left">
+                <span class="s-badge s-sm">Small</span>
+                <span>Less than 1 sprint. One squad, no cross-team dependency.</span>
+              </div>
+            </div>
+            <div class="scale-item">
+              <div class="scale-item-left">
+                <span class="s-badge s-md">Medium</span>
+                <span>1–3 sprints. May need design review or API changes.</span>
+              </div>
+            </div>
+            <div class="scale-item">
+              <div class="scale-item-left">
+                <span class="s-badge s-lg">Large</span>
+                <span>Full quarter or more. Cross-team coordination required.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-note"><strong>Criteria are not permanent.</strong> Every quarter, revisit the scoring axes. If the company shifts focus from growth to retention, "user impact" might matter less than "churn reduction signal." The framework adapts — you just need to be explicit about it.</div>
+
+        <div class="step-output">
+          <div class="output-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M13.3 4.7L6 12 2.7 8.7l1.1-1 2.2 2.2 6.3-6.3 1 1z" fill="#137333"/></svg></div>
+          <span class="output-label">Agreed scoring criteria with shared definitions and scale</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ BRIDGE ═══════════ -->
+  <div class="bridge">
+    <div class="bridge-arrow">&darr;</div>
+    <div>
+      <div class="bridge-label">Transition</div>
+      <div class="bridge-text">You have a complete backlog and agreed criteria. <strong>The question shifts from "what could we do?" to "what should we do first?"</strong></div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ PHASE 02 ═══════════ -->
+  <div class="phase-block">
+    <div class="phase-row">
+      <div class="phase-chip chip-amber">Phase 02</div>
+      <div class="phase-line"></div>
+    </div>
+    <div class="phase-title-row">Score and Negotiate</div>
+    <div class="phase-sub">Rank · Challenge · Commit</div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num">3</div>
+      <div class="step-connector"></div>
+    </div>
+    <div class="step-body">
+      <div class="step-card">
+        <div class="step-meta">
+          <span class="step-tag">Step 03</span>
+          <span class="step-time-chip">Half-day workshop</span>
+        </div>
+        <div class="step-title">Score Independently, Then Calibrate</div>
+        <p class="step-desc">Each scorer rates the backlog alone first. Then the team meets to calibrate. The goal is not consensus on every score — it's surfacing disagreements that reveal hidden assumptions.</p>
+
+        <div class="fidelity-ladder">
+          <div class="fid-step"><div class="fid-label">Solo scoring</div><div class="fid-desc">Each PM scores independently</div></div>
+          <div class="fid-step"><div class="fid-label">Variance check</div><div class="fid-desc">Flag items with spread &gt; 2</div></div>
+          <div class="fid-step"><div class="fid-label">Calibration</div><div class="fid-desc">Discuss flagged items only</div></div>
+          <div class="fid-step"><div class="fid-label">Final ranking</div><div class="fid-desc">Lock scores, sort by total</div></div>
+        </div>
+
+        <div class="card-cols">
+          <div class="col-box tb">
+            <span class="col-label bl">Healthy calibration signals</span>
+            <ul class="col-list">
+              <li>Disagreements surface new data nobody had before</li>
+              <li>At least one item moves significantly after discussion</li>
+              <li>The final ranking surprises at least one person</li>
+              <li>Nobody feels their input was ignored</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <span class="col-label">Red flags in calibration</span>
+            <ul class="col-list">
+              <li>One person dominates and others defer without pushback</li>
+              <li>Scores change to avoid conflict, not because of new evidence</li>
+              <li>The final ranking matches exactly what leadership pre-decided</li>
+              <li>Nobody can articulate why item #1 beats item #2</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step-output">
+          <div class="output-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M13.3 4.7L6 12 2.7 8.7l1.1-1 2.2 2.2 6.3-6.3 1 1z" fill="#137333"/></svg></div>
+          <span class="output-label">Calibrated priority ranking with documented rationale for top 10</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num">4</div>
+    </div>
+    <div class="step-body">
+      <div class="step-card">
+        <div class="step-meta">
+          <span class="step-tag">Step 04</span>
+          <span class="step-time-chip">1 day</span>
+        </div>
+        <div class="step-title">Draw the Line</div>
+        <p class="step-desc">Capacity is finite. Draw an explicit line between what the team will pursue this quarter and what stays in the backlog. The items below the line are not rejected — they are deferred with a reason.</p>
+
+        <div class="card-cols">
+          <div class="col-box tg">
+            <span class="col-label gr">Above the line</span>
+            <ul class="col-list">
+              <li>Committed work that fits within available capacity</li>
+              <li>Each item has an owner and a target quarter</li>
+              <li>Dependencies are mapped and accepted by other teams</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <span class="col-label">Below the line</span>
+            <ul class="col-list">
+              <li>Valuable but not urgent enough given current constraints</li>
+              <li>Revisited next cycle — with fresh data, not memory</li>
+              <li>May move up if capacity opens or evidence strengthens</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step-note"><strong>The line is not a wall.</strong> Mid-cycle changes happen. When they do, use the same framework: score the new item, compare it against the current line, and make the trade-off explicit. Never add without removing.</div>
+
+        <div class="step-output">
+          <div class="output-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M13.3 4.7L6 12 2.7 8.7l1.1-1 2.2 2.2 6.3-6.3 1 1z" fill="#137333"/></svg></div>
+          <span class="output-label">Committed list with explicit cut-off and deferred items documented</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ ITERATION STRIP ═══════════ -->
+  <div class="iter-strip">
+    <div class="iter-header">Quarterly review cycle — repeat every quarter to keep the backlog alive</div>
+    <div class="iter-items">
+      <div class="iter-item"><div class="iter-n">01</div><div class="iter-name">Collect</div><div class="iter-desc">New signals and data</div></div>
+      <div class="iter-item"><div class="iter-n">02</div><div class="iter-name">Refresh</div><div class="iter-desc">Update evidence</div></div>
+      <div class="iter-item"><div class="iter-n">03</div><div class="iter-name">Re-score</div><div class="iter-desc">Apply current criteria</div></div>
+      <div class="iter-item"><div class="iter-n">04</div><div class="iter-name">Calibrate</div><div class="iter-desc">Align as a team</div></div>
+      <div class="iter-item"><div class="iter-n">05</div><div class="iter-name">Commit</div><div class="iter-desc">Draw the new line</div></div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ BRIDGE 2 ═══════════ -->
+  <div class="bridge" style="margin-top:8px">
+    <div class="bridge-arrow">&darr;</div>
+    <div>
+      <div class="bridge-label">Transition to execution</div>
+      <div class="bridge-text">The ranking is done and the line is drawn. <strong>The question shifts from "what should we do?" to "how do we track whether it worked?"</strong></div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ PHASE 03 ═══════════ -->
+  <div class="phase-block">
+    <div class="phase-row">
+      <div class="phase-chip chip-green">Phase 03</div>
+      <div class="phase-line"></div>
+    </div>
+    <div class="phase-title-row">Track and Learn</div>
+    <div class="phase-sub">Measure · Reflect · Adapt</div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num">5</div>
+    </div>
+    <div class="step-body">
+      <div class="step-card">
+        <div class="step-meta">
+          <span class="step-tag">Step 05</span>
+          <span class="step-time-chip">Ongoing</span>
+        </div>
+        <div class="step-title">Close the Loop on Every Bet</div>
+        <p class="step-desc">Prioritization without follow-up is just planning theater. Every committed item deserves a retrospective: did it move the metric? Was the effort estimate accurate? What would we do differently? This is what turns prioritization from an event into a system.</p>
+
+        <div class="metric-row">
+          <div class="metric-chip">
+            <div class="m-label">Outcome accuracy</div>
+            <div class="m-val">Did the bet pay off?</div>
+            <div class="m-desc">Compare predicted impact vs. actual metric movement</div>
+          </div>
+          <div class="metric-chip">
+            <div class="m-label">Effort accuracy</div>
+            <div class="m-val">Did the estimate hold?</div>
+            <div class="m-desc">Compare T-shirt size vs. actual sprints consumed</div>
+          </div>
+          <div class="metric-chip">
+            <div class="m-label">Learning velocity</div>
+            <div class="m-val">Are we getting better?</div>
+            <div class="m-desc">Quarter-over-quarter improvement in prediction accuracy</div>
+          </div>
+        </div>
+
+        <div class="step-note"><strong>The goal is calibration, not blame.</strong> If half the bets missed their predicted impact, the framework isn't broken — the assumptions feeding it are. Adjust the inputs, not the process.</div>
+
+        <div class="step-output">
+          <div class="output-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M13.3 4.7L6 12 2.7 8.7l1.1-1 2.2 2.2 6.3-6.3 1 1z" fill="#137333"/></svg></div>
+          <span class="output-label">Retrospective completed with learnings fed back into next cycle</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ DELIVERABLES ═══════════ -->
+  <div class="deliverables">
+    <div class="del-top">
+      <div class="del-chip">Final deliverables</div>
+      <h2>Output Artifacts</h2>
+      <p>Every prioritization cycle that follows this framework produces these three artifacts.</p>
+    </div>
+    <div class="del-cards">
+      <div class="del-card">
+        <div class="del-n">01</div>
+        <div class="del-title">Scored Opportunity Backlog</div>
+        <p class="del-desc">Complete list of opportunities with evidence, confidence levels, scores, and ranking. The single source of truth for what was considered.</p>
+      </div>
+      <div class="del-card">
+        <div class="del-n">02</div>
+        <div class="del-title">Quarterly Commitment Map</div>
+        <p class="del-desc">The items above the line with owners, target dates, dependencies, and success criteria. What the team promised to deliver.</p>
+      </div>
+      <div class="del-card">
+        <div class="del-n">03</div>
+        <div class="del-title">Cycle Retrospective</div>
+        <p class="del-desc">Outcome accuracy, effort accuracy, and learning velocity for every committed item. The feedback loop that makes the next cycle better.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <div class="doc-footer">
+    <div class="footer-quote">The best prioritization framework is the one your team actually uses. Simplicity wins.</div>
+    <span class="footer-brand">ZapSign · Product Team</span>
+  </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+---
+description: Regras obrigatórias de design para a plataforma ZapSign Product Guidelines
+globs: ["**/*.tsx", "**/*.css", "**/*.module.css"]
+alwaysApply: true
+---
+
+# Design System — ZapSign Product Guidelines
+
+## Referência obrigatória
+
+Antes de criar ou modificar qualquer componente visual, consulte o arquivo `DESIGN_SYSTEM.md` na raiz do projeto. Ele contém:
+
+- Paleta de cores com tokens CSS
+- Escala tipográfica
+- Sistema de espaçamento (grid de 4px)
+- Padrões de componentes (cards, chips, labels, notes)
+- Regras de animação e transição
+- Heurísticas de revisão
+
+## Regras inegociáveis
+
+1. **Use apenas tokens CSS definidos em `globals.css`.** Nunca hardcodar cores, espaçamentos ou border-radius.
+2. **Estilo Google, clean, premium.** White-space generoso, hierarquia clara, zero ornamentos.
+3. **CSS Modules para estilos de componentes.** Nomeie com `.module.css`.
+4. **Fonte display: `var(--font-display)`.** Fonte body: `var(--font-body)`.
+5. **Cards: fundo branco, borda `--border-lt`, sombra `--shadow-xs`, hover sobe para `--shadow-sm`.**
+6. **Labels/tags: uppercase, letter-spacing 0.06em+, peso 600-700, tamanho 10-11px.**
+7. **Animações de entrada: fadeUp 300ms com stagger de 60ms.** Hover: max 200ms.
+8. **Responsivo: sidebar some em 768px, grids colapsam em 640px.**
+9. **Contraste mínimo WCAG AA em todos os textos.**
+10. **Nunca adicionar emojis ou elementos decorativos sem função.**

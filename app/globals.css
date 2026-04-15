@@ -1,49 +1,213 @@
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS — ZapSign Product Guidelines
+   ═══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Color: Neutrals ── */
+  --white:        #FFFFFF;
+  --bg:           #F8F9FA;
+  --bg-2:         #F1F3F4;
+  --bg-3:         #E8EAED;
+  --surface:      #FFFFFF;
+  --surface-hover: #F8F9FA;
+  --surface-active:#F1F3F4;
+
+  /* ── Color: Ink ── */
+  --ink:          #202124;
+  --ink-2:        #3C4043;
+  --ink-3:        #5F6368;
+  --ink-4:        #9AA0A6;
+
+  /* ── Color: Borders ── */
+  --border:       #DADCE0;
+  --border-lt:    #E8EAED;
+  --border-subtle:#F1F3F4;
+
+  /* ── Color: Blue ── */
+  --blue:         #1A73E8;
+  --blue-hover:   #1765CC;
+  --blue-lt:      #E8F0FE;
+  --blue-mid:     #AECBFA;
+
+  /* ── Color: Green ── */
+  --green:        #1E8E3E;
+  --green-lt:     #E6F4EA;
+  --green-mid:    #A8DAB5;
+
+  /* ── Color: Amber ── */
+  --amber:        #E37400;
+  --amber-lt:     #FEF7E0;
+  --amber-mid:    #FDD663;
+
+  /* ── Color: Purple ── */
+  --purple:       #7B3FA0;
+  --purple-lt:    #F3E8FD;
+  --purple-mid:   #D4C2ED;
+
+  /* ── Color: Teal ── */
+  --teal:         #0D7A6A;
+  --teal-lt:      #E4F7F4;
+  --teal-mid:     #A1DED2;
+
+  /* ── Color: Red ── */
+  --red:          #D93025;
+  --red-lt:       #FCE8E6;
+  --red-mid:      #F5C8C6;
+
+  /* ── Typography ── */
+  --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:    'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ── Spacing (4px grid, generous) ── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+  --sp-24: 96px;
+
+  /* ── Radii ── */
+  --r-sm:  8px;
+  --r-md:  12px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-2xl: 28px;
+  --r-full: 9999px;
+
+  /* ── Shadows (subtle, premium) ── */
+  --shadow-xs:  0 1px 2px rgba(0,0,0,.03);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,.06);
+  --shadow-xl:  0 12px 40px rgba(0,0,0,.08);
+
+  /* ── Transitions ── */
+  --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* ── Layout ── */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --content-max-width: 880px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
 a {
-  color: inherit;
+  color: var(--blue);
   text-decoration: none;
 }
+a:hover {
+  text-decoration: underline;
+}
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+::selection {
+  background: var(--blue-lt);
+  color: var(--ink);
+}
+
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════ */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp var(--duration-slow) var(--ease-out) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-out) both;
+}
+
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 320ms; }
+.stagger-6 { animation-delay: 400ms; }
+.stagger-7 { animation-delay: 480ms; }
+.stagger-8 { animation-delay: 560ms; }

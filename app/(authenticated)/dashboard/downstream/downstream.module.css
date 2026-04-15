@@ -1,0 +1,33 @@
+.page {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding-bottom: var(--sp-16);
+}
+
+.principlesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-8);
+  margin-bottom: var(--sp-16);
+}
+
+.prerequisitesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-20);
+}
+
+@media (max-width: 840px) {
+  .principlesGrid,
+  .prerequisitesGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .principlesGrid,
+  .prerequisitesGrid {
+    grid-template-columns: 1fr;
+  }
+}

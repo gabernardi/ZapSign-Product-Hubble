@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance de Produtos · ZapSign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 24px 32px 16px;
+    gap: 14px;
+  }
+
+  .hdr { display: flex; align-items: center; justify-content: space-between; }
+  .hdr-left { display: flex; align-items: baseline; gap: 12px; }
+  .hdr-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+  }
+  .hdr-sub { font-size: 13px; color: var(--ink-4); font-weight: 500; }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4);
+  }
+
+  .main {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; min-height: 0;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    transition: box-shadow 200ms var(--ease-out);
+  }
+  .card:hover { box-shadow: var(--shadow-sm); }
+
+  .card-top { padding: 18px 20px 14px; }
+  .card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .pill {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 2px 10px; border-radius: var(--r-full);
+  }
+
+  .kpi-row { display: flex; align-items: baseline; gap: 8px; }
+  .kpi-big {
+    font-family: var(--font-display);
+    font-size: 38px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
+  }
+  .kpi-unit { font-size: 13px; font-weight: 500; color: var(--ink-3); }
+  .kpi-ctx { font-size: 11.5px; color: var(--ink-4); margin-top: 3px; }
+
+  .divider { height: 1px; background: var(--border-lt); }
+
+  /* ─── Row table with background bars ─── */
+  .rows { flex: 1; display: flex; flex-direction: column; }
+
+  .row-hdr {
+    display: flex; justify-content: space-between;
+    padding: 7px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-lt);
+    flex-shrink: 0;
+  }
+  .rh {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-4);
+  }
+
+  .row {
+    position: relative;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border-lt);
+    flex: 1; min-height: 32px;
+    overflow: hidden;
+  }
+  .row:last-child { border-bottom: none; }
+
+  .row-bg {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    border-radius: 0; opacity: 0.12;
+    transition: width 700ms var(--ease-out);
+  }
+
+  .row-left {
+    display: flex; align-items: center; gap: 10px;
+    position: relative; z-index: 1;
+  }
+  .row-period { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+  .row-val {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 700; color: var(--ink);
+  }
+
+  .row-right { position: relative; z-index: 1; }
+  .row-growth {
+    font-size: 10.5px; font-weight: 700;
+    padding: 2px 8px; border-radius: var(--r-full);
+    white-space: nowrap;
+  }
+
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--ink-4);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 400ms var(--ease-out) both; }
+  .a1 { animation-delay: 0ms; }
+  .a2 { animation-delay: 60ms; }
+  .a3 { animation-delay: 120ms; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="hdr anim a1">
+    <div class="hdr-left">
+      <div class="hdr-title">Performance de Produtos</div>
+      <div class="hdr-sub">Março — Abril 2026</div>
+    </div>
+    <div class="hdr-mark">ZapSign</div>
+  </div>
+
+  <div class="main">
+
+    <!-- Certificados Digitais -->
+    <div class="card anim a2">
+      <div class="card-top">
+        <div class="card-hdr">
+          <div class="card-title">Certificados Digitais</div>
+          <span class="pill" style="background:var(--blue-lt);color:var(--blue)">Semanal</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-big" style="color:var(--blue)">215</div>
+          <div class="kpi-unit">certificados</div>
+        </div>
+        <div class="kpi-ctx">5 semanas · desde 05/03/2026</div>
+      </div>
+      <div class="divider"></div>
+      <div class="rows" id="certRows">
+        <div class="row-hdr">
+          <div class="rh">Período</div>
+          <div class="rh">Variação</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pombo Digital -->
+    <div class="card anim a3">
+      <div class="card-top">
+        <div class="card-hdr">
+          <div class="card-title">Pombo Digital</div>
+          <span class="pill" style="background:var(--purple-lt);color:var(--purple)">Mensal</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-big" style="color:var(--purple)">113</div>
+          <div class="kpi-unit">compras</div>
+        </div>
+        <div class="kpi-ctx">3 meses · Jan — Mar 2026</div>
+      </div>
+      <div class="divider"></div>
+      <div class="rows" id="pomboRows">
+        <div class="row-hdr">
+          <div class="rh">Período</div>
+          <div class="rh">Variação</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div style="font-weight:500">Atualizado em 06/04/2026</div>
+    <div class="hdr-mark">ZapSign</div>
+  </div>
+</div>
+
+<script>
+function build(id, data, color) {
+  const el = document.getElementById(id);
+  const max = Math.max(...data.map(d => d.val));
+
+  data.forEach((d, i) => {
+    const pct = (d.val / max) * 100;
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <div class="row-bg" style="width:0;background:${color}"></div>
+      <div class="row-left">
+        <span class="row-period">${d.period}</span>
+        <span class="row-val">${d.val}</span>
+      </div>
+      <div class="row-right">
+        ${d.growth
+          ? `<span class="row-growth" style="background:var(--green-lt);color:var(--green)">${d.growth}</span>`
+          : `<span class="row-growth" style="background:var(--bg-2);color:var(--ink-4)">—</span>`
+        }
+      </div>`;
+    el.appendChild(row);
+    setTimeout(() => {
+      row.querySelector('.row-bg').style.width = pct + '%';
+    }, 200 + i * 100);
+  });
+}
+
+build('certRows', [
+  { period: '1ª sem · 05–06/03',     val: 7,  growth: '' },
+  { period: '2ª sem · 09–13/03',     val: 16, growth: '+128,6%' },
+  { period: '3ª sem · 16–20/03',     val: 43, growth: '+168,8%' },
+  { period: '4ª sem · 23–27/03',     val: 65, growth: '+51,2%' },
+  { period: '5ª sem · 30/03–03/04',  val: 84, growth: '+29,2%' },
+], '#1A73E8');
+
+build('pomboRows', [
+  { period: 'Janeiro',   val: 7,  growth: '' },
+  { period: 'Fevereiro', val: 39, growth: '+457,1%' },
+  { period: 'Março',     val: 67, growth: '+71,8%' },
+], '#7B3FA0');
+</script>
+
+</body>
+</html>
