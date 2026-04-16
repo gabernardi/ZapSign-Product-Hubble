@@ -19,12 +19,12 @@ function getStore(): Map<string, LockState> {
 
 export function getPasswordLockClientKey(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0]?.trim() || "unknown";
-  }
-  const realIp = request.headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
-  return "unknown";
+  const ip =
+    forwarded?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip")?.trim() ||
+    "unknown";
+  const ua = (request.headers.get("user-agent") ?? "").slice(0, 160);
+  return `${ip}|${ua}`;
 }
 
 function normalizeState(key: string): LockState {

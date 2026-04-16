@@ -3,7 +3,12 @@ import { CredentialsSignin } from "@auth/core/errors";
 import Credentials from "next-auth/providers/credentials";
 import { evaluatePasswordAttempt } from "@/lib/password-lockout";
 
-const SITE_PASSWORD = process.env.SITE_PASSWORD ?? "1234";
+/** Senha vazia no .env não pode derrubar o default (?? não trata ""). */
+const SITE_PASSWORD = (() => {
+  const raw = process.env.SITE_PASSWORD;
+  if (typeof raw === "string" && raw.trim().length > 0) return raw.trim();
+  return "1234";
+})();
 
 class LockedOutError extends CredentialsSignin {
   code = "locked_out";
@@ -23,7 +28,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials, request) {
         const password =
-          typeof credentials?.password === "string" ? credentials.password : "";
+          typeof credentials?.password === "string"
+            ? credentials.password.trim()
+            : "";
 
         const expected = SITE_PASSWORD;
         const passwordOk = password.length > 0 && password === expected;
@@ -51,12 +58,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   trustHost: true,
   callbacks: {
-    async signIn({ account }) {
-      if (account?.provider === "credentials") return true;
-      return false;
+    /** Só existe login por credenciais; authorize já validou a senha. */
+    signIn() {
+      return true;
     },
-    jwt({ token, account }) {
-      if (account?.provider === "credentials") {
+    jwt({ token, user, account }) {
+      if (user && (account?.type === "credentials" || account?.provider === "credentials")) {
         token.passwordGate = true;
       }
       return token;

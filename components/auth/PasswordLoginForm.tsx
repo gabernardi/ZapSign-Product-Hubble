@@ -9,7 +9,7 @@ function messageForCode(code: string | undefined): string {
   if (code === "locked_out") {
     return "Muitas tentativas incorretas. Acesso bloqueado por 30 minutos.";
   }
-  if (code === "invalid_credentials") {
+  if (code === "invalid_credentials" || code === "CredentialsSignin") {
     return "Senha incorreta.";
   }
   return "Não foi possível entrar. Tente novamente.";
@@ -24,8 +24,10 @@ export function PasswordLoginForm() {
     e.preventDefault();
     setError(null);
     const form = e.currentTarget;
-    const password = new FormData(form).get("password");
-    if (typeof password !== "string") return;
+    const raw = new FormData(form).get("password");
+    if (typeof raw !== "string") return;
+    const password = raw.trim();
+    if (!password) return;
 
     startTransition(async () => {
       const result = await signIn("credentials", {
@@ -34,13 +36,13 @@ export function PasswordLoginForm() {
         callbackUrl: "/dashboard",
       });
 
-      if (result?.ok && !result.error) {
+      if (result?.ok && !result?.error) {
         router.push("/dashboard");
         router.refresh();
         return;
       }
 
-      setError(messageForCode(result?.code));
+      setError(messageForCode(result?.code ?? result?.error));
       form.reset();
     });
   }
