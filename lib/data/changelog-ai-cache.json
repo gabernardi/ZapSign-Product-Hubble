@@ -10998,5 +10998,13 @@
     "description": "Agora, a rotina que insere Notas Fiscais considera corretamente os casos de Payment Intents, garantindo que os dados sejam persistidos corretamente no banco.",
     "impact": "As Notas Fiscais geradas a partir de Payment Intents são agora inseridas corretamente, evitando erros de registro.",
     "source": "openai"
+  },
+  "pr:v2:truora/api:2977:0127a207814e": {
+    "userFacing": false,
+    "reason": "Mudanças internas relacionadas a migrações de banco de dados sem efeito visível.",
+    "title": "",
+    "description": "",
+    "impact": "",
+    "source": "openai"
   }
 }
