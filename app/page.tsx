@@ -97,10 +97,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
-          <span className={styles.footerBrand}>
-            ZapSign · Time de Produto
-          </span>
-          <span className={styles.footerMeta}>Guia interno · Abril 2026</span>
+          <span className={styles.footerBrand}>Product Hubble</span>
+          <span className={styles.footerMeta}>Uso interno · ZapSign · 2026</span>
         </div>
       </footer>
     </div>

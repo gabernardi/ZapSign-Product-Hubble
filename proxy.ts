@@ -25,5 +25,11 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Exclude Next.js internals, the NextAuth handler, and any static asset
+  // in /public (anything with an extension we care about). Without this,
+  // requests like /zapsign-mark-white.png on the unauthenticated login
+  // page get redirected to "/", rendering as broken <img>.
+  matcher: [
+    "/((?!_next/static|_next/image|api/auth|favicon\\.ico|.+\\.(?:png|jpg|jpeg|gif|svg|webp|ico|txt|xml|woff|woff2|ttf|otf|mp4|webm)$).*)",
+  ],
 };

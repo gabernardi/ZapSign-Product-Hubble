@@ -24,7 +24,7 @@ const STORAGE_KEY = "zs-theme";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function readStoredPreference(): ThemePreference {
-  if (typeof window === "undefined") return "system";
+  if (typeof window === "undefined") return "dark";
   try {
     const value = window.localStorage.getItem(STORAGE_KEY);
     if (value === "light" || value === "dark" || value === "system") {
@@ -33,7 +33,9 @@ function readStoredPreference(): ThemePreference {
   } catch {
     // localStorage unavailable (private mode, SSR edge). Fall through.
   }
-  return "system";
+  // No stored preference: Hubble ships with dark as the default. Users can
+  // still opt into light or system via the theme toggle.
+  return "dark";
 }
 
 function resolvePreference(pref: ThemePreference): ResolvedTheme {
@@ -139,8 +141,11 @@ export const THEME_INIT_SCRIPT = `(() => {
     var v = localStorage.getItem(k);
     if (v === 'light' || v === 'dark') {
       document.documentElement.setAttribute('data-theme', v);
-    } else {
+    } else if (v === 'system') {
       document.documentElement.removeAttribute('data-theme');
+    } else {
+      // No stored preference: default to dark to match Hubble's ship state.
+      document.documentElement.setAttribute('data-theme', 'dark');
     }
   } catch (e) {}
 })();`;
