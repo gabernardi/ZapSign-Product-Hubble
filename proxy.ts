@@ -1,11 +1,9 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-// Runs on Node runtime so it can import the full Auth.js config (including
-// the Google provider) without triggering Vercel's "unsupported modules"
-// check in the Edge Runtime.
-export const runtime = "nodejs";
-
+// Proxy runs on the Node.js runtime by default (Next.js 16+), which lets
+// us import the full Auth.js config — including the Google provider —
+// without hitting Vercel's Edge "unsupported modules" check.
 export default auth((req) => {
   const isAuthenticated = Boolean(req.auth?.user);
   const isAuthRoute = req.nextUrl.pathname.startsWith("/api/auth");
