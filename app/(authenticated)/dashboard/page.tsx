@@ -1,82 +1,97 @@
 "use client";
 
 import Link from "next/link";
+import { Fraunces } from "next/font/google";
 import { useSession } from "next-auth/react";
-import styles from "./dashboard.module.css";
+import { GlasswingShell } from "@/components/glasswing/GlasswingShell";
+import { GlasswingHero } from "@/components/glasswing/GlasswingHero";
+import {
+  EditorialSection,
+  EditorialProse,
+} from "@/components/glasswing/EditorialSection";
+import { TableOfContents } from "@/components/glasswing/TableOfContents";
+import { getGlasswingNav } from "@/lib/data/glasswing-nav";
+import { QUARTERS } from "@/lib/data/roadmap";
+import styles from "./page.module.css";
 
-const GUIDES = [
+const activeQuarter = QUARTERS.find((q) => q.active) ?? QUARTERS[1];
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
+  axes: ["opsz", "SOFT"],
+});
+
+interface HomeEntry {
+  number: string;
+  label: string;
+  title: string;
+  body: string;
+  href?: string;
+  cta?: string;
+  status?: "ready" | "soon";
+}
+
+const ENTRIES: HomeEntry[] = [
   {
+    number: "01",
+    label: "Guideline",
     title: "Upstream",
-    description:
-      "Como o time de produto investiga problemas e concebe soluções antes do build.",
+    body: "Como o trio formula, valida e prepara o que será construído — da descoberta do problema ao protótipo pronto para entrar em build.",
     href: "/dashboard/upstream",
-    status: "active" as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 4v16M12 4l5 5M12 4L7 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    color: "blue",
+    cta: "Ler guia",
+    status: "ready",
   },
   {
+    number: "02",
+    label: "Guideline",
     title: "Downstream",
-    description:
-      "Como o time transforma protótipos validados em entregas com qualidade e impacto medido.",
+    body: "Como o trio executa, lança e aprende com o que foi construído — do handoff técnico até a medição do impacto em produção.",
     href: "/dashboard/downstream",
-    status: "active" as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 20V4M12 20l5-5M12 20l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    color: "green",
+    cta: "Ler guia",
+    status: "ready",
   },
   {
-    title: "Liderança",
-    description:
-      "Comunicação, times e desenvolvimento pessoal para quem lidera em produto e engenharia.",
-    href: "/dashboard/management-tips",
-    status: "active" as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 3a5 5 0 015 5v1a5 5 0 01-10 0V8a5 5 0 015-5z" stroke="currentColor" strokeWidth="2" />
-        <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    ),
-    color: "amber",
-  },
-  {
-    title: "Roadmap",
-    description:
-      "Visão consolidada das iniciativas planejadas por trimestre — projetos, apostas e oportunidades.",
+    number: "03",
+    label: `${activeQuarter.period} · Trimestre atual`,
+    title: `Roadmap ${activeQuarter.label}`,
+    body: "Cinco squads, um trimestre e um contrato público: escopo fechado, métrica combinada, aprendizado registrado.",
     href: "/dashboard/roadmap",
-    status: "active" as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
-        <path d="M3 10h18" stroke="currentColor" strokeWidth="2" />
-        <path d="M9 4v6M15 4v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        <path d="M7 14h3M14 14h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    ),
-    color: "teal",
+    cta: "Ver trimestre",
+    status: "ready",
   },
   {
-    title: "Árvore de Oportunidades",
-    description:
-      "Mapeie e priorize oportunidades de produto de forma visual e estruturada.",
-    href: "/dashboard/opportunity-tree",
-    status: "coming" as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="5" r="3" stroke="currentColor" strokeWidth="2" />
-        <circle cx="6" cy="17" r="3" stroke="currentColor" strokeWidth="2" />
-        <circle cx="18" cy="17" r="3" stroke="currentColor" strokeWidth="2" />
-        <path d="M12 8v4L6 14M12 12l6 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    ),
-    color: "purple",
+    number: "04",
+    label: "Laboratório",
+    title: "Laboratório de produto",
+    body: "Espaço livre pro time experimentar qualquer ideia — de uma funcionalidade nova pro core de assinatura a uma aposta que pode virar unidade de negócio nova. Este site é a forma mais acessível; o convite vai até onde a sua ideia for.",
+    href: "/dashboard/contribuir",
+    cta: "Entrar no laboratório",
+    status: "ready",
   },
+  {
+    number: "05",
+    label: "Changelog · LAB-001",
+    title: "Histórico automatizado",
+    body: "Changelog gerado direto dos commits da main, sem esforço manual. É um dos primeiros experimentos saídos do laboratório — está em beta, ainda evoluindo.",
+    href: "/dashboard/changelog",
+    cta: "Ver histórico",
+    status: "ready",
+  },
+  {
+    number: "06",
+    label: "Em breve",
+    title: "Árvore de oportunidades",
+    body: "Um mapa vivo de onde o produto pode crescer — problemas, apostas e hipóteses organizados pelo impacto que podem gerar.",
+    status: "soon",
+  },
+];
+
+const tocItems = [
+  { id: "abertura", label: "Abertura" },
+  { id: "conteudos", label: "Conteúdos" },
+  { id: "manifesto", label: "Manifesto" },
 ];
 
 function getGreeting(): string {
@@ -86,69 +101,156 @@ function getGreeting(): string {
   return "Boa noite";
 }
 
-export default function DashboardPage() {
+export default function DashboardHome() {
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(" ")[0];
+  const heroEyebrow = firstName
+    ? `${getGreeting()}, ${firstName}`
+    : "ZapSign | Product Hubble";
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>
-          {firstName ? `${getGreeting()}, ${firstName}` : "Guidelines de Produto"}
-        </h1>
-        <p className={styles.subtitle}>
-          Guias de processo, frameworks e ferramentas para o time de Produto.
-        </p>
-      </div>
+    <div className={`${styles.page} ${fraunces.variable}`}>
+      <GlasswingShell
+        brand="ZapSign | Product Hubble"
+        navItems={getGlasswingNav("home")}
+      >
+        <TableOfContents items={tocItems} label="Nesta página" />
 
-      <div className={styles.grid}>
-        {GUIDES.map((guide, i) => {
-          const isComing = guide.status === "coming";
+        <GlasswingHero
+          eyebrow={heroEyebrow}
+          title="Guia interno do time de produto."
+          subtitle="Um único lugar para entender como pensamos, decidimos e entregamos. Da formulação do problema ao aprendizado no pós-lançamento."
+          continueLabel="Começar"
+          continueHref="#abertura"
+        />
 
-          const content = (
-            <>
-              <div className={styles.cardIcon}>{guide.icon}</div>
-              <div className={styles.cardContent}>
-                <div className={styles.cardTitleRow}>
-                  <h2 className={styles.cardTitle}>{guide.title}</h2>
-                  {isComing && (
-                    <span className={styles.badge}>Em breve</span>
-                  )}
-                </div>
-                <p className={styles.cardDesc}>{guide.description}</p>
-              </div>
-              {!isComing && (
-                <div className={styles.arrow}>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M7 4l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              )}
-            </>
-          );
+        <EditorialSection
+          id="abertura"
+          label="O que você vai encontrar aqui."
+          eyebrow="01 · Abertura"
+        >
+          <EditorialProse>
+            <p>
+              Este é o lugar onde o time de produto da ZapSign guarda memória.
+              Não é um conjunto de regras — é o registro honesto de como
+              trabalhamos hoje, o que já aprendemos e o que ainda estamos
+              descobrindo.
+            </p>
+            <p>
+              As duas <strong>guidelines</strong> descrevem o ciclo completo de
+              uma entrega: do problema ao protótipo (upstream) e do handoff ao
+              aprendizado em produção (downstream). O <strong>roadmap</strong>{" "}
+              mostra em que estamos apostando agora e por quê. As seções{" "}
+              <em>meta</em> explicam como o próprio guia é editado e o que mudou
+              desde a primeira versão.
+            </p>
+            <p>
+              Leia por curiosidade, consulte na dúvida, abra um PR quando
+              discordar. O guia melhora quando mais gente escreve nele.
+            </p>
+          </EditorialProse>
+        </EditorialSection>
 
-          if (isComing) {
-            return (
-              <div
-                key={guide.href}
-                className={`${styles.card} ${styles[guide.color]} ${styles.coming} animate-fade-up stagger-${i + 1}`}
-              >
-                {content}
-              </div>
-            );
-          }
+        <EditorialSection
+          id="conteudos"
+          label="Seis leituras para entender como o produto se move."
+          eyebrow="02 · Conteúdos"
+          wide
+        >
+          <EditorialProse>
+            <p>
+              Cada leitura é independente — dá pra começar por qualquer uma.
+              Mas se esta é a sua primeira visita, a ordem abaixo é o percurso
+              mais curto do abstrato (como pensamos) para o concreto (o que
+              estamos fazendo agora).
+            </p>
+          </EditorialProse>
+          <ol className={styles.entries}>
+            {ENTRIES.map((entry) => {
+              const isSoon = entry.status === "soon";
 
-          return (
-            <Link
-              key={guide.href}
-              href={guide.href}
-              className={`${styles.card} ${styles[guide.color]} animate-fade-up stagger-${i + 1}`}
-            >
-              {content}
-            </Link>
-          );
-        })}
-      </div>
+              const body = (
+                <>
+                  <div className={styles.entryNumber}>{entry.number}</div>
+                  <div className={styles.entryBody}>
+                    <header className={styles.entryHead}>
+                      <span className={styles.entryLabel}>{entry.label}</span>
+                      <h3 className={styles.entryTitle}>{entry.title}</h3>
+                    </header>
+                    <p className={styles.entryText}>{entry.body}</p>
+                    {!isSoon && entry.cta && (
+                      <span className={styles.entryCta}>
+                        {entry.cta}
+                        <span aria-hidden="true" className={styles.entryArrow}>
+                          →
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </>
+              );
+
+              if (isSoon || !entry.href) {
+                return (
+                  <li
+                    key={entry.number}
+                    className={`${styles.entry} ${styles.entrySoon}`}
+                    aria-disabled="true"
+                  >
+                    {body}
+                  </li>
+                );
+              }
+
+              return (
+                <li key={entry.number} className={styles.entry}>
+                  <Link href={entry.href} className={styles.entryLink}>
+                    {body}
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
+        </EditorialSection>
+
+        <EditorialSection
+          id="manifesto"
+          label="Três frases que sustentam o guia."
+          eyebrow="03 · Manifesto"
+        >
+          <EditorialProse>
+            <p>
+              <strong>O problema precede o produto.</strong> Nenhuma solução
+              entra em build antes de o time entender — com evidência — qual
+              dor está sendo resolvida e para quem.
+            </p>
+            <p>
+              <strong>A entrega não acaba no deploy.</strong> Soltamos, medimos
+              e ajustamos. O aprendizado registrado vale mais que a entrega
+              silenciosa.
+            </p>
+            <p>
+              <strong>O guia pertence ao time.</strong> Quem vive o processo
+              escreve sobre ele. Toda contribuição — do typo ao capítulo novo
+              — é bem-vinda.
+            </p>
+          </EditorialProse>
+        </EditorialSection>
+
+        <footer className={styles.footer}>
+          <div className={styles.footerInner}>
+            <p className={styles.footerQuote}>
+              &ldquo;Guia não é regra. É memória do que já aprendemos.&rdquo;
+            </p>
+            <div className={styles.footerMeta}>
+              <span className={styles.footerBrand}>
+                ZapSign · Time de Produto
+              </span>
+              <span>Guia interno · Abril 2026</span>
+            </div>
+          </div>
+        </footer>
+      </GlasswingShell>
     </div>
   );
 }

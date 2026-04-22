@@ -1,15 +1,63 @@
 .note {
-  background: var(--blue-lt);
-  border-radius: var(--r-md);
-  padding: var(--sp-5) var(--sp-6);
+  margin-top: var(--sp-5);
+  padding: var(--sp-5) 0 var(--sp-2);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-4);
+  margin-bottom: var(--sp-3);
+}
+
+.glyph {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  line-height: 1;
+}
+
+.body {
   font-size: 14px;
   color: var(--ink-2);
   line-height: 1.7;
-  margin-bottom: 0;
+  letter-spacing: -0.006em;
+  max-width: 68ch;
 }
 
-.note strong,
-.note :global(strong) {
+.body strong,
+.body :global(strong) {
   font-weight: 600;
   color: var(--ink);
+}
+
+.body em,
+.body :global(em) {
+  font-style: normal;
+  color: var(--ink-3);
+}
+
+.body a,
+.body :global(a) {
+  color: var(--zs-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--zs-mid);
+  transition: text-decoration-color var(--duration-fast) var(--ease-out);
+}
+
+.body a:hover,
+.body :global(a):hover {
+  text-decoration-color: var(--zs);
 }

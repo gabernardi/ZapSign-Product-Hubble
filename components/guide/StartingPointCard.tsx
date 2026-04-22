@@ -16,12 +16,13 @@ export function StartingPointCard({
   focusValue,
 }: StartingPointCardProps) {
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${styles[`${color}Card`]}`}>
       <div className={`${styles.dot} ${styles[color]}`} />
       <div className={styles.title}>{title}</div>
       <div className={styles.body}>{body}</div>
       <div className={styles.focus}>
-        {focusLabel}: <span>{focusValue}</span>
+        {focusLabel}
+        <span>{focusValue}</span>
       </div>
     </div>
   );

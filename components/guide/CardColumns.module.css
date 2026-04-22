@@ -5,33 +5,48 @@
   margin-bottom: var(--sp-5);
 }
 
-@media (max-width: 520px) {
+@media (max-width: 560px) {
   .grid { grid-template-columns: 1fr; }
 }
 
 .box {
-  background: var(--bg);
-  border-radius: var(--r-md);
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--surface-radius);
+  box-shadow: var(--surface-shadow);
   padding: var(--sp-5) var(--sp-5) var(--sp-6);
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
 }
 
-.bgblue  { background: var(--blue-lt); }
-.bggreen { background: var(--green-lt); }
-.bgamber { background: var(--amber-lt); }
+.box:hover {
+  box-shadow: var(--surface-shadow-hover);
+}
 
 .label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ink-4);
-  letter-spacing: 0.06em;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-3);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: var(--sp-4);
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.blue  { color: var(--blue); }
-.green { color: var(--green); }
-.amber { color: var(--amber); }
+.label::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--zs);
+}
+
+/* Legacy color props — now unified under ZapSign neutral. */
+.blue, .green, .amber { color: var(--ink-3); }
+.bgblue, .bggreen, .bgamber { background: var(--surface-bg); }
 
 .list {
   display: flex;
@@ -49,13 +64,12 @@
 }
 
 .list li::before {
-  content: '';
+  content: "";
   position: absolute;
-  left: 0;
+  left: 2px;
   top: 10px;
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--ink-4);
-  opacity: 0.5;
+  background: var(--zs-mid);
 }

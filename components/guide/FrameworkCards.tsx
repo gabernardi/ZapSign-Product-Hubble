@@ -140,7 +140,7 @@ const FRAMEWORK_MODALS: FrameworkModalData[] = [
         description:
           "Crie um espaço entre o que aconteceu e o que você vai fazer. Respire fundo. Não reaja ainda.",
         example:
-          "Antes de responder aquele Slack, conte até 10. A pausa muda o tom de tudo.",
+          "Antes de responder aquela mensagem no Google Chat, conte até 10. A pausa muda o tom de tudo.",
       },
       {
         letter: "R",

@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/generate-changelog.mjs",
     "dev": "next dev",
+    "dev:clean": "rm -rf .next && next dev",
+    "dev:webpack": "next dev --webpack",
+    "prebuild": "node scripts/generate-changelog.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "changelog": "node scripts/generate-changelog.mjs"
   },
   "dependencies": {
     "next": "16.2.1",

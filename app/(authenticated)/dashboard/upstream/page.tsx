@@ -1,131 +1,217 @@
-import { upstreamData as data } from "@/lib/data/upstream";
-import { GuideHeader } from "@/components/guide/GuideHeader";
-import { SectionLabel } from "@/components/guide/SectionLabel";
-import { PrincipleCard } from "@/components/guide/PrincipleCard";
-import { StartingPointCard } from "@/components/guide/StartingPointCard";
-import { PhaseBlock } from "@/components/guide/PhaseBlock";
-import { StepCard } from "@/components/guide/StepCard";
-import { TemplateBox } from "@/components/guide/TemplateBox";
-import { CardColumns } from "@/components/guide/CardColumns";
-import { MetricRow } from "@/components/guide/MetricRow";
-import { StepNote } from "@/components/guide/StepNote";
-import { ScaleList } from "@/components/guide/ScaleList";
-import { FidelityLadder } from "@/components/guide/FidelityLadder";
-import { Bridge } from "@/components/guide/Bridge";
-import { IterationStrip } from "@/components/guide/IterationStrip";
-import { Deliverables } from "@/components/guide/Deliverables";
-import { NextSteps } from "@/components/guide/NextSteps";
-import { GuideFooter } from "@/components/guide/GuideFooter";
-import styles from "./upstream.module.css";
+import { Fraunces } from "next/font/google";
+import { upstreamGlasswingData as data } from "@/lib/data/upstream-glasswing";
+import { GlasswingShell } from "@/components/glasswing/GlasswingShell";
+import { GlasswingHero } from "@/components/glasswing/GlasswingHero";
+import {
+  EditorialSection,
+  EditorialProse,
+} from "@/components/glasswing/EditorialSection";
+import { SceneBlock } from "@/components/glasswing/SceneBlock";
+import { StakeholderGrid } from "@/components/glasswing/StakeholderGrid";
+import { StatBar } from "@/components/glasswing/StatBar";
+import { TimelineChart } from "@/components/glasswing/TimelineChart";
+import { QuoteCarousel } from "@/components/glasswing/QuoteCarousel";
+import { Footnotes } from "@/components/glasswing/Footnotes";
+import { TableOfContents } from "@/components/glasswing/TableOfContents";
+import { PhaseOwnership } from "@/components/glasswing/PhaseOwnership";
+import { getGlasswingNav } from "@/lib/data/glasswing-nav";
+import styles from "./page.module.css";
 
-export default function UpstreamGuidePage() {
+const tocItems = [
+  { id: "introducao", label: "Abertura" },
+  { id: "contexto", label: "Contexto" },
+  { id: "passos", label: "Os passos" },
+  { id: "participantes", label: "Quem participa" },
+  { id: "dados", label: "Evidência" },
+  { id: "vozes", label: "Vozes" },
+  { id: "artefatos", label: "Artefatos" },
+  { id: "appendix", label: "Appendix" },
+];
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
+  axes: ["opsz", "SOFT"],
+});
+
+export const metadata = {
+  title: "Upstream · Hubble",
+  description:
+    "Guia do processo Upstream da ZapSign: como o trio formula, valida e prepara o que será construído.",
+};
+
+export default function UpstreamPage() {
   return (
-    <div className={styles.page}>
-      <GuideHeader {...data.header} />
+    <div className={`${styles.page} ${fraunces.variable}`}>
+      <GlasswingShell
+        brand={data.topbar.brand}
+        navItems={getGlasswingNav("upstream")}
+      >
+        <TableOfContents items={tocItems} label="Neste guia" />
+        <GlasswingHero
+          eyebrow={data.hero.eyebrow}
+          title={data.hero.title}
+          subtitle={data.hero.subtitle}
+          continueLabel={data.hero.continueLabel}
+          continueHref="#introducao"
+        />
 
-      {/* Principios */}
-      <SectionLabel>Princípios</SectionLabel>
-      <div className={styles.principlesGrid}>
-        {data.principles.map((p, i) => (
-          <div key={i} className={`animate-fade-up stagger-${i + 1}`}>
-            <PrincipleCard {...p} />
+        <EditorialSection
+          id="introducao"
+          label={data.introduction.label}
+          eyebrow="01 · Abertura"
+        >
+          <EditorialProse>
+            {data.introduction.paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </EditorialProse>
+        </EditorialSection>
+
+        <EditorialSection
+          id="contexto"
+          label={data.context.label}
+          eyebrow="02 · Contexto"
+        >
+          <EditorialProse>
+            {data.context.paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </EditorialProse>
+        </EditorialSection>
+
+        <SceneBlock
+          kind={data.intermission.kind}
+          eyebrow={data.intermission.eyebrow}
+          title={data.intermission.title}
+          body={data.intermission.body}
+        />
+
+        <EditorialSection
+          id="passos"
+          label={data.phases.label}
+          eyebrow="03 · Os passos"
+          wide
+        >
+          <EditorialProse>
+            <p>{data.phases.intro}</p>
+          </EditorialProse>
+          <div className={styles.phases}>
+            {data.phases.items.map((phase) => (
+              <article key={phase.number} className={styles.phase}>
+                <div className={styles.phaseNumber}>{phase.number}</div>
+                <div className={styles.phaseBody}>
+                  <header className={styles.phaseHead}>
+                    <span className={styles.phaseDuration}>
+                      {phase.duration}
+                    </span>
+                    <h3 className={styles.phaseName}>{phase.name}</h3>
+                  </header>
+                  <p className={styles.phaseText}>{phase.body}</p>
+                  <ul className={styles.phaseHighlights}>
+                    {phase.highlights.map((h, i) => (
+                      <li key={i}>{h}</li>
+                    ))}
+                  </ul>
+                  {phase.ownership && (
+                    <PhaseOwnership
+                      owner={phase.ownership.owner}
+                      contributors={phase.ownership.contributors}
+                    />
+                  )}
+                </div>
+              </article>
+            ))}
           </div>
-        ))}
-      </div>
+        </EditorialSection>
 
-      {/* Pontos de partida */}
-      <SectionLabel>Pontos de partida possíveis</SectionLabel>
-      <div className={styles.startingGrid}>
-        {data.startingPoints.map((sp, i) => (
-          <div key={i} className={`animate-fade-up stagger-${i + 1}`}>
-            <StartingPointCard {...sp} />
+        <StakeholderGrid
+          id="participantes"
+          eyebrow={data.stakeholders.eyebrow}
+          title={data.stakeholders.title}
+          description={data.stakeholders.description}
+          items={data.stakeholders.items}
+        />
+
+        <EditorialSection
+          id="dados"
+          label={data.benchmarks.label}
+          eyebrow="04 · Evidência"
+          wide
+        >
+          <EditorialProse>
+            <p>{data.benchmarks.intro}</p>
+          </EditorialProse>
+          <TimelineChart
+            title={data.benchmarks.timeline.title}
+            description={data.benchmarks.timeline.description}
+            series={data.benchmarks.timeline.points}
+            unit={data.benchmarks.timeline.unit}
+          />
+          {data.benchmarks.blocks.map((block) => (
+            <StatBar
+              key={block.title}
+              title={block.title}
+              description={block.description}
+              series={block.series}
+              unit={block.unit}
+            />
+          ))}
+        </EditorialSection>
+
+        <EditorialSection
+          id="vozes"
+          label={data.voices.label}
+          eyebrow="05 · Vozes"
+        >
+          <EditorialProse>
+            <p>{data.voices.intro}</p>
+          </EditorialProse>
+          <QuoteCarousel quotes={data.voices.quotes} />
+        </EditorialSection>
+
+        <EditorialSection
+          id="artefatos"
+          label={data.plans.label}
+          eyebrow="06 · Artefatos"
+        >
+          <EditorialProse>
+            <p>{data.plans.intro}</p>
+          </EditorialProse>
+          <div className={styles.plans}>
+            {data.plans.items.map((item) => (
+              <article key={item.number} className={styles.plan}>
+                <div className={styles.planNumber}>{item.number}</div>
+                <div className={styles.planBody}>
+                  <h3 className={styles.planTitle}>{item.title}</h3>
+                  <p className={styles.planText}>{item.body}</p>
+                </div>
+              </article>
+            ))}
           </div>
-        ))}
-      </div>
+        </EditorialSection>
 
-      {/* Fase 01 */}
-      <PhaseBlock
-        phase="Fase 01"
-        color="blue"
-        title="Entendimento do Ponto de Partida"
-        subtitle="Contextualizar · Medir · Alinhar"
-      />
+        <EditorialSection
+          id="appendix"
+          label={data.appendix.label}
+          eyebrow="Appendix"
+        >
+          <Footnotes items={data.appendix.footnotes} />
+        </EditorialSection>
 
-      <StepCard {...data.step1}>
-        <TemplateBox {...data.step1.template} />
-        <CardColumns columns={data.step1.columns} />
-      </StepCard>
-
-      <StepCard {...data.step2}>
-        <MetricRow metrics={data.step2.metrics} />
-        <CardColumns columns={data.step2.columns} />
-        <StepNote>
-          <span dangerouslySetInnerHTML={{ __html: data.step2.note }} />
-        </StepNote>
-      </StepCard>
-
-      <StepCard {...data.step3} isLast>
-        <div className={styles.scaleWrapper}>
-          <span className={styles.scaleLabel}>Escala de profundidade do documento</span>
-          <ScaleList items={data.step3.scale} />
-        </div>
-        <CardColumns columns={data.step3.columns} />
-        <StepNote>
-          <span dangerouslySetInnerHTML={{ __html: data.step3.note }} />
-        </StepNote>
-      </StepCard>
-
-      <Bridge label={data.bridge1.label}>
-        <span dangerouslySetInnerHTML={{ __html: data.bridge1.html }} />
-      </Bridge>
-
-      {/* Fase 02 */}
-      <PhaseBlock
-        phase="Fase 02"
-        color="amber"
-        title="Design e Validação"
-        subtitle="Explorar · Prototipar · Testar"
-      />
-
-      <StepCard {...data.step4}>
-        <FidelityLadder steps={data.step4.fidelity} />
-        <CardColumns columns={data.step4.columns} />
-        <StepNote>
-          <span dangerouslySetInnerHTML={{ __html: data.step4.note }} />
-        </StepNote>
-      </StepCard>
-
-      <StepCard {...data.step5} isLast>
-        <CardColumns columns={data.step5.columns} />
-        <StepNote>
-          <span dangerouslySetInnerHTML={{ __html: data.step5.note }} />
-        </StepNote>
-      </StepCard>
-
-      <IterationStrip {...data.iteration} />
-
-      <Bridge label={data.bridge2.label}>
-        <span dangerouslySetInnerHTML={{ __html: data.bridge2.html }} />
-      </Bridge>
-
-      {/* Fase 03 */}
-      <PhaseBlock
-        phase="Fase 03"
-        color="green"
-        title="Entrega com Qualidade"
-        subtitle="Especificar · Negociar · Lançar"
-      />
-
-      <StepCard {...data.step6} isLast>
-        <CardColumns columns={data.step6.columns} />
-        <StepNote>
-          <span dangerouslySetInnerHTML={{ __html: data.step6.note }} />
-        </StepNote>
-      </StepCard>
-
-      <Deliverables {...data.deliverables} />
-      <NextSteps {...data.nextSteps} />
-      <GuideFooter {...data.footer} />
+        <footer className={styles.footer}>
+          <div className={styles.footerInner}>
+            <p className={styles.footerQuote}>
+              &ldquo;{data.footer.quote}&rdquo;
+            </p>
+            <div className={styles.footerMeta}>
+              <span className={styles.footerBrand}>{data.footer.brand}</span>
+              <span>{data.footer.meta}</span>
+            </div>
+          </div>
+        </footer>
+      </GlasswingShell>
     </div>
   );
 }

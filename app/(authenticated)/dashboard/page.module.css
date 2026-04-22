@@ -1,0 +1,223 @@
+.page {
+  --gw-font-display: var(--font-fraunces), "Fraunces", "Tiempos Headline", Georgia, serif;
+  --gw-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --gw-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --gw-max: 1120px;
+  --gw-reading: 720px;
+  --gw-wide: 880px;
+  --gw-gutter: 32px;
+
+  background: var(--gw-bg);
+  color: var(--gw-ink);
+  min-height: 100dvh;
+}
+
+@media (max-width: 640px) {
+  .page {
+    --gw-gutter: 20px;
+  }
+}
+
+/* ═════════════ Conteúdos ═════════════ */
+
+.entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.entry {
+  border-top: 1px solid var(--gw-rule);
+}
+
+.entry:first-child {
+  border-top: 1px solid var(--gw-rule-strong);
+}
+
+.entry:last-child {
+  border-bottom: 1px solid var(--gw-rule);
+}
+
+.entryLink,
+.entrySoon {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 24px;
+  padding: 48px 0;
+  text-decoration: none;
+  color: inherit;
+  transition: background 150ms ease;
+}
+
+.entryLink {
+  cursor: pointer;
+}
+
+.entryLink:hover {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--gw-ink) 2%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+.entryLink:hover .entryArrow {
+  transform: translateX(4px);
+}
+
+.entryLink:hover .entryCta {
+  color: var(--gw-ink);
+  border-bottom-color: var(--gw-ink);
+}
+
+.entrySoon {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.entryNumber {
+  font-family: var(--gw-font-display);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--gw-ink);
+  font-variation-settings: "opsz" 72;
+}
+
+.entrySoon .entryNumber {
+  color: var(--gw-ink-3);
+}
+
+.entryBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: var(--gw-wide);
+}
+
+.entryHead {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.entryLabel {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--gw-ink-3);
+}
+
+.entryTitle {
+  font-family: var(--gw-font-display);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--gw-ink);
+  font-variation-settings: "opsz" 48;
+  margin: 0;
+}
+
+.entryText {
+  font-family: var(--gw-font-body);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--gw-ink-2);
+  max-width: 64ch;
+  margin: 0;
+}
+
+.entryCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--gw-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gw-ink-2);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gw-rule-strong);
+  transition: color 150ms ease, border-color 150ms ease;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.entryArrow {
+  display: inline-block;
+  transition: transform 180ms ease;
+}
+
+@media (max-width: 640px) {
+  .entryLink,
+  .entrySoon {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 36px 0;
+  }
+  .entryNumber {
+    font-size: 32px;
+  }
+  .entryTitle {
+    font-size: 22px;
+  }
+  .entryText {
+    font-size: 16px;
+  }
+}
+
+/* ═════════════ Footer ═════════════ */
+
+.footer {
+  width: 100%;
+  padding: clamp(80px, 10vw, 120px) var(--gw-gutter) clamp(64px, 8vw, 96px);
+  background: var(--gw-bg);
+  border-top: 1px solid var(--gw-rule-strong);
+}
+
+.footerInner {
+  max-width: var(--gw-reading);
+  margin: 0 auto;
+}
+
+.footerQuote {
+  font-family: var(--gw-font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--gw-ink);
+  margin-bottom: 32px;
+  max-width: 26ch;
+}
+
+.footerMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--gw-ink-3);
+  padding-top: 24px;
+  border-top: 1px solid var(--gw-rule);
+}
+
+.footerBrand {
+  color: var(--gw-ink);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .footerMeta {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

@@ -1,0 +1,81 @@
+.band {
+  width: 100%;
+  padding: 0 var(--gw-gutter);
+  background: var(--gw-bg);
+  color: var(--gw-ink);
+}
+
+.inner {
+  max-width: var(--gw-reading);
+  margin: 0 auto;
+  padding: clamp(72px, 10vw, 120px) 0;
+}
+
+.wide {
+  max-width: var(--gw-wide);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gw-ink-3);
+}
+
+.title {
+  font-family: var(--gw-font-display);
+  font-weight: 400;
+  font-size: clamp(32px, 4.2vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  max-width: 22ch;
+  color: var(--gw-ink);
+  font-variation-settings: "opsz" 72;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: var(--gw-font-body);
+  font-size: 18px;
+  line-height: 1.7;
+  letter-spacing: -0.004em;
+  color: var(--gw-ink-2);
+}
+
+.prose :global(p) {
+  margin: 0;
+}
+
+.prose :global(strong) {
+  color: var(--gw-ink);
+  font-weight: 600;
+}
+
+.prose :global(em) {
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .header {
+    margin-bottom: 32px;
+  }
+  .prose {
+    font-size: 17px;
+  }
+}

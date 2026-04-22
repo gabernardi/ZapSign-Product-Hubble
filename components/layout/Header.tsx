@@ -71,21 +71,37 @@ export function Header({ onMenuToggle }: HeaderProps) {
           </svg>
         </button>
 
-        <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-          {breadcrumbs.map((crumb, i) => (
-            <span key={crumb.href} className={styles.crumbItem}>
-              {i > 0 && <span className={styles.crumbSep}>/</span>}
-              {i === breadcrumbs.length - 1 ? (
-                <span className={styles.crumbCurrent}>{crumb.label}</span>
-              ) : (
-                <Link href={crumb.href} className={styles.crumbLink}>
-                  {crumb.label}
-                </Link>
-              )}
-            </span>
-          ))}
-        </nav>
+        <div className={styles.crumbWrap}>
+          <span className={styles.crumbEyebrow}>Você está em</span>
+          <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
+            {breadcrumbs.map((crumb, i) => (
+              <span key={crumb.href} className={styles.crumbItem}>
+                {i > 0 && <span className={styles.crumbSep} aria-hidden="true">›</span>}
+                {i === breadcrumbs.length - 1 ? (
+                  <span className={styles.crumbCurrent}>{crumb.label}</span>
+                ) : (
+                  <Link href={crumb.href} className={styles.crumbLink}>
+                    {crumb.label}
+                  </Link>
+                )}
+              </span>
+            ))}
+          </nav>
+        </div>
       </div>
+
+      <div className={styles.right}>
+        <button className={styles.searchPill} aria-label="Buscar">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.6" />
+            <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+          <span className={styles.searchText}>Buscar</span>
+          <span className={styles.searchKbd}>
+            <kbd>⌘</kbd>
+            <kbd>K</kbd>
+          </span>
+        </button>
 
       {session?.user && (
         <div className={styles.userArea} ref={menuRef}>
@@ -125,6 +141,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
           )}
         </div>
       )}
+      </div>
     </header>
   );
 }

@@ -1,55 +1,91 @@
 .card {
-  padding: var(--sp-5);
+  position: relative;
+  padding: var(--sp-5) var(--sp-5) var(--sp-5);
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
-  border-radius: var(--r-xl);
-  transition: background var(--duration-normal) var(--ease-out);
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--surface-radius);
+  box-shadow: var(--surface-shadow);
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out);
+  overflow: hidden;
 }
 
 .card:hover {
-  background: var(--bg-2);
+  transform: translateY(-1px);
+  box-shadow: var(--surface-shadow-hover);
+  border-color: var(--border-lt);
 }
 
+/* Category accent — a single dot. No background tints. */
 .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   margin-bottom: var(--sp-4);
+  position: relative;
 }
 
-.blue   { background: var(--blue); }
-.amber  { background: var(--amber); }
-.teal   { background: var(--teal); }
-.purple { background: var(--purple); }
+.dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0.18;
+}
+
+/* Category dots — sólidos, diferenciados apenas no dot (não no card). */
+.blue   { background: var(--brand-500); color: var(--brand-500); }
+.amber  { background: var(--amber);     color: var(--amber); }
+.teal   { background: var(--teal);      color: var(--teal); }
+.purple { background: var(--purple);    color: var(--purple); }
+
+/* Legacy card background variants — now neutralized. */
+.blueCard, .amberCard, .tealCard, .purpleCard {
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+}
 
 .title {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink);
   line-height: 1.35;
   margin-bottom: var(--sp-2);
+  letter-spacing: -0.01em;
 }
 
 .body {
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--ink-3);
-  line-height: 1.65;
+  line-height: 1.6;
   flex: 1;
 }
 
 .focus {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--ink-4);
-  line-height: 1.5;
-  padding-top: var(--sp-3);
-  margin-top: var(--sp-3);
-  border-top: 1px solid var(--border-subtle);
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding-top: var(--sp-4);
+  margin-top: var(--sp-4);
+  border-top: 1px solid var(--surface-inner-border);
 }
 
 .focus span {
-  color: var(--ink-3);
+  display: block;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  margin-top: 4px;
+  letter-spacing: -0.002em;
+  text-transform: none;
 }

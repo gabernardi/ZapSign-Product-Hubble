@@ -33,36 +33,41 @@
 }
 
 .sm {
-  background: var(--green-lt);
-  color: var(--green);
+  background: var(--zs-lt);
+  color: var(--zs-deep);
+  border: 1px solid rgba(31, 94, 244, 0.16);
 }
 
 .md {
-  background: var(--amber-lt);
-  color: var(--amber);
+  background: var(--bg);
+  color: var(--ink-2);
+  border: 1px solid var(--border-lt);
 }
 
 .lg {
-  background: var(--red-lt);
-  color: var(--red);
+  background: var(--ink);
+  color: var(--white);
+  border: 1px solid var(--ink);
 }
 
 .templateBtn {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: var(--blue);
-  background: var(--blue-lt);
-  border: 1px solid var(--blue-mid);
+  color: var(--zs-deep);
+  background: var(--surface-bg);
+  border: 1px solid var(--zs-mid);
   border-radius: var(--r-full);
-  padding: 4px 14px;
+  padding: 4px 12px;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background 150ms, box-shadow 150ms;
+  letter-spacing: -0.005em;
+  transition: background 150ms, box-shadow 150ms, border-color 150ms;
 }
 
 .templateBtn:hover {
-  background: var(--blue-mid);
+  background: var(--zs-lt);
+  border-color: var(--zs);
   box-shadow: var(--shadow-xs);
 }
 
@@ -128,18 +133,18 @@
 }
 
 .modalBadgeSm {
-  background: var(--green-lt);
-  color: var(--green);
+  background: var(--zs-lt);
+  color: var(--zs-deep);
 }
 
 .modalBadgeMd {
-  background: var(--amber-lt);
-  color: var(--amber);
+  background: var(--bg);
+  color: var(--ink-2);
 }
 
 .modalBadgeLg {
-  background: var(--red-lt);
-  color: var(--red);
+  background: var(--ink);
+  color: var(--white);
 }
 
 .modalTitle {

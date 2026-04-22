@@ -1,64 +1,104 @@
 /* ═══════════════════════════════════════════
-   DESIGN TOKENS — ZapSign Product Guidelines
+   DESIGN TOKENS — Hubble (ZapSign Product)
    ═══════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@500&display=swap');
 
 :root {
-  /* ── Color: Neutrals ── */
-  --white:        #FFFFFF;
-  --bg:           #F8F9FA;
-  --bg-2:         #F1F3F4;
-  --bg-3:         #E8EAED;
-  --surface:      #FFFFFF;
-  --surface-hover: #F8F9FA;
-  --surface-active:#F1F3F4;
+  /* ══════════════════════════════════════════
+     ZAPSIGN OFFICIAL PALETTE
+     Brand: blue (primary action, accents, focus)
+     Neutral: slate-based grayscale
+     ══════════════════════════════════════════ */
 
-  /* ── Color: Ink ── */
-  --ink:          #202124;
-  --ink-2:        #3C4043;
-  --ink-3:        #5F6368;
-  --ink-4:        #9AA0A6;
+  /* ── Neutrals (slate) ── */
+  --white:         #FFFFFF;                /* slate-0 */
+  --bg:            #FAFAFA;
+  --bg-2:          #F4F4F5;
+  --bg-3:          #EBEBEB;                /* soft-200 */
+  --surface:       #FFFFFF;
+  --surface-hover: #FAFAFA;
+  --surface-active:#F4F4F5;
 
-  /* ── Color: Borders ── */
-  --border:       #DADCE0;
-  --border-lt:    #E8EAED;
-  --border-subtle:#F1F3F4;
+  /* ── Ink (text on light surfaces) ── */
+  --ink:           #030712;                /* slate-950 — primary text */
+  --ink-2:         #282828;                /* neutral-800 */
+  --ink-3:         #5C5C5C;                /* neutral-600 */
+  --ink-4:         #8A8A8A;                /* mid gray */
 
-  /* ── Color: Blue ── */
-  --blue:         #1A73E8;
-  --blue-hover:   #1765CC;
-  --blue-lt:      #E8F0FE;
-  --blue-mid:     #AECBFA;
+  /* ── Borders ── */
+  --border:        #D1D1D1;                /* soft-300 */
+  --border-lt:     #E4E4E7;
+  --border-subtle: #EEEEEF;
 
-  /* ── Color: Green ── */
-  --green:        #1E8E3E;
-  --green-lt:     #E6F4EA;
-  --green-mid:    #A8DAB5;
+  /* ── Brand: ZapSign blue ── */
+  --brand-800:     #162D6B;                /* dark    */
+  --brand-700:     #1A3A9E;                /* darker  */
+  --brand-500:     #1F5EF4;                /* base    */
+  --brand-300:     #7FA6FA;                /* mid    */
+  --brand-alpha-16:#DBE5FD;                /* alpha-16 */
+  --brand-alpha-10:#E9EFFE;                /* alpha-10 */
 
-  /* ── Color: Amber ── */
-  --amber:        #E37400;
-  --amber-lt:     #FEF7E0;
-  --amber-mid:    #FDD663;
+  /* ── Brand semantic aliases (used by components) ── */
+  --zs:            var(--brand-500);       /* primary action */
+  --zs-soft:       #3D7CF7;                /* lighter hover  */
+  --zs-deep:       var(--brand-700);       /* emphasis text  */
+  --zs-ink:        var(--brand-800);       /* darkest brand  */
+  --zs-mid:        var(--brand-300);       /* secondary dot / border */
+  --zs-lt:         var(--brand-alpha-10);  /* soft background */
+  --zs-soft-bg:    var(--brand-alpha-16);  /* slightly stronger bg */
 
-  /* ── Color: Purple ── */
-  --purple:       #7B3FA0;
-  --purple-lt:    #F3E8FD;
-  --purple-mid:   #D4C2ED;
+  /* ── Legacy color tokens (kept for non-upstream pages) ── */
+  --blue:          var(--brand-500);
+  --blue-hover:    var(--brand-700);
+  --blue-lt:       var(--brand-alpha-10);
+  --blue-mid:      var(--brand-300);
+  --green:         #1E8E3E;
+  --green-lt:      #E6F4EA;
+  --green-mid:     #A8DAB5;
+  --amber:         #E37400;
+  --amber-lt:      #FEF7E0;
+  --amber-mid:     #FDD663;
+  --purple:        #7B3FA0;
+  --purple-lt:     #F3E8FD;
+  --purple-mid:    #D4C2ED;
+  --teal:          #0D7A6A;
+  --teal-lt:       #E4F7F4;
+  --teal-mid:      #A1DED2;
+  --red:           #D93025;
+  --red-lt:        #FCE8E6;
+  --red-mid:       #F5C8C6;
 
-  /* ── Color: Teal ── */
-  --teal:         #0D7A6A;
-  --teal-lt:      #E4F7F4;
-  --teal-mid:     #A1DED2;
+  /* ══════════════════════════════════════════
+     TYPOGRAPHY — ZapSign official
+     Display (titles): Inter, opsz 30, medium, tight tracking
+     Body (text/UI):   Inter, opsz 14, regular/medium, open tracking
+     ══════════════════════════════════════════ */
+  --font-display:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:      'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ── Color: Red ── */
-  --red:          #D93025;
-  --red-lt:       #FCE8E6;
-  --red-mid:      #F5C8C6;
+  /* Optical sizing presets — apply as font-variation-settings */
+  --opsz-display: "opsz" 30;
+  --opsz-body:    "opsz" 14;
 
-  /* ── Typography ── */
-  --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body:    'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* ── Official type scale ────────────────────
+     Title (Inter Display style, medium 500)
+       H1:  40 / 48   ·  letter-spacing -1%   (-0.01em)
+       H2:  32 / 40   ·  letter-spacing -0.5% (-0.005em)
+       H3:  24 / 32   ·  letter-spacing 0%
+       H4:  20 / 28   ·  letter-spacing 0%
+     Subheading (Inter, medium 500 — opsz 14)
+       XL:  32 / 32   ·  letter-spacing +1%  (0.01em)
+       LG:  28 / 28   ·  letter-spacing +1%
+       MD:  22 / 22   ·  letter-spacing +1%
+       SM:  18 / 22   ·  letter-spacing +1%
+     Body (Inter, regular 400)
+       LG:  20 / 28   ·  letter-spacing -1.5% (-0.015em)
+       MD:  16 / 24   ·  letter-spacing -1.1% (-0.011em)
+       P-SM:14 / 20   ·  letter-spacing -0.6% (-0.006em)
+       P-XS:12 / 16   ·  letter-spacing 0%
+  ───────────────────────────────────────────── */
 
   /* ── Spacing (4px grid, generous) ── */
   --sp-1:  4px;
@@ -97,9 +137,123 @@
   --duration-slow: 400ms;
 
   /* ── Layout ── */
-  --sidebar-width: 260px;
-  --header-height: 64px;
-  --content-max-width: 880px;
+  --sidebar-width: 264px;
+  --header-height: 60px;
+  --content-max-width: 960px;
+
+  /* ── Rules / dividers ── */
+  --rule:          1px solid var(--border-subtle);
+
+  /* ── Premium shadows w/ brand undertone ── */
+  --shadow-brand-sm: 0 1px 2px rgba(22, 45, 107, 0.06), 0 2px 8px rgba(22, 45, 107, 0.05);
+  --shadow-brand-md: 0 4px 16px rgba(22, 45, 107, 0.08), 0 1px 3px rgba(22, 45, 107, 0.05);
+  --shadow-brand-lg: 0 12px 32px rgba(22, 45, 107, 0.10), 0 2px 6px rgba(22, 45, 107, 0.06);
+
+  /* ── Surface system (single source of truth for cards) ── */
+  --surface-bg:     var(--white);
+  --surface-border: var(--border-subtle);
+  --surface-radius: var(--r-lg);
+  --surface-shadow: 0 1px 2px rgba(32, 33, 36, 0.03), 0 1px 3px rgba(32, 33, 36, 0.02);
+  --surface-shadow-hover: 0 2px 8px rgba(32, 33, 36, 0.04), 0 1px 4px rgba(32, 33, 36, 0.03);
+
+  /* Inside cards — inner section tones */
+  --surface-inner-bg:      #FAFBFC;
+  --surface-inner-border:  var(--border-subtle);
+
+  /* ══════════════════════════════════════════
+     GLASSWING THEME — editorial surfaces
+     Shared tokens used by full-bleed pages
+     (dashboard, upstream, downstream, roadmap,
+      contribuir, changelog, login).
+     Default = dark. Overridden by [data-theme]
+     and prefers-color-scheme below.
+     ══════════════════════════════════════════ */
+  --gw-bg:          #0A0A0A;
+  --gw-surface:     #111111;
+  --gw-surface-2:   #161616;
+  --gw-surface-3:   #1A1A1A;
+
+  --gw-ink:         #FFFFFF;
+  --gw-ink-2:       rgba(255, 255, 255, 0.78);
+  --gw-ink-3:       rgba(255, 255, 255, 0.58);
+  --gw-ink-4:       rgba(255, 255, 255, 0.38);
+
+  --gw-rule:        rgba(255, 255, 255, 0.10);
+  --gw-rule-strong: rgba(255, 255, 255, 0.22);
+
+  /* Semantic veils built on top of --gw-ink — automatically adapt
+     to light / dark by mixing the current ink color with transparent. */
+  --gw-veil-1:      color-mix(in srgb, var(--gw-ink) 3%, transparent);
+  --gw-veil-2:      color-mix(in srgb, var(--gw-ink) 4%, transparent);
+  --gw-veil-3:      color-mix(in srgb, var(--gw-ink) 6%, transparent);
+  --gw-veil-4:      color-mix(in srgb, var(--gw-ink) 8%, transparent);
+  --gw-veil-5:      color-mix(in srgb, var(--gw-ink) 12%, transparent);
+
+  /* Color scheme hint for form controls, scrollbars, etc. */
+  color-scheme: dark;
+}
+
+/* Light mode — default when the system prefers light and the user
+   hasn't explicitly chosen a theme. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --gw-bg:          #FFFFFF;
+    --gw-surface:     #FAFAFA;
+    --gw-surface-2:   #F4F4F5;
+    --gw-surface-3:   #EBEBEB;
+
+    --gw-ink:         #0A0A0A;
+    --gw-ink-2:       rgba(10, 10, 10, 0.78);
+    --gw-ink-3:       rgba(10, 10, 10, 0.54);
+    --gw-ink-4:       rgba(10, 10, 10, 0.38);
+
+    --gw-rule:        rgba(10, 10, 10, 0.10);
+    --gw-rule-strong: rgba(10, 10, 10, 0.20);
+
+    /* Invert white brand asset so it reads on light surfaces. */
+    --gw-brand-mark-filter: invert(1);
+
+    color-scheme: light;
+  }
+}
+
+/* Explicit user preference — wins over system. */
+:root[data-theme="light"] {
+  --gw-bg:          #FFFFFF;
+  --gw-surface:     #FAFAFA;
+  --gw-surface-2:   #F4F4F5;
+  --gw-surface-3:   #EBEBEB;
+
+  --gw-ink:         #0A0A0A;
+  --gw-ink-2:       rgba(10, 10, 10, 0.78);
+  --gw-ink-3:       rgba(10, 10, 10, 0.54);
+  --gw-ink-4:       rgba(10, 10, 10, 0.38);
+
+  --gw-rule:        rgba(10, 10, 10, 0.10);
+  --gw-rule-strong: rgba(10, 10, 10, 0.20);
+
+  --gw-brand-mark-filter: invert(1);
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --gw-bg:          #0A0A0A;
+  --gw-surface:     #111111;
+  --gw-surface-2:   #161616;
+  --gw-surface-3:   #1A1A1A;
+
+  --gw-ink:         #FFFFFF;
+  --gw-ink-2:       rgba(255, 255, 255, 0.78);
+  --gw-ink-3:       rgba(255, 255, 255, 0.58);
+  --gw-ink-4:       rgba(255, 255, 255, 0.38);
+
+  --gw-rule:        rgba(255, 255, 255, 0.10);
+  --gw-rule-strong: rgba(255, 255, 255, 0.22);
+
+  --gw-brand-mark-filter: none;
+
+  color-scheme: dark;
 }
 
 
@@ -123,7 +277,9 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+  font-variation-settings: var(--opsz-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

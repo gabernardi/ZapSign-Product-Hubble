@@ -1,225 +1,190 @@
-"use client";
-
-import { useState } from "react";
-import Link from "next/link";
+import { Fraunces } from "next/font/google";
+import { roadmapGlasswingData as data } from "@/lib/data/roadmap-glasswing";
+import { GlasswingShell } from "@/components/glasswing/GlasswingShell";
+import { GlasswingHero } from "@/components/glasswing/GlasswingHero";
 import {
-  QUARTERS,
-  type RoadmapQuarter,
-  type RoadmapItem,
-  type RoadmapSection,
-  type RoadmapGroup,
-} from "@/lib/data/roadmap";
-import { OPPORTUNITIES } from "@/lib/data/opportunities";
-import styles from "./roadmap.module.css";
+  EditorialSection,
+  EditorialProse,
+} from "@/components/glasswing/EditorialSection";
+import { SceneBlock } from "@/components/glasswing/SceneBlock";
+import { Footnotes } from "@/components/glasswing/Footnotes";
+import { TableOfContents } from "@/components/glasswing/TableOfContents";
+import { QuarterStrip } from "@/components/glasswing/QuarterStrip";
+import { SquadBlock } from "@/components/glasswing/SquadBlock";
+import { PlatformProgress } from "@/components/glasswing/PlatformProgress";
+import { getGlasswingNav } from "@/lib/data/glasswing-nav";
+import styles from "./page.module.css";
 
-function Chevron() {
-  return (
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-      <path
-        d="M2.5 3.75L5 6.25l2.5-2.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+const tocItems = [
+  { id: "introducao", label: "Abertura" },
+  { id: "contexto", label: "O momento" },
+  { id: "principios", label: "Princípios" },
+  { id: "ano", label: "O ano" },
+  { id: "squads", label: "Squads" },
+  { id: "plataforma", label: "Plataforma v2" },
+  { id: "appendix", label: "Appendix" },
+];
 
-function OppDrawer({ ids, open }: { ids: string[]; open: boolean }) {
-  const opps = ids.map((id) => OPPORTUNITIES[id]).filter(Boolean);
-  if (!opps.length) return null;
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
+  axes: ["opsz", "SOFT"],
+});
 
-  return (
-    <div className={`${styles.oppDrawer} ${open ? styles.open : ""}`}>
-      <div className={styles.oppDrawerInner}>
-        <div className={styles.oppList}>
-          {opps.map((o) => (
-            <div key={o.id} className={styles.oppCard}>
-              <div className={styles.oppHead}>
-                <span className={styles.oppId}>{o.id}</span>
-                <span className={styles.oppOutcome}>{o.outcome}</span>
-              </div>
-              <p className={styles.oppDesc}>{o.description}</p>
-              <div className={styles.oppKvs}>
-                {(
-                  [
-                    ["Segmento", o.segment],
-                    ["Motion", o.motion],
-                    ["Fonte", o.source],
-                    ["Prioridade", o.priority],
-                  ] as const
-                ).map(([label, value]) => (
-                  <div key={label} className={styles.oppKv}>
-                    <span className={styles.oppKvLabel}>{label}</span>
-                    <span className={styles.oppKvValue}>{value}</span>
-                  </div>
-                ))}
-              </div>
-              {o.evidence && <p className={styles.oppEvidence}>{o.evidence}</p>}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Item({ item }: { item: RoadmapItem }) {
-  const [open, setOpen] = useState(false);
-  const hasOpps = !!item.opportunityIds?.length;
-
-  return (
-    <div className={styles.item}>
-      <div className={styles.itemTitle}>{item.title}</div>
-      <div className={styles.itemDesc}>{item.description}</div>
-
-      {(item.owner || item.caveat) && (
-        <div className={styles.itemMeta}>
-          {item.owner && <span className={styles.owner}>{item.owner}</span>}
-          {item.caveat && <span className={styles.caveat}>{item.caveat}</span>}
-        </div>
-      )}
-
-      {hasOpps && (
-        <button
-          className={`${styles.oppToggle} ${open ? styles.open : ""}`}
-          onClick={() => setOpen((p) => !p)}
-        >
-          <Chevron />
-          {item.opportunityIds!.length} oportunidade
-          {item.opportunityIds!.length > 1 ? "s" : ""}
-        </button>
-      )}
-
-      {hasOpps && <OppDrawer ids={item.opportunityIds!} open={open} />}
-    </div>
-  );
-}
-
-function Column({ group }: { group: RoadmapGroup }) {
-  return (
-    <div className={`${styles.col} ${styles[group.id]}`}>
-      <div className={styles.colHeader}>
-        <span className={styles.colName}>
-          {group.id === "downstream" ? "Downstream" : "Upstream"}
-        </span>
-      </div>
-      <div className={styles.items}>
-        {group.items.map((item) => (
-          <Item key={item.id} item={item} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SectionBlock({ section }: { section: RoadmapSection }) {
-  return (
-    <section className={`${styles.section} animate-fade-up`}>
-      <div className={styles.sectionHeader}>
-        <h2 className={styles.sectionTitle}>{section.title}</h2>
-        <p className={styles.sectionNarrative}>{section.narrative}</p>
-      </div>
-      <div
-        className={`${styles.sectionGrid} ${section.groups.length === 1 ? styles.single : ""}`}
-      >
-        {section.groups.map((g) => (
-          <Column key={g.id} group={g} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ComplianceBlock({
-  items,
-}: {
-  items: { id: string; title: string; description: string }[];
-}) {
-  if (!items.length) return null;
-  return (
-    <div className={`${styles.compliance} animate-fade-up`}>
-      <div className={styles.complianceLabel}>Obrigatório</div>
-      <div className={styles.complianceList}>
-        {items.map((c) => (
-          <div key={c.id} className={styles.complianceRow}>
-            <span className={styles.complianceName}>{c.title}</span>
-            <span className={styles.complianceSep}> — </span>
-            {c.description}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function EmptyQuarter({ quarter }: { quarter: RoadmapQuarter }) {
-  return (
-    <div className={styles.emptyState}>
-      <p className={styles.emptyTitle}>
-        {quarter.label} &middot; {quarter.period}
-      </p>
-      <p className={styles.emptyDesc}>Planejamento ainda não definido.</p>
-    </div>
-  );
-}
+export const metadata = {
+  title: "Roadmap · Hubble",
+  description:
+    "Roadmap trimestral da ZapSign: squads, metas e status dos projetos em execução.",
+};
 
 export default function RoadmapPage() {
-  const [activeId, setActiveId] = useState(
-    () => QUARTERS.find((q) => q.active)?.id || QUARTERS[0].id
-  );
-  const quarter = QUARTERS.find((q) => q.id === activeId)!;
-  const hasContent =
-    quarter.compliance.length > 0 || quarter.sections.length > 0;
-
   return (
-    <div className={styles.page}>
-      <header className={`${styles.header} animate-fade-up`}>
-        <div className={styles.breadcrumb}>
-          <Link href="/dashboard">Dashboard</Link>
-          <span className={styles.breadcrumbSep}>/</span>
-          <span>Roadmap</span>
-        </div>
-        <h1 className={styles.title}>Roadmap {quarter.label}</h1>
-        <p className={styles.period}>{quarter.period}</p>
-      </header>
+    <div className={`${styles.page} ${fraunces.variable}`}>
+      <GlasswingShell
+        brand={data.topbar.brand}
+        navItems={getGlasswingNav("roadmap", "2T26")}
+      >
+        <TableOfContents items={tocItems} label="Neste guia" />
 
-      <nav className={`${styles.quarterNav} animate-fade-up`}>
-        {QUARTERS.map((q) => {
-          const empty =
-            q.compliance.length === 0 && q.sections.length === 0;
-          return (
-            <button
-              key={q.id}
-              className={`${styles.quarterTab} ${q.id === activeId ? styles.active : ""} ${empty && q.id !== activeId ? styles.disabled : ""}`}
-              onClick={() => {
-                if (!empty || q.id === activeId) setActiveId(q.id);
-              }}
-            >
-              {q.label}
-            </button>
-          );
-        })}
-      </nav>
+        <GlasswingHero
+          eyebrow={data.hero.eyebrow}
+          title={data.hero.title}
+          subtitle={data.hero.subtitle}
+          continueLabel={data.hero.continueLabel}
+          continueHref="#introducao"
+        />
 
-      {hasContent ? (
-        <div className="animate-fade-up">
-          {quarter.summary && (
-            <p className={styles.summary}>{quarter.summary}</p>
-          )}
+        <EditorialSection
+          id="introducao"
+          label={data.introduction.label}
+          eyebrow="01 · Abertura"
+        >
+          <EditorialProse>
+            {data.introduction.paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </EditorialProse>
+        </EditorialSection>
 
-          <ComplianceBlock items={quarter.compliance} />
+        <EditorialSection
+          id="contexto"
+          label={data.context.label}
+          eyebrow="02 · O momento"
+        >
+          <EditorialProse>
+            {data.context.paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </EditorialProse>
+        </EditorialSection>
 
-          <div className={styles.sections}>
-            {quarter.sections.map((s) => (
-              <SectionBlock key={s.id} section={s} />
+        <EditorialSection
+          id="principios"
+          label={data.principles.label}
+          eyebrow="03 · Princípios"
+          wide
+        >
+          <EditorialProse>
+            <p>{data.principles.intro}</p>
+          </EditorialProse>
+          <div className={styles.phases}>
+            {data.principles.items.map((p) => (
+              <article key={p.number} className={styles.phase}>
+                <div className={styles.phaseNumber}>{p.number}</div>
+                <div className={styles.phaseBody}>
+                  <header className={styles.phaseHead}>
+                    <span className={styles.phaseDuration}>{p.duration}</span>
+                    <h3 className={styles.phaseName}>{p.name}</h3>
+                  </header>
+                  <p className={styles.phaseText}>{p.body}</p>
+                  <ul className={styles.phaseHighlights}>
+                    {p.highlights.map((h, i) => (
+                      <li key={i}>{h}</li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
             ))}
           </div>
-        </div>
-      ) : (
-        <EmptyQuarter quarter={quarter} />
-      )}
+        </EditorialSection>
+
+        <SceneBlock
+          kind={data.intermission.kind}
+          eyebrow={data.intermission.eyebrow}
+          title={data.intermission.title}
+          body={data.intermission.body}
+        />
+
+        <EditorialSection
+          id="ano"
+          label={data.quarters.label}
+          eyebrow="04 · O ano"
+          wide
+        >
+          <EditorialProse>
+            <p>{data.quarters.intro}</p>
+          </EditorialProse>
+          <QuarterStrip items={data.quarters.items} />
+        </EditorialSection>
+
+        <EditorialSection
+          id="squads"
+          label={data.squadsSection.label}
+          eyebrow="05 · Squads"
+          wide
+        >
+          <EditorialProse>
+            <p>{data.squadsSection.intro}</p>
+          </EditorialProse>
+          <div className={styles.squads}>
+            {data.squadsSection.items.map((squad, i) => (
+              <SquadBlock
+                key={squad.id}
+                id={`squad-${squad.id}`}
+                number={String(i + 1).padStart(2, "0")}
+                name={squad.name}
+                context={squad.context}
+                people={squad.people}
+                goals={squad.goals}
+                projects={squad.projects}
+              />
+            ))}
+          </div>
+        </EditorialSection>
+
+        <EditorialSection
+          id="plataforma"
+          label={data.platform.label}
+          eyebrow="06 · Plataforma v2"
+          wide
+        >
+          <EditorialProse>
+            <p>{data.platform.intro}</p>
+          </EditorialProse>
+          <PlatformProgress flows={data.platform.flows} />
+        </EditorialSection>
+
+        <EditorialSection
+          id="appendix"
+          label={data.appendix.label}
+          eyebrow="Appendix"
+        >
+          <Footnotes items={data.appendix.footnotes} />
+        </EditorialSection>
+
+        <footer className={styles.footer}>
+          <div className={styles.footerInner}>
+            <p className={styles.footerQuote}>
+              &ldquo;{data.footer.quote}&rdquo;
+            </p>
+            <div className={styles.footerMeta}>
+              <span className={styles.footerBrand}>{data.footer.brand}</span>
+              <span>{data.footer.meta}</span>
+            </div>
+          </div>
+        </footer>
+      </GlasswingShell>
     </div>
   );
 }

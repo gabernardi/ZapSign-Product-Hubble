@@ -1,0 +1,138 @@
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  padding: 24px 0;
+  border-top: 1px solid var(--gw-rule);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row:first-child {
+  border-top: 1px solid var(--gw-rule-strong);
+}
+
+.row:last-child {
+  border-bottom: 1px solid var(--gw-rule);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: start;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--gw-font-display);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--gw-ink);
+}
+
+.squad {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--gw-ink-3);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.status {
+  font-family: var(--gw-font-body);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 5px 10px;
+  border: 1px solid var(--gw-rule-strong);
+  color: var(--gw-ink-2);
+  white-space: nowrap;
+}
+
+.status_production {
+  background: var(--gw-ink);
+  color: var(--gw-bg);
+  border-color: var(--gw-ink);
+}
+
+.status_development {
+  color: var(--gw-ink);
+}
+
+.status_discovery,
+.status_conditional {
+  border-style: dashed;
+}
+
+.status_backlog {
+  color: var(--gw-ink-3);
+}
+
+.percent {
+  font-family: var(--gw-font-display);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--gw-ink);
+  min-width: 56px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: var(--gw-rule);
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--gw-ink);
+  transition: width 400ms ease;
+}
+
+.fillComplete {
+  background: var(--gw-ink);
+}
+
+@media (max-width: 640px) {
+  .head {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .meta {
+    justify-content: space-between;
+  }
+  .percent {
+    min-width: 0;
+    text-align: left;
+  }
+}

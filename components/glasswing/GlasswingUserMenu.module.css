@@ -1,0 +1,231 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.placeholder {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* ═════════════ Trigger ═════════════ */
+
+.trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: transform 140ms ease;
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--gw-bg),
+    0 0 0 4px color-mix(in srgb, var(--gw-ink) 70%, transparent);
+  border-radius: 999px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gw-surface);
+  border: 1px solid var(--gw-rule-strong);
+  overflow: hidden;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.trigger:hover .avatar,
+.trigger[aria-expanded="true"] .avatar {
+  border-color: var(--gw-ink);
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarInitials {
+  font-family: var(--gw-font-body);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--gw-ink);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* ═════════════ Menu ═════════════ */
+
+.menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 280px;
+  background: var(--gw-bg);
+  border: 1px solid var(--gw-rule-strong);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 50;
+  animation: gwUserMenuIn 160ms ease-out;
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--gw-ink) 14%, transparent);
+}
+
+@keyframes gwUserMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 14px 12px;
+}
+
+.identityName {
+  font-family: var(--gw-font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--gw-ink);
+  line-height: 1.3;
+}
+
+.identityEmail {
+  font-family: var(--gw-font-body);
+  font-size: 12.5px;
+  color: var(--gw-ink-3);
+  line-height: 1.3;
+  word-break: break-all;
+}
+
+.sep {
+  height: 1px;
+  background: var(--gw-rule);
+  margin: 2px 4px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 11px 14px;
+  font-family: var(--gw-font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--gw-ink-2);
+  text-align: left;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.action:hover:not(:disabled) {
+  background: var(--gw-veil-3);
+  color: var(--gw-ink);
+}
+
+.action:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.arrow {
+  display: inline-block;
+  color: var(--gw-ink-3);
+  transition: transform 150ms ease, color 150ms ease;
+}
+
+.action:hover:not(:disabled) .arrow {
+  color: var(--gw-ink);
+  transform: translate(2px, -2px);
+}
+
+/* ═════════════ Theme switch ═════════════ */
+
+.themeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px 8px;
+}
+
+.themeLabel {
+  font-family: var(--gw-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gw-ink-3);
+}
+
+.themeSwitch {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid var(--gw-rule);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gw-ink) 4%, transparent);
+}
+
+.themeOption {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-family: var(--gw-font-body);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--gw-ink-3);
+  border-radius: 999px;
+  line-height: 1.4;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.themeOption:hover {
+  color: var(--gw-ink-2);
+}
+
+.themeOptionActive,
+.themeOptionActive:hover {
+  color: var(--gw-bg);
+  background: var(--gw-ink);
+}
+
+.themeOptionActive:focus-visible,
+.themeOption:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--gw-ink) 40%, transparent);
+}
+
+@media (max-width: 640px) {
+  .menu {
+    min-width: 240px;
+  }
+}

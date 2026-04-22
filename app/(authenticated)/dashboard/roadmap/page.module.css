@@ -1,0 +1,173 @@
+.page {
+  --gw-font-display: var(--font-fraunces), "Fraunces", "Tiempos Headline", Georgia, serif;
+  --gw-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --gw-max: 1120px;
+  --gw-reading: 720px;
+  --gw-wide: 880px;
+  --gw-gutter: 32px;
+
+  background: var(--gw-bg);
+  color: var(--gw-ink);
+  min-height: 100dvh;
+}
+
+@media (max-width: 640px) {
+  .page {
+    --gw-gutter: 20px;
+  }
+}
+
+/* ═════════════ Principles (reuses the phase block pattern) ═════════════ */
+
+.phases {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.phase {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 24px;
+  padding: 48px 0;
+  border-top: 1px solid var(--gw-rule);
+}
+
+.phase:first-child {
+  border-top: 1px solid var(--gw-rule-strong);
+}
+
+.phase:last-child {
+  border-bottom: 1px solid var(--gw-rule);
+}
+
+.phaseNumber {
+  font-family: var(--gw-font-display);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--gw-ink);
+  font-variation-settings: "opsz" 72;
+}
+
+.phaseBody {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.phaseHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.phaseName {
+  font-family: var(--gw-font-display);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--gw-ink);
+}
+
+.phaseDuration {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--gw-ink-3);
+}
+
+.phaseText {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--gw-ink-2);
+}
+
+.phaseHighlights {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-left: 1px solid var(--gw-rule-strong);
+  padding-left: 20px;
+}
+
+.phaseHighlights li {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--gw-ink-2);
+}
+
+@media (max-width: 640px) {
+  .phase {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .phaseNumber {
+    font-size: 32px;
+  }
+  .phaseName {
+    font-size: 22px;
+  }
+}
+
+/* ═════════════ Squads ═════════════ */
+
+.squads {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═════════════ Footer ═════════════ */
+
+.footer {
+  width: 100%;
+  padding: clamp(80px, 10vw, 120px) var(--gw-gutter) clamp(64px, 8vw, 96px);
+  background: var(--gw-bg);
+  border-top: 1px solid var(--gw-rule-strong);
+}
+
+.footerInner {
+  max-width: var(--gw-reading);
+  margin: 0 auto;
+}
+
+.footerQuote {
+  font-family: var(--gw-font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--gw-ink);
+  margin-bottom: 32px;
+  max-width: 24ch;
+}
+
+.footerMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--gw-ink-3);
+  padding-top: 24px;
+  border-top: 1px solid var(--gw-rule);
+}
+
+.footerBrand {
+  color: var(--gw-ink);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .footerMeta {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

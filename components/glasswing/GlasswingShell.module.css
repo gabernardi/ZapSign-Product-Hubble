@@ -1,0 +1,421 @@
+.shell {
+  min-height: 100dvh;
+  background: var(--gw-bg);
+  color: var(--gw-ink);
+  font-family: var(--gw-font-body);
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: -0.003em;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--gw-bg) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  border-bottom: 1px solid var(--gw-rule);
+  color: var(--gw-ink);
+}
+
+.topbarInner {
+  max-width: var(--gw-max);
+  margin: 0 auto;
+  padding: 16px var(--gw-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--gw-font-body);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.005em;
+  color: var(--gw-ink);
+  text-decoration: none;
+  transition: opacity 150ms ease;
+}
+
+.brand:hover {
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.brandMark {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  object-fit: contain;
+  /* The asset is a white glyph on transparent; invert in light themes
+     so it becomes a dark glyph over the light background. */
+  filter: var(--gw-brand-mark-filter, none);
+}
+
+.brandText {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.brandCompany {
+  color: var(--gw-ink);
+  font-weight: 500;
+}
+
+.brandSep {
+  color: var(--gw-ink-3);
+  font-weight: 400;
+}
+
+.brandProduct {
+  color: var(--gw-ink);
+  font-weight: 600;
+  letter-spacing: -0.008em;
+}
+
+.rightCluster {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.navItem {
+  font-family: var(--gw-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--gw-ink-2);
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color 150ms ease;
+  white-space: nowrap;
+}
+
+.navItem:hover {
+  color: var(--gw-ink);
+  text-decoration: none;
+}
+
+.navItemActive {
+  color: var(--gw-ink);
+}
+
+.navBadge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 2px 7px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+  background: linear-gradient(135deg, #A8E6CF 0%, #7FA6FA 100%);
+  border-radius: 999px;
+  line-height: 1.2;
+  vertical-align: middle;
+  transform: translateY(-1px);
+}
+
+/* ═════════════ Dropdown ═════════════ */
+
+.navDropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.navItemTrigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--gw-font-body);
+}
+
+.caret {
+  display: inline-block;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--gw-ink-3);
+  transition: transform 180ms ease, color 150ms ease;
+  transform: translateY(-1px);
+}
+
+.navItemTrigger:hover .caret,
+.navItemActive .caret {
+  color: var(--gw-ink);
+}
+
+.caretOpen {
+  transform: translateY(-1px) rotate(180deg);
+  color: var(--gw-ink);
+}
+
+/* ═════════════ Lab flair (acento do Laboratório) ═════════════ */
+/* Declarado depois do bloco .navItemTrigger para vencer o
+   `background: none` da reset do botão (mesma especificidade → ordem
+   de código decide). .navItem.navItemLab também sobe a specificity
+   pra 0,2,0 como camada extra de segurança. */
+
+/* Tokens do flair: valores neon pro modo escuro (padrão) */
+.navItem.navItemLab,
+.navFlair {
+  --lab-grad-1: #B6FF7A;
+  --lab-grad-2: #7BE9FF;
+  --lab-grad-3: #C7A4FF;
+  --lab-glow-1: rgba(182, 255, 122, 0.4);
+  --lab-glow-2: rgba(123, 233, 255, 0.25);
+  --lab-glow-3: rgba(199, 164, 255, 0.35);
+}
+
+/* Modo claro por preferência do sistema */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .navItem.navItemLab,
+  :root:not([data-theme="dark"]) .navFlair {
+    --lab-grad-1: #1F9A5E;
+    --lab-grad-2: #1E6FD9;
+    --lab-grad-3: #6B3FCF;
+    --lab-glow-1: rgba(31, 154, 94, 0.35);
+    --lab-glow-2: rgba(30, 111, 217, 0.25);
+    --lab-glow-3: rgba(107, 63, 207, 0.3);
+  }
+}
+
+/* Modo claro explícito (override do usuário) */
+:root[data-theme="light"] .navItem.navItemLab,
+:root[data-theme="light"] .navFlair {
+  --lab-grad-1: #1F9A5E;
+  --lab-grad-2: #1E6FD9;
+  --lab-grad-3: #6B3FCF;
+  --lab-glow-1: rgba(31, 154, 94, 0.35);
+  --lab-glow-2: rgba(30, 111, 217, 0.25);
+  --lab-glow-3: rgba(107, 63, 207, 0.3);
+}
+
+.navItem.navItemLab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-image: linear-gradient(
+    100deg,
+    var(--lab-grad-1) 0%,
+    var(--lab-grad-2) 55%,
+    var(--lab-grad-3) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 600;
+  transition: filter 150ms ease;
+}
+
+.navItem.navItemLab:hover {
+  filter: brightness(1.12) saturate(1.1);
+}
+
+.navItem.navItemLab.navItemActive {
+  filter: brightness(1.08);
+}
+
+.navItem.navItemLab .caret {
+  -webkit-text-fill-color: currentColor;
+  color: var(--gw-ink-3);
+  background: none;
+}
+
+.navItem.navItemLab:hover .caret,
+.navItem.navItemLab.navItemActive .caret {
+  color: var(--gw-ink);
+}
+
+.navFlair {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    var(--lab-grad-1) 0%,
+    var(--lab-grad-2) 55%,
+    var(--lab-grad-3) 100%
+  );
+  box-shadow: 0 0 8px var(--lab-glow-1);
+  animation: gwLabPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes gwLabPulse {
+  0%, 100% {
+    opacity: 0.85;
+    box-shadow: 0 0 6px var(--lab-glow-1),
+      0 0 12px var(--lab-glow-2);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 10px var(--lab-glow-1),
+      0 0 18px var(--lab-glow-3);
+  }
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 320px;
+  background: var(--gw-bg);
+  border: 1px solid var(--gw-rule-strong);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 50;
+  animation: gwMenuIn 160ms ease-out;
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--gw-ink) 14%, transparent);
+}
+
+@keyframes gwMenuIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: var(--gw-ink-2);
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.menuItem:hover {
+  background: var(--gw-veil-3);
+  color: var(--gw-ink);
+  text-decoration: none;
+}
+
+.menuItemActive {
+  color: var(--gw-ink);
+}
+
+.menuItemTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.menuItemLabel {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: inherit;
+}
+
+.menuItemBadge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  font-family: var(--gw-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--gw-ink-2);
+  background: var(--gw-veil-2);
+  border: 1px solid var(--gw-rule-strong);
+  border-radius: 4px;
+  line-height: 1.4;
+}
+
+.menuItemActive .menuItemBadge,
+.menuItem:hover .menuItemBadge {
+  color: var(--gw-ink);
+  background: var(--gw-veil-4);
+}
+
+.menuItemDesc {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--gw-ink-3);
+}
+
+.menuItem:hover .menuItemDesc {
+  color: var(--gw-ink-2);
+}
+
+.exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gw-ink);
+  text-decoration: none;
+  padding: 8px 16px;
+  background: var(--gw-ink);
+  color: var(--gw-bg);
+  border-radius: 999px;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.exit:hover {
+  opacity: 0.88;
+  text-decoration: none;
+  color: var(--gw-bg);
+}
+
+.exitArrow {
+  font-size: 12px;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 860px) {
+  .nav {
+    display: none;
+  }
+  .brandText {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .topbarInner {
+    padding: 12px var(--gw-gutter);
+    gap: 12px;
+  }
+  .exit {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+}

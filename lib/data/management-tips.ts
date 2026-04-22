@@ -230,7 +230,7 @@ export const managementTipsData = {
         ],
       },
     ],
-    note: "<strong>No dia a dia.</strong> Prazo estourado, erro em produção, mudança de escopo. São os melhores momentos para praticar. Dez segundos de pausa antes de responder um Slack urgente já mudam o tom de tudo.",
+    note: "<strong>No dia a dia.</strong> Prazo estourado, erro em produção, mudança de escopo. São os melhores momentos para praticar. Dez segundos de pausa antes de responder uma mensagem urgente no Google Chat já mudam o tom de tudo.",
   },
 
   step4: {

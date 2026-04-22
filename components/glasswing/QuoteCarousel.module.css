@@ -1,0 +1,138 @@
+.carousel {
+  padding: 48px 0;
+  border-top: 1px solid var(--gw-rule);
+  border-bottom: 1px solid var(--gw-rule);
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.counter {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--gw-font-display);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--gw-ink-3);
+}
+
+.counterCurrent {
+  color: var(--gw-ink);
+}
+
+.counterSep {
+  color: var(--gw-ink-4);
+}
+
+.counterTotal {
+  color: var(--gw-ink-3);
+}
+
+.quote {
+  margin: 0;
+  animation: gwQuoteFade 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.body {
+  font-family: var(--gw-font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  color: var(--gw-ink);
+  margin-bottom: 28px;
+  font-variation-settings: "opsz" 48;
+}
+
+.attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-style: normal;
+}
+
+.role {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gw-ink);
+}
+
+.context {
+  font-size: 13px;
+  color: var(--gw-ink-3);
+  letter-spacing: 0.01em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--gw-rule);
+  background: transparent;
+  color: var(--gw-ink-2);
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.navButton:hover {
+  color: var(--gw-ink);
+  border-color: var(--gw-rule-strong);
+  background: var(--gw-veil-2);
+}
+
+.navButton:focus-visible {
+  outline: 2px solid var(--gw-ink);
+  outline-offset: 2px;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  background: color-mix(in srgb, var(--gw-ink) 20%, transparent);
+  cursor: pointer;
+  padding: 0;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.dot:hover {
+  background: color-mix(in srgb, var(--gw-ink) 40%, transparent);
+}
+
+.dotActive {
+  background: var(--gw-ink);
+  transform: scale(1.15);
+}
+
+.dotActive:hover {
+  background: var(--gw-ink);
+}
+
+@keyframes gwQuoteFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

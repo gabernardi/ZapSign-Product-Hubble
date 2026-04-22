@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "entries": {
+    "api-2974": {
+      "status": "approved",
+      "override": null,
+      "visibility": "both",
+      "reviewedAt": "2026-04-22T15:10:48.408Z"
+    },
+    "api-2976": {
+      "status": "approved",
+      "override": null,
+      "visibility": "internal",
+      "reviewedAt": "2026-04-22T16:59:29.419Z"
+    }
+  }
+}

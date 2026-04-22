@@ -1,10 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { SessionProvider } from "@/components/auth/SessionProvider";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import styles from "./layout.module.css";
+
+const FULL_BLEED_ROUTES = [
+  "/dashboard",
+  "/dashboard/downstream",
+  "/dashboard/upstream",
+  "/dashboard/roadmap",
+  "/dashboard/contribuir",
+  "/dashboard/changelog",
+];
 
 export default function AuthenticatedLayout({
   children,
@@ -12,6 +22,12 @@ export default function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isFullBleed = FULL_BLEED_ROUTES.includes(pathname);
+
+  if (isFullBleed) {
+    return <SessionProvider>{children}</SessionProvider>;
+  }
 
   return (
     <SessionProvider>

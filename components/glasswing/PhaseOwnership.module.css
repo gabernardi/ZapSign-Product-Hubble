@@ -1,0 +1,85 @@
+.wrap {
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gw-rule);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gw-ink-3);
+}
+
+.ownerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.role {
+  font-family: var(--gw-font-display);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--gw-ink);
+}
+
+.focus {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gw-ink-2);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.roleInline {
+  color: var(--gw-ink);
+  font-weight: 500;
+}
+
+.sep {
+  color: var(--gw-ink-4);
+}
+
+.focusInline {
+  color: var(--gw-ink-2);
+}
+
+@media (max-width: 640px) {
+  .role {
+    font-size: 16px;
+  }
+  .ownerRow,
+  .item {
+    gap: 6px;
+  }
+}

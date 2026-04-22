@@ -43,7 +43,7 @@ export function StepCard({
               <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
                 <path
                   d="M13.3 4.7L6 12 2.7 8.7l1.1-1 2.2 2.2 6.3-6.3 1 1z"
-                  fill="#137333"
+                  fill="#fff"
                 />
               </svg>
             </div>
