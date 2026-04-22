@@ -1,11 +1,10 @@
-import NextAuth from "next-auth";
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { authConfig } from "@/lib/auth.config";
 
-// Uses the edge-safe slice of the Auth.js config so this middleware can
-// run on the Edge Runtime (required by Vercel). The Google provider and
-// anything that performs OAuth network calls lives in `lib/auth.ts`.
-const { auth } = NextAuth(authConfig);
+// Runs on Node runtime so it can import the full Auth.js config (including
+// the Google provider) without triggering Vercel's "unsupported modules"
+// check in the Edge Runtime.
+export const runtime = "nodejs";
 
 export default auth((req) => {
   const isAuthenticated = Boolean(req.auth?.user);

@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { authConfig } from "./auth.config";
 
 const ALLOWED_DOMAINS = ["zapsign.com.br", "truora.com"] as const;
 
@@ -12,7 +11,6 @@ function isAllowedEmail(email: string | null | undefined): boolean {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authConfig,
   providers: [
     Google({
       authorization: {
@@ -22,8 +20,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: "/",
+    error: "/",
+  },
+  trustHost: true,
   callbacks: {
-    ...authConfig.callbacks,
     signIn({ account, profile, user }) {
       if (account?.provider !== "google") return false;
       const email =
@@ -31,6 +33,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         user?.email ??
         null;
       return isAllowedEmail(email);
+    },
+    session({ session, token }) {
+      if (token?.email && typeof token.email === "string" && session.user) {
+        session.user.email = token.email;
+      }
+      return session;
     },
   },
 });
