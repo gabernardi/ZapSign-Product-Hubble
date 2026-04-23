@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CommentsInboxLink } from "@/components/comments/CommentsInboxLink";
 import styles from "./GlasswingShell.module.css";
 import { GlasswingNav } from "./GlasswingNav";
 import { GlasswingUserMenu } from "./GlasswingUserMenu";
@@ -40,6 +41,7 @@ export function GlasswingShell({
 
           <div className={styles.rightCluster}>
             {navItems.length > 0 && <GlasswingNav items={navItems} />}
+            <CommentsInboxLink variant="glasswing" />
             <GlasswingUserMenu />
           </div>
         </div>

@@ -1,4 +1,8 @@
-import { emptyStore, type CommentsStore } from "./comments";
+import {
+  emptyStore,
+  normalizeCommentsStore,
+  type CommentsStore,
+} from "./comments";
 import { loadJsonBlob, saveJsonBlob } from "./json-blob-store";
 
 const FILENAME = "comments.json";
@@ -8,9 +12,9 @@ export async function loadCommentsStore(): Promise<CommentsStore> {
   if (!store || typeof store !== "object" || !store.pages) {
     return emptyStore();
   }
-  return store;
+  return normalizeCommentsStore(store);
 }
 
 export async function saveCommentsStore(store: CommentsStore): Promise<void> {
-  await saveJsonBlob(FILENAME, store);
+  await saveJsonBlob(FILENAME, normalizeCommentsStore(store));
 }

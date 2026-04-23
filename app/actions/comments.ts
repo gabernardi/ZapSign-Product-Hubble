@@ -6,6 +6,9 @@ import {
   addComment as addCommentHelper,
   addThread as addThreadHelper,
   deleteComment as deleteCommentHelper,
+  getThreadById,
+  markAllThreadsRead as markAllThreadsReadHelper,
+  markThreadRead as markThreadReadHelper,
   setThreadStatus as setThreadStatusHelper,
   toggleReaction as toggleReactionHelper,
   type Author,
@@ -17,6 +20,10 @@ import {
   loadCommentsStore,
   saveCommentsStore,
 } from "@/lib/data/comments-store";
+import {
+  notifyCommentThreadParticipants,
+  notifyNewCommentThread,
+} from "@/lib/email/comment-notifications";
 
 const ALLOWED_DOMAINS = ["zapsign.com.br", "truora.com"] as const;
 
@@ -73,6 +80,7 @@ export async function createThread(
   const thread = addThreadHelper(store, pageId, anchor, trimmed, author);
   await saveCommentsStore(store);
   revalidatePath(pageId);
+  void notifyNewCommentThread({ pageId, thread, actor: author });
   return thread;
 }
 
@@ -86,10 +94,18 @@ export async function addComment(
   const trimmed = assertValidBody(body);
 
   const store = await loadCommentsStore();
-  const ok = addCommentHelper(store, pageId, threadId, trimmed, author);
-  if (!ok) throw new Error("Thread não encontrada.");
+  const comment = addCommentHelper(store, pageId, threadId, trimmed, author);
+  if (!comment) throw new Error("Thread não encontrada.");
+  const thread = getThreadById(store, pageId, threadId);
+  if (!thread) throw new Error("Thread não encontrada.");
   await saveCommentsStore(store);
   revalidatePath(pageId);
+  void notifyCommentThreadParticipants({
+    pageId,
+    thread,
+    actor: author,
+    commentBody: comment.body,
+  });
 }
 
 export async function toggleReaction(
@@ -156,4 +172,24 @@ export async function deleteComment(
   await saveCommentsStore(store);
   revalidatePath(pageId);
   return { threadRemoved: result.threadRemoved };
+}
+
+export async function markThreadRead(
+  pageId: string,
+  threadId: string,
+): Promise<void> {
+  assertValidPageId(pageId);
+  const author = await requireAuthor();
+  const store = await loadCommentsStore();
+  const ok = markThreadReadHelper(store, pageId, threadId, author.email);
+  if (!ok) throw new Error("Thread não encontrada.");
+  await saveCommentsStore(store);
+}
+
+export async function markAllThreadsRead(): Promise<{ updated: number }> {
+  const author = await requireAuthor();
+  const store = await loadCommentsStore();
+  const updated = markAllThreadsReadHelper(store, author.email);
+  await saveCommentsStore(store);
+  return { updated };
 }

@@ -288,6 +288,24 @@
   font-size: 11.5px;
 }
 
+.threadUnreadFlag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--blue);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.threadUnreadFlag::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
 .threadResolvedFlag::before {
   content: "";
   display: inline-block;

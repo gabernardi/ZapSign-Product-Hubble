@@ -47,11 +47,6 @@ export function CommentableSurface({ children }: CommentableSurfaceProps) {
   } = useComments();
   const surfaceRef = useRef<HTMLDivElement | null>(null);
   const [trigger, setTrigger] = useState<TriggerState | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const openThreads = useMemo(
     () => threads.filter((t) => t.status === "open"),
@@ -183,10 +178,7 @@ export function CommentableSurface({ children }: CommentableSurfaceProps) {
   // botão enquanto o usuário ainda arrasta o mouse.
   useEffect(() => {
     if (!currentUserEmail) return;
-    if (panelOpen) {
-      setTrigger(null);
-      return;
-    }
+    if (panelOpen) return;
 
     let dragging = false;
 
@@ -251,16 +243,19 @@ export function CommentableSurface({ children }: CommentableSurfaceProps) {
     beginCompose(anchor);
   }, [trigger, beginCompose]);
 
+  const visibleTrigger = panelOpen ? null : trigger;
+  const canPortal = typeof document !== "undefined";
+
   return (
     <div ref={surfaceRef} className={styles.surface}>
       {children}
-      {mounted && trigger
+      {canPortal && visibleTrigger
         ? createPortal(
             <div
               className={styles.triggerPortal}
               style={{
-                left: `${trigger.x}px`,
-                top: `${trigger.y}px`,
+                left: `${visibleTrigger.x}px`,
+                top: `${visibleTrigger.y}px`,
               }}
               data-comments-skip=""
             >

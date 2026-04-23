@@ -70,7 +70,6 @@ export function CommentsPanel() {
     pendingThreadId,
     closePanel,
     setActiveThread,
-    beginCompose,
     cancelCompose,
     createThread,
     replyToThread,
@@ -78,6 +77,7 @@ export function CommentsPanel() {
     resolveThread,
     removeComment,
     currentUserEmail,
+    isThreadUnread,
   } = useComments();
 
   const [showResolved, setShowResolved] = useState(false);
@@ -104,6 +104,9 @@ export function CommentsPanel() {
     () => ordered.filter((t) => t.status === "resolved"),
     [ordered],
   );
+  const shouldShowResolved =
+    showResolved ||
+    !!resolvedThreads.find((thread) => thread.id === activeThreadId);
 
   // Rola para o thread ativo.
   useEffect(() => {
@@ -202,6 +205,7 @@ export function CommentsPanel() {
                       removeComment(thread.id, commentId)
                     }
                     currentUserEmail={currentUserEmail}
+                    unread={isThreadUnread(thread.id)}
                   />
                 </li>
               ))}
@@ -216,9 +220,9 @@ export function CommentsPanel() {
                 onClick={() => setShowResolved((v) => !v)}
               >
                 <span>Resolvidas · {resolvedThreads.length}</span>
-                <span>{showResolved ? "Ocultar" : "Mostrar"}</span>
+                <span>{shouldShowResolved ? "Ocultar" : "Mostrar"}</span>
               </button>
-              {showResolved && (
+              {shouldShowResolved && (
                 <ul className={styles.threadList}>
                   {resolvedThreads.map((thread) => (
                     <li key={thread.id}>
@@ -236,6 +240,7 @@ export function CommentsPanel() {
                           removeComment(thread.id, commentId)
                         }
                         currentUserEmail={currentUserEmail}
+                        unread={isThreadUnread(thread.id)}
                         resolved
                       />
                     </li>
@@ -311,6 +316,7 @@ interface ThreadCardProps {
   isActive: boolean;
   isPending: boolean;
   resolved?: boolean;
+  unread?: boolean;
   currentUserEmail: string | null;
   onFocus: () => void;
   onReply: (body: string) => Promise<void> | void;
@@ -324,6 +330,7 @@ function ThreadCard({
   isActive,
   isPending,
   resolved,
+  unread,
   currentUserEmail,
   onFocus,
   onReply,
@@ -363,6 +370,7 @@ function ThreadCard({
           {thread.comments.length}{" "}
           {thread.comments.length === 1 ? "comentário" : "comentários"}
         </span>
+        {unread && <span className={styles.threadUnreadFlag}>Novo</span>}
         {thread.status === "resolved" && (
           <span className={styles.threadResolvedFlag}>Resolvida</span>
         )}

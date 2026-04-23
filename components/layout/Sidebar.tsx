@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CommentsInboxLink } from "@/components/comments/CommentsInboxLink";
 import styles from "./Sidebar.module.css";
 
 interface NavItem {
@@ -42,6 +43,15 @@ const NAV_GROUPS: NavGroup[] = [
             <path d="M2 8h16" stroke="currentColor" strokeWidth="1.5" />
             <path d="M7 3v5M13 3v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             <path d="M6 12h3M11 12h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        ),
+      },
+      {
+        label: "Comentários",
+        href: "/dashboard/comentarios",
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M3.5 5A1.5 1.5 0 0 1 5 3.5h10A1.5 1.5 0 0 1 16.5 5v7A1.5 1.5 0 0 1 15 13.5H9l-4.5 3V13.5H5A1.5 1.5 0 0 1 3.5 12V5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           </svg>
         ),
       },
@@ -173,6 +183,16 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
                         <span className={styles.navText}>{item.label}</span>
                         <span className={styles.badge}>Em breve</span>
                       </div>
+                    );
+                  }
+
+                  if (item.href === "/dashboard/comentarios") {
+                    return (
+                      <CommentsInboxLink
+                        key={item.href}
+                        variant="sidebar"
+                        onClick={onMobileClose}
+                      />
                     );
                   }
 

@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import {
   addComment as addCommentAction,
   createThread as createThreadAction,
@@ -24,6 +25,7 @@ import type {
   Thread,
   ThreadStatus,
 } from "@/lib/data/comments";
+import { useCommentsInbox } from "./CommentsInboxProvider";
 
 const POLL_INTERVAL_MS = 15_000;
 
@@ -53,6 +55,7 @@ export interface CommentContextValue {
   ) => Promise<void>;
   removeComment: (threadId: string, commentId: string) => Promise<void>;
   refresh: () => Promise<void>;
+  isThreadUnread: (threadId: string) => boolean;
 }
 
 const CommentContext = createContext<CommentContextValue | null>(null);
@@ -83,6 +86,13 @@ export function CommentProvider({
   children,
 }: CommentProviderProps) {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const requestedThreadId = searchParams.get("thread");
+  const {
+    refresh: refreshInbox,
+    markThreadRead: markInboxThreadRead,
+    isThreadUnread: isInboxThreadUnread,
+  } = useCommentsInbox();
   const [threads, setThreads] = useState<Thread[]>(initialThreads);
   const [panelOpen, setPanelOpen] = useState(false);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
@@ -91,20 +101,23 @@ export function CommentProvider({
     null,
   );
 
-  const currentUserEmail = session?.user?.email ?? null;
+  const sessionEmail = session?.user?.email ?? null;
+  const sessionName = session?.user?.name ?? null;
+  const sessionImage = session?.user?.image ?? null;
+  const currentUserEmail = sessionEmail;
   const panelOpenRef = useRef(panelOpen);
   useEffect(() => {
     panelOpenRef.current = panelOpen;
   }, [panelOpen]);
 
   const localAuthor: Author | null = useMemo(() => {
-    if (!session?.user?.email) return null;
+    if (!sessionEmail) return null;
     return {
-      email: session.user.email,
-      name: session.user.name ?? undefined,
-      image: session.user.image ?? undefined,
+      email: sessionEmail,
+      name: sessionName ?? undefined,
+      image: sessionImage ?? undefined,
     };
-  }, [session?.user?.email, session?.user?.name, session?.user?.image]);
+  }, [sessionEmail, sessionImage, sessionName]);
 
   const refresh = useCallback(async () => {
     try {
@@ -122,21 +135,10 @@ export function CommentProvider({
     }
   }, [pageId]);
 
-  useEffect(() => {
-    if (!panelOpen) return;
-    const id = window.setInterval(() => {
-      if (panelOpenRef.current) {
-        void refresh();
-      }
-    }, POLL_INTERVAL_MS);
-    return () => window.clearInterval(id);
-  }, [panelOpen, refresh]);
-
-  useEffect(() => {
-    if (refreshOnMount) {
-      void refresh();
-    }
-  }, [refreshOnMount, refresh]);
+  const isThreadUnread = useCallback(
+    (threadId: string) => isInboxThreadUnread(pageId, threadId),
+    [isInboxThreadUnread, pageId],
+  );
 
   const openPanel = useCallback((threadId?: string | null) => {
     setPanelOpen(true);
@@ -166,6 +168,47 @@ export function CommentProvider({
     setComposeAnchor(null);
   }, []);
 
+  useEffect(() => {
+    if (!panelOpen) return;
+    const id = window.setInterval(() => {
+      if (panelOpenRef.current) {
+        void refresh();
+      }
+    }, POLL_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [panelOpen, refresh]);
+
+  useEffect(() => {
+    if (refreshOnMount) {
+      const id = window.setTimeout(() => {
+        void refresh();
+      }, 0);
+      return () => window.clearTimeout(id);
+    }
+  }, [refreshOnMount, refresh]);
+
+  useEffect(() => {
+    if (!requestedThreadId) return;
+    if (!threads.some((thread) => thread.id === requestedThreadId)) return;
+    const id = window.setTimeout(() => {
+      openPanel(requestedThreadId);
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [openPanel, requestedThreadId, threads]);
+
+  useEffect(() => {
+    if (!panelOpen || !activeThreadId || !currentUserEmail) return;
+    if (!isThreadUnread(activeThreadId)) return;
+    void markInboxThreadRead(pageId, activeThreadId);
+  }, [
+    activeThreadId,
+    currentUserEmail,
+    isThreadUnread,
+    markInboxThreadRead,
+    pageId,
+    panelOpen,
+  ]);
+
   const createThread = useCallback(
     async (anchor: CommentAnchor, body: string): Promise<Thread | null> => {
       if (!localAuthor) return null;
@@ -178,13 +221,14 @@ export function CommentProvider({
         setActiveThreadId(created.id);
         setComposeAnchor(null);
         setPanelOpen(true);
+        await refreshInbox();
         return created;
       } catch (err) {
         console.error("createThread failed", err);
         return null;
       }
     },
-    [pageId, localAuthor],
+    [localAuthor, pageId, refreshInbox],
   );
 
   const replyToThread = useCallback(
@@ -216,6 +260,7 @@ export function CommentProvider({
       try {
         await addCommentAction(pageId, threadId, trimmed);
         await refresh();
+        await refreshInbox();
       } catch (err) {
         console.error("replyToThread failed", err);
         setThreads((prev) =>
@@ -230,7 +275,7 @@ export function CommentProvider({
         );
       }
     },
-    [pageId, localAuthor, refresh],
+    [localAuthor, pageId, refresh, refreshInbox],
   );
 
   const reactToComment = useCallback(
@@ -267,7 +312,7 @@ export function CommentProvider({
         await refresh();
       }
     },
-    [pageId, localAuthor, refresh],
+    [localAuthor, pageId, refresh],
   );
 
   const resolveThread = useCallback(
@@ -277,12 +322,13 @@ export function CommentProvider({
       );
       try {
         await setThreadStatusAction(pageId, threadId, status);
+        await refreshInbox();
       } catch (err) {
         console.error("setThreadStatus failed", err);
         await refresh();
       }
     },
-    [pageId, refresh],
+    [pageId, refresh, refreshInbox],
   );
 
   const removeComment = useCallback(
@@ -304,12 +350,13 @@ export function CommentProvider({
             ),
           );
         }
+        await refreshInbox();
       } catch (err) {
         console.error("deleteComment failed", err);
         await refresh();
       }
     },
-    [pageId, refresh],
+    [pageId, refresh, refreshInbox],
   );
 
   const value = useMemo<CommentContextValue>(
@@ -332,6 +379,7 @@ export function CommentProvider({
       resolveThread,
       removeComment,
       refresh,
+      isThreadUnread,
     }),
     [
       pageId,
@@ -352,6 +400,7 @@ export function CommentProvider({
       resolveThread,
       removeComment,
       refresh,
+      isThreadUnread,
     ],
   );
 

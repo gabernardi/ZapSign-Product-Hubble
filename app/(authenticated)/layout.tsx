@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { SessionProvider } from "@/components/auth/SessionProvider";
+import { CommentsInboxProvider } from "@/components/comments/CommentsInboxProvider";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import styles from "./layout.module.css";
@@ -19,6 +20,7 @@ const FULL_BLEED_PREFIXES = [
   "/dashboard/roadmap",
   "/dashboard/contribuir",
   "/dashboard/changelog",
+  "/dashboard/comentarios",
 ];
 
 export default function AuthenticatedLayout({
@@ -35,21 +37,27 @@ export default function AuthenticatedLayout({
     );
 
   if (isFullBleed) {
-    return <SessionProvider>{children}</SessionProvider>;
+    return (
+      <SessionProvider>
+        <CommentsInboxProvider>{children}</CommentsInboxProvider>
+      </SessionProvider>
+    );
   }
 
   return (
     <SessionProvider>
-      <div className={styles.layout}>
-        <Sidebar
-          mobileOpen={mobileMenuOpen}
-          onMobileClose={() => setMobileMenuOpen(false)}
-        />
-        <div className={styles.main}>
-          <Header onMenuToggle={() => setMobileMenuOpen((prev) => !prev)} />
-          <div className={styles.content}>{children}</div>
+      <CommentsInboxProvider>
+        <div className={styles.layout}>
+          <Sidebar
+            mobileOpen={mobileMenuOpen}
+            onMobileClose={() => setMobileMenuOpen(false)}
+          />
+          <div className={styles.main}>
+            <Header onMenuToggle={() => setMobileMenuOpen((prev) => !prev)} />
+            <div className={styles.content}>{children}</div>
+          </div>
         </div>
-      </div>
+      </CommentsInboxProvider>
     </SessionProvider>
   );
 }

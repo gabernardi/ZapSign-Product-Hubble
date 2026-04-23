@@ -1,0 +1,128 @@
+.link {
+  text-decoration: none;
+}
+
+.active {}
+
+.link:hover {
+  text-decoration: none;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.label {
+  min-width: 0;
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: var(--r-full);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.glasswing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px 10px;
+  border: 1px solid var(--border-lt);
+  border-radius: var(--r-full);
+  background: var(--white);
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.glasswing:hover,
+.glasswing.active {
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.glasswing .count {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.header {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 34px;
+  padding: 0 12px;
+  background: var(--white);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--r-full);
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.header:hover,
+.header.active {
+  color: var(--ink);
+  border-color: var(--border);
+  box-shadow: var(--shadow-xs);
+}
+
+.header .count {
+  background: var(--zs);
+  color: var(--white);
+}
+
+.sidebar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 7px var(--sp-3);
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-3);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.sidebar:hover {
+  background: var(--bg-2);
+  color: var(--ink);
+}
+
+.sidebar.active {
+  background: var(--zs-lt);
+  color: var(--zs-deep);
+  font-weight: 600;
+}
+
+.sidebar .count {
+  margin-left: auto;
+  background: var(--ink);
+  color: var(--white);
+}

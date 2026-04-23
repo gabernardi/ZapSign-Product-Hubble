@@ -6,6 +6,7 @@ type ActiveKey =
   | "downstream"
   | "papeis"
   | "roadmap"
+  | "comentarios"
   | "home"
   | "contribuir"
   | "changelog";
@@ -60,6 +61,12 @@ export function getGlasswingNav(
           (activeQuarterId ? activeQuarterId === quarter.id : quarter.active),
         description: quarter.period,
       })),
+    },
+    {
+      label: "Comentários",
+      href: "/dashboard/comentarios",
+      active: active === "comentarios",
+      description: "Inbox global com atividade recente em todas as páginas.",
     },
     {
       label: "Laboratório",

@@ -4,12 +4,14 @@ import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { CommentsInboxLink } from "@/components/comments/CommentsInboxLink";
 import styles from "./Header.module.css";
 
 const BREADCRUMB_MAP: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/dashboard/upstream": "Upstream",
   "/dashboard/downstream": "Downstream",
+  "/dashboard/comentarios": "Comentários",
   "/dashboard/opportunity-tree": "Árvore de Oportunidades",
 };
 
@@ -91,6 +93,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       <div className={styles.right}>
+        <CommentsInboxLink variant="header" />
         <button className={styles.searchPill} aria-label="Buscar">
           <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.6" />
