@@ -149,9 +149,9 @@ const Q2_SQUADS: RoadmapSquad[] = [
     tl: "Santiago",
     devs: ["Carlos", "Adriana", "Samuel", "Veronica"],
     context:
-      "Pagarme v5 ficou em 5% — a migração dos clientes existentes foi mais complexa do que o esperado. O Q2 desbloqueia pagamentos e entrega o fluxo mais crítico da plataforma: a criação de documentos.",
+      "Pagarme v5 ficou em 5% — a migração dos clientes existentes foi mais complexa do que o esperado. O Q2 desbloqueia pagamentos e avança no fluxo mais crítico da plataforma: a criação de documentos, com conclusão e lançamento previstos até o 3T26.",
     goals: [
-      { value: "100%", label: "Fluxo de criação de documento" },
+      { value: "Lançamento até 3T26", label: "Fluxo de criação de documento" },
       { value: "100%", label: "Migração Pagarme" },
     ],
     projects: [
@@ -159,7 +159,7 @@ const Q2_SQUADS: RoadmapSquad[] = [
         id: "ex-001",
         title: "Criação de documentos v2 — Produção",
         description:
-          "O fluxo mais crítico. Protótipo validado com clientes reais. Objetivo: ir para produção no Q2.",
+          "O fluxo mais crítico. Protótipo validado com clientes reais. Objetivo: concluir o desenvolvimento no 2T26 e lançar em produção até o 3T26.",
         status: "development",
       },
       {
@@ -241,7 +241,7 @@ const Q2_SQUADS: RoadmapSquad[] = [
   },
   {
     id: "retencion",
-    name: "Retención",
+    name: "Retenção",
     accent: "amber",
     pm: "Débora",
     tl: "Adoglio",
