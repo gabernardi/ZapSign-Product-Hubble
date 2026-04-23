@@ -4,6 +4,7 @@ import { QUARTERS } from "@/lib/data/roadmap";
 type ActiveKey =
   | "upstream"
   | "downstream"
+  | "papeis"
   | "roadmap"
   | "home"
   | "contribuir"
@@ -13,7 +14,10 @@ export function getGlasswingNav(
   active: ActiveKey = "home",
   activeQuarterId?: string,
 ): GlasswingNavItem[] {
-  const isGuideline = active === "upstream" || active === "downstream";
+  const isGuideline =
+    active === "upstream" ||
+    active === "downstream" ||
+    active === "papeis";
 
   const publishedQuarters = QUARTERS.filter(
     (q) => q.published || q.squads.length > 0,
@@ -35,6 +39,13 @@ export function getGlasswingNav(
           href: "/dashboard/downstream",
           active: active === "downstream",
           description: "Como o trio executa, lança e aprende com o que foi construído.",
+        },
+        {
+          label: "Papéis & Responsabilidades",
+          href: "/dashboard/papeis",
+          active: active === "papeis",
+          description:
+            "Quem decide o quê, com quem e em que momento — PM, Design, TL, EM e Engineers.",
         },
       ],
     },

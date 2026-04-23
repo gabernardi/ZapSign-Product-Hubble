@@ -7,10 +7,15 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import styles from "./layout.module.css";
 
-const FULL_BLEED_ROUTES = [
-  "/dashboard",
+// Rotas que usam o próprio shell editorial (Glasswing) e portanto não devem
+// receber a Sidebar/Header legados deste layout. Prefixos cobrem subrotas
+// (ex.: /dashboard/roadmap/1t26, /dashboard/roadmap/3t26…) sem exigir
+// atualização manual a cada trimestre.
+const FULL_BLEED_EXACT = ["/dashboard"];
+const FULL_BLEED_PREFIXES = [
   "/dashboard/downstream",
   "/dashboard/upstream",
+  "/dashboard/papeis",
   "/dashboard/roadmap",
   "/dashboard/contribuir",
   "/dashboard/changelog",
@@ -23,7 +28,11 @@ export default function AuthenticatedLayout({
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isFullBleed = FULL_BLEED_ROUTES.includes(pathname);
+  const isFullBleed =
+    FULL_BLEED_EXACT.includes(pathname) ||
+    FULL_BLEED_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    );
 
   if (isFullBleed) {
     return <SessionProvider>{children}</SessionProvider>;
