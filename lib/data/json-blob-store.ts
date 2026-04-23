@@ -119,6 +119,50 @@ export async function loadJsonBlob<T>(
   return local ?? emptyValue;
 }
 
+/**
+ * Após um `put`, o CDN do Vercel Blob pode continuar servindo a versão
+ * anterior por alguns segundos. Fazemos polling curto verificando se a
+ * URL pública já devolve o conteúdo recém-escrito. Isso garante que um
+ * refresh imediato do usuário (SSR lendo o Blob) não traga a versão
+ * antiga "de volta".
+ *
+ * Limites: damos no máximo ~1.5s de espera total. Se ainda não propagou,
+ * seguimos adiante — o cliente vai reconciliar via stream em seguida.
+ */
+const PROPAGATION_ATTEMPTS = 6;
+const PROPAGATION_DELAY_MS = 250;
+
+async function waitForPropagation(
+  url: string,
+  expectedBody: string,
+): Promise<void> {
+  for (let attempt = 0; attempt < PROPAGATION_ATTEMPTS; attempt += 1) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, PROPAGATION_DELAY_MS),
+    );
+    try {
+      const bust = `${url}?v=${Date.now()}`;
+      const res = await fetch(bust, {
+        cache: "no-store",
+        headers: { "cache-control": "no-cache" },
+      });
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (text === expectedBody) {
+        console.info(
+          `[json-blob-store] propagation confirmed in ${(attempt + 1) * PROPAGATION_DELAY_MS}ms`,
+        );
+        return;
+      }
+    } catch {
+      // Ignora erros de rede — nova tentativa no próximo loop.
+    }
+  }
+  console.warn(
+    `[json-blob-store] propagation not confirmed after ${PROPAGATION_ATTEMPTS * PROPAGATION_DELAY_MS}ms`,
+  );
+}
+
 export async function saveJsonBlob<T>(
   filename: string,
   value: T,
@@ -139,6 +183,10 @@ export async function saveJsonBlob<T>(
     console.info(
       `[json-blob-store] save ok filename=${filename} bytes=${body.length} pathname=${result.pathname} url=${result.url}`,
     );
+    const url = blobPublicUrl(filename);
+    if (url) {
+      await waitForPropagation(url, body);
+    }
     return;
   }
   await writeLocal(filename, value);

@@ -24,11 +24,21 @@ type Listener = (event: CommentsStreamEvent) => void;
 
 const POLL_INTERVAL_MS = 2_000;
 const MAX_LISTENERS = 1_000;
+/**
+ * Janela após um publish local em que ignoramos o resultado do poller.
+ * O CDN do Vercel Blob pode servir stale por alguns segundos logo após um
+ * `put` — nesse intervalo, o snapshot in-memory (publicado pela action) é
+ * mais confiável. Depois dessa janela, o poller volta a ser fonte de
+ * verdade (cobre mudanças vindas de outras instâncias).
+ */
+const RECENT_PUBLISH_WINDOW_MS = 10_000;
 
 interface BusState {
   emitter: EventEmitter;
   lastRevision: string;
   lastStore: CommentsStore | null;
+  /** `Date.now()` do último `publishStoreSnapshot` nesta instância. */
+  lastPublishAt: number;
   pollerStarted: boolean;
 }
 
@@ -44,6 +54,7 @@ function getState(): BusState {
       emitter,
       lastRevision: "",
       lastStore: null,
+      lastPublishAt: 0,
       pollerStarted: false,
     };
   }
@@ -76,15 +87,27 @@ function ensurePoller(): void {
     try {
       const store = await loadCommentsStore();
       const revision = hashStore(store);
-      if (revision !== state.lastRevision) {
-        state.lastStore = store;
-        state.lastRevision = revision;
-        state.emitter.emit("store", {
-          type: "change",
-          store,
-          revision,
-        } satisfies CommentsStreamEvent);
+      if (revision === state.lastRevision) return;
+
+      // Se uma action publicou recentemente nesta instância, o Blob pode
+      // estar servindo stale do CDN. Confia no snapshot in-memory até a
+      // janela passar — senão o poller re-emitiria a versão antiga e
+      // "desfaria" a mudança no cliente.
+      const sincePublish = Date.now() - state.lastPublishAt;
+      if (sincePublish < RECENT_PUBLISH_WINDOW_MS) {
+        console.info(
+          `[comments-bus] skip poll: recent publish (${sincePublish}ms ago)`,
+        );
+        return;
       }
+
+      state.lastStore = store;
+      state.lastRevision = revision;
+      state.emitter.emit("store", {
+        type: "change",
+        store,
+        revision,
+      } satisfies CommentsStreamEvent);
     } catch (err) {
       console.warn("[comments-bus] poll failed:", err);
     }
@@ -123,6 +146,7 @@ export function publishStoreSnapshot(store: CommentsStore): void {
   ensurePoller();
   const state = getState();
   const revision = hashStore(store);
+  state.lastPublishAt = Date.now();
   if (revision === state.lastRevision) return;
   state.lastStore = store;
   state.lastRevision = revision;
