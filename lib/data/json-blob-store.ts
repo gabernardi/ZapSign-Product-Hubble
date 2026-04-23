@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { BlobNotFoundError, head, put } from "@vercel/blob";
+import { BlobNotFoundError, get, put } from "@vercel/blob";
 
 /**
  * Storage JSON minimalista com duas estratégias:
@@ -8,9 +8,9 @@ import { BlobNotFoundError, head, put } from "@vercel/blob";
  * - **Produção (Vercel com `BLOB_READ_WRITE_TOKEN`):** lê e escreve em
  *   Vercel Blob (store público). O filesystem da função serverless é
  *   read-only, então o Blob é o único lugar mutável. As URLs dos blobs
- *   nunca são expostas ao cliente — todas as leituras passam por código
- *   server-side, e o `storeId` aleatório do subdomínio serve como
- *   barreira prática contra acesso direto.
+ *   nunca são expostas ao cliente — todas as leituras passam pela SDK
+ *   server-side com o Bearer token, o que força ida ao origin e evita
+ *   servir dados stale do CDN.
  *
  * - **Desenvolvimento (sem token):** lê e escreve no arquivo local
  *   versionado em `lib/data/<filename>`. Mantém o fluxo antigo de
@@ -20,9 +20,11 @@ import { BlobNotFoundError, head, put } from "@vercel/blob";
  * Nesse caso o load usa o JSON commitado como seed. O primeiro `save`
  * promove o Blob a fonte da verdade.
  *
- * **Cache CDN:** como o store é público, `get()` da SDK ignora pedidos
- * de bypass de cache. Fazemos `head()` → `fetch` com cache-buster query
- * string pra garantir leitura fresca depois de cada write.
+ * **Cache CDN:** usamos `get()` da SDK com `useCache: false` — ela
+ * adiciona `?cache=0` na URL e envia `Authorization: Bearer`, o que
+ * bypassa o cache do CDN em cada leitura. `cacheControlMaxAge: 60`
+ * limita o pior caso de staleness caso algum cliente ignore as
+ * diretivas acima.
  *
  * **Concorrência:** dois writes simultâneos fazem read-modify-write em
  * cima do store inteiro — o último vence. Aceitável pro volume interno;
@@ -30,7 +32,6 @@ import { BlobNotFoundError, head, put } from "@vercel/blob";
  * relacional.
  */
 
-// Mínimo aceito pela Vercel Blob é 60s.
 const CACHE_TTL_SECONDS = 60;
 
 function blobEnabled(): boolean {
@@ -64,17 +65,16 @@ export async function loadJsonBlob<T>(
 ): Promise<T> {
   if (blobEnabled()) {
     try {
-      const meta = await head(filename);
-      const url = `${meta.url}?_t=${Date.now()}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (res.ok) {
-        return (await res.json()) as T;
+      const result = await get(filename, {
+        access: "public",
+        useCache: false,
+      });
+      if (result && result.statusCode === 200 && result.stream) {
+        const text = await new Response(result.stream).text();
+        return JSON.parse(text) as T;
       }
-      // Status não-OK com blob existente é sintoma real de problema, não
-      // "não existe" — propaga em vez de silenciosamente usar seed.
-      throw new Error(
-        `Blob fetch falhou para ${filename}: HTTP ${res.status}`,
-      );
+      // result === null não é esperado quando não usamos ifNoneMatch e
+      // o blob existe — trata como "vazio, usa seed".
     } catch (err) {
       if (!(err instanceof BlobNotFoundError)) {
         throw err;
