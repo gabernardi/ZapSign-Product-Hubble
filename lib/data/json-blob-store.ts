@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { get, put } from "@vercel/blob";
+import { BlobNotFoundError, head, put } from "@vercel/blob";
 
 /**
  * Storage JSON minimalista com duas estratégias:
@@ -20,10 +20,10 @@ import { get, put } from "@vercel/blob";
  * Nesse caso o load usa o JSON commitado como seed. O primeiro `save`
  * promove o Blob a fonte da verdade.
  *
- * **Cache CDN:** usamos `get()` da SDK com `useCache: false` — ela
- * adiciona `?cache=0` na URL e envia `Authorization: Bearer`, o que
- * bypassa o cache do CDN em cada leitura. `cacheControlMaxAge: 60`
- * limita o pior caso de staleness caso algum cliente ignore as
+ * **Cache CDN:** usamos `head()` para descobrir a URL do blob + `fetch()`
+ * com cache-buster (`?v=<uploadedAt>`) e `cache: "no-store"`, forçando
+ * ida ao origin e ignorando stale do CDN. `cacheControlMaxAge: 60` no
+ * `put` limita o pior caso de staleness caso algum cliente ignore as
  * diretivas acima.
  *
  * **Concorrência:** dois writes simultâneos fazem read-modify-write em
@@ -65,22 +65,28 @@ export async function loadJsonBlob<T>(
 ): Promise<T> {
   if (blobEnabled()) {
     try {
-      const result = await get(filename, {
-        access: "public",
-        useCache: false,
+      const meta = await head(filename);
+      const cacheBuster = meta.uploadedAt
+        ? new Date(meta.uploadedAt).getTime().toString()
+        : Date.now().toString();
+      const separator = meta.url.includes("?") ? "&" : "?";
+      const res = await fetch(`${meta.url}${separator}v=${cacheBuster}`, {
+        cache: "no-store",
       });
-      if (result && result.statusCode === 200 && result.stream) {
-        const text = await new Response(result.stream).text();
+      if (res.ok) {
+        const text = await res.text();
         return JSON.parse(text) as T;
       }
-      // result === null não é esperado quando não usamos ifNoneMatch e
-      // o blob existe — trata como "vazio, usa seed".
+      console.warn(
+        `[json-blob-store] fetch failed for ${filename}: ${res.status} ${res.statusText}`,
+      );
     } catch (err) {
-      // Qualquer falha de leitura no Blob (not found, 400, rede) cai pro seed
-      // local + emptyValue. Isso mantém o build/prerender estáveis mesmo se o
-      // store estiver em estado inesperado; problemas reais ficam visíveis no
-      // log sem quebrar a página.
-      console.warn(`[json-blob-store] read failed for ${filename}:`, err);
+      // Blob ainda não existe (primeiro deploy) ou leitura falhou: cai pro
+      // seed local + emptyValue. Erros reais ficam visíveis no log sem
+      // quebrar o prerender/runtime.
+      if (!(err instanceof BlobNotFoundError)) {
+        console.warn(`[json-blob-store] read failed for ${filename}:`, err);
+      }
     }
     const seed = await readLocal<T>(filename);
     return seed ?? emptyValue;
