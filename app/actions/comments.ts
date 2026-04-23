@@ -24,6 +24,7 @@ import {
   notifyCommentThreadParticipants,
   notifyNewCommentThread,
 } from "@/lib/email/comment-notifications";
+import { publishStoreSnapshot } from "@/lib/comments/events-bus";
 
 const ALLOWED_DOMAINS = ["zapsign.com.br", "truora.com"] as const;
 
@@ -79,6 +80,7 @@ export async function createThread(
   const store = await loadCommentsStore();
   const thread = addThreadHelper(store, pageId, anchor, trimmed, author);
   await saveCommentsStore(store);
+  publishStoreSnapshot(store);
   revalidatePath(pageId);
   void notifyNewCommentThread({ pageId, thread, actor: author });
   return thread;
@@ -99,6 +101,7 @@ export async function addComment(
   const thread = getThreadById(store, pageId, threadId);
   if (!thread) throw new Error("Thread não encontrada.");
   await saveCommentsStore(store);
+  publishStoreSnapshot(store);
   revalidatePath(pageId);
   void notifyCommentThreadParticipants({
     pageId,
@@ -131,6 +134,7 @@ export async function toggleReaction(
   );
   if (!ok) throw new Error("Comentário não encontrado.");
   await saveCommentsStore(store);
+  publishStoreSnapshot(store);
   revalidatePath(pageId);
 }
 
@@ -148,6 +152,7 @@ export async function setThreadStatus(
   const ok = setThreadStatusHelper(store, pageId, threadId, status);
   if (!ok) throw new Error("Thread não encontrada.");
   await saveCommentsStore(store);
+  publishStoreSnapshot(store);
   revalidatePath(pageId);
 }
 
@@ -170,6 +175,7 @@ export async function deleteComment(
     throw new Error("Não foi possível remover o comentário.");
   }
   await saveCommentsStore(store);
+  publishStoreSnapshot(store);
   revalidatePath(pageId);
   return { threadRemoved: result.threadRemoved };
 }
@@ -184,6 +190,7 @@ export async function markThreadRead(
   const ok = markThreadReadHelper(store, pageId, threadId, author.email);
   if (!ok) throw new Error("Thread não encontrada.");
   await saveCommentsStore(store);
+  publishStoreSnapshot(store);
 }
 
 export async function markAllThreadsRead(): Promise<{ updated: number }> {
@@ -191,5 +198,6 @@ export async function markAllThreadsRead(): Promise<{ updated: number }> {
   const store = await loadCommentsStore();
   const updated = markAllThreadsReadHelper(store, author.email);
   await saveCommentsStore(store);
+  publishStoreSnapshot(store);
   return { updated };
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { SessionProvider } from "@/components/auth/SessionProvider";
 import { CommentsInboxProvider } from "@/components/comments/CommentsInboxProvider";
+import { CommentsStreamProvider } from "@/components/comments/CommentsStreamProvider";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import styles from "./layout.module.css";
@@ -39,25 +40,29 @@ export default function AuthenticatedLayout({
   if (isFullBleed) {
     return (
       <SessionProvider>
-        <CommentsInboxProvider>{children}</CommentsInboxProvider>
+        <CommentsStreamProvider>
+          <CommentsInboxProvider>{children}</CommentsInboxProvider>
+        </CommentsStreamProvider>
       </SessionProvider>
     );
   }
 
   return (
     <SessionProvider>
-      <CommentsInboxProvider>
-        <div className={styles.layout}>
-          <Sidebar
-            mobileOpen={mobileMenuOpen}
-            onMobileClose={() => setMobileMenuOpen(false)}
-          />
-          <div className={styles.main}>
-            <Header onMenuToggle={() => setMobileMenuOpen((prev) => !prev)} />
-            <div className={styles.content}>{children}</div>
+      <CommentsStreamProvider>
+        <CommentsInboxProvider>
+          <div className={styles.layout}>
+            <Sidebar
+              mobileOpen={mobileMenuOpen}
+              onMobileClose={() => setMobileMenuOpen(false)}
+            />
+            <div className={styles.main}>
+              <Header onMenuToggle={() => setMobileMenuOpen((prev) => !prev)} />
+              <div className={styles.content}>{children}</div>
+            </div>
           </div>
-        </div>
-      </CommentsInboxProvider>
+        </CommentsInboxProvider>
+      </CommentsStreamProvider>
     </SessionProvider>
   );
 }
