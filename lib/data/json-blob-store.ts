@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { BlobNotFoundError, head, put } from "@vercel/blob";
+import { put } from "@vercel/blob";
 
 /**
  * Storage JSON minimalista com duas estratégias:
@@ -20,11 +20,13 @@ import { BlobNotFoundError, head, put } from "@vercel/blob";
  * Nesse caso o load usa o JSON commitado como seed. O primeiro `save`
  * promove o Blob a fonte da verdade.
  *
- * **Cache CDN:** usamos `head()` para descobrir a URL do blob + `fetch()`
- * com cache-buster (`?v=<uploadedAt>`) e `cache: "no-store"`, forçando
- * ida ao origin e ignorando stale do CDN. `cacheControlMaxAge: 60` no
- * `put` limita o pior caso de staleness caso algum cliente ignore as
- * diretivas acima.
+ * **Cache CDN:** não usamos `head()` porque a metadata também pode vir
+ * stale do CDN logo após um `put`. Em vez disso, construímos a URL
+ * pública diretamente a partir do `storeId` embutido no
+ * `BLOB_READ_WRITE_TOKEN` e buscamos com `?v=<Date.now()>` +
+ * `cache: "no-store"` + `cache-control: no-cache`, o que força sempre
+ * ida ao origin. `cacheControlMaxAge: 0` no `put` garante que o CDN
+ * não sirva a resposta passada por mais do que uma request.
  *
  * **Concorrência:** dois writes simultâneos fazem read-modify-write em
  * cima do store inteiro — o último vence. Aceitável pro volume interno;
@@ -32,10 +34,19 @@ import { BlobNotFoundError, head, put } from "@vercel/blob";
  * relacional.
  */
 
-const CACHE_TTL_SECONDS = 60;
+const CACHE_TTL_SECONDS = 0;
 
 function blobEnabled(): boolean {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+function blobPublicUrl(pathname: string): string | null {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) return null;
+  // Formato esperado: vercel_blob_rw_<storeId>_<secret>
+  const match = token.match(/^vercel_blob_rw_([A-Za-z0-9]+)_/);
+  if (!match) return null;
+  return `https://${match[1]}.public.blob.vercel-storage.com/${pathname}`;
 }
 
 function localPath(filename: string): string {
@@ -64,16 +75,16 @@ export async function loadJsonBlob<T>(
   emptyValue: T,
 ): Promise<T> {
   const enabled = blobEnabled();
-  console.info(`[json-blob-store] load start filename=${filename} blob=${enabled}`);
-  if (enabled) {
+  const url = blobPublicUrl(filename);
+  console.info(
+    `[json-blob-store] load start filename=${filename} blob=${enabled} url=${Boolean(url)}`,
+  );
+  if (enabled && url) {
     try {
-      const meta = await head(filename);
-      const cacheBuster = meta.uploadedAt
-        ? new Date(meta.uploadedAt).getTime().toString()
-        : Date.now().toString();
-      const separator = meta.url.includes("?") ? "&" : "?";
-      const res = await fetch(`${meta.url}${separator}v=${cacheBuster}`, {
+      const bustUrl = `${url}?v=${Date.now()}`;
+      const res = await fetch(bustUrl, {
         cache: "no-store",
+        headers: { "cache-control": "no-cache" },
       });
       if (res.ok) {
         const text = await res.text();
@@ -82,23 +93,20 @@ export async function loadJsonBlob<T>(
         );
         return JSON.parse(text) as T;
       }
-      console.warn(
-        `[json-blob-store] fetch failed filename=${filename} status=${res.status} ${res.statusText}`,
-      );
-    } catch (err) {
-      // Blob ainda não existe (primeiro deploy) ou leitura falhou: cai pro
-      // seed local + emptyValue. Erros reais ficam visíveis no log sem
-      // quebrar o prerender/runtime.
-      if (err instanceof BlobNotFoundError) {
+      if (res.status === 404) {
         console.info(
           `[json-blob-store] blob not found filename=${filename} (using seed)`,
         );
       } else {
         console.warn(
-          `[json-blob-store] read failed filename=${filename}:`,
-          err,
+          `[json-blob-store] fetch failed filename=${filename} status=${res.status} ${res.statusText}`,
         );
       }
+    } catch (err) {
+      console.warn(
+        `[json-blob-store] read failed filename=${filename}:`,
+        err,
+      );
     }
     const seed = await readLocal<T>(filename);
     console.info(
