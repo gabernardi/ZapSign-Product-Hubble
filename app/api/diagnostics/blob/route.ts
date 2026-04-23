@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { del, get, put } from "@vercel/blob";
+import { del, head, put } from "@vercel/blob";
 
 /**
  * Endpoint de diagnóstico TEMPORÁRIO.
- * Testa o roundtrip do Vercel Blob (put → get → del) e reporta o que
- * aconteceu. Remover depois que a persistência for confirmada em prod.
+ * Testa o roundtrip do Vercel Blob (put → head → fetch → del) e reporta o
+ * que aconteceu. Remover depois que a persistência for confirmada em prod.
  */
 
 const ALLOWED_DOMAINS = ["zapsign.com.br", "truora.com"] as const;
@@ -34,22 +34,24 @@ export async function GET() {
 
   try {
     const putResult = await put(filename, JSON.stringify(payload), {
-      access: "private",
+      access: "public",
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: "application/json",
+      cacheControlMaxAge: 60,
     });
     report.putOk = true;
     report.putPathname = putResult.pathname;
 
-    const getResult = await get(filename, { access: "private" });
-    if (getResult && getResult.statusCode === 200 && getResult.stream) {
-      const text = await new Response(getResult.stream).text();
+    const meta = await head(filename);
+    const url = `${meta.url}?_t=${Date.now()}`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (res.ok) {
       report.getOk = true;
-      report.getBody = text;
+      report.getBody = await res.text();
     } else {
       report.getOk = false;
-      report.getResult = getResult;
+      report.getStatus = res.status;
     }
 
     await del(filename);
