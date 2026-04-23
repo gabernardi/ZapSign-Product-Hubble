@@ -7,24 +7,27 @@
   gap: var(--sp-8);
 }
 
-.summaryRow {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--sp-4);
-}
+/* ---------- Stat bar ---------- */
 
-.summaryCard {
+.statBar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: var(--sp-5) var(--sp-6);
   background: var(--white);
   border: 1px solid var(--border-lt);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-xs);
-  padding: var(--sp-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
 }
 
-.summaryLabel {
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.statLabel {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -32,13 +35,25 @@
   color: var(--ink-4);
 }
 
-.summaryValue {
+.statValue {
   font-family: var(--font-display);
   font-size: 28px;
-  line-height: 1.1;
+  line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--ink);
 }
+
+.statValueAccent {
+  color: var(--blue);
+}
+
+.statDivider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border-lt);
+}
+
+/* ---------- Toolbar ---------- */
 
 .toolbar {
   display: flex;
@@ -49,64 +64,69 @@
 }
 
 .filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
-}
-
-.filterButton,
-.markAllButton,
-.threadLink,
-.pageLink {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  padding: 4px;
+  background: var(--white);
+  border: 1px solid var(--border-lt);
   border-radius: var(--r-full);
-  font-family: var(--font-body);
-  text-decoration: none;
-  transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
+  box-shadow: var(--shadow-xs);
 }
 
 .filterButton {
-  padding: 8px 12px;
-  background: var(--white);
-  border: 1px solid var(--border-lt);
+  appearance: none;
+  border: 0;
+  background: transparent;
   color: var(--ink-3);
+  padding: 7px 14px;
+  font-family: var(--font-body);
   font-size: 12.5px;
   font-weight: 600;
+  border-radius: var(--r-full);
   cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 }
 
-.filterButton:hover,
-.filterButtonActive {
-  background: var(--bg);
-  border-color: var(--border);
+.filterButton:hover {
   color: var(--ink);
 }
 
-.markAllButton,
-.threadLink,
-.pageLink {
+.filterButtonActive {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.markAllButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 9px 14px;
   background: var(--white);
   border: 1px solid var(--border);
   color: var(--ink);
+  font-family: var(--font-body);
   font-size: 12.5px;
   font-weight: 600;
+  border-radius: var(--r-full);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.markAllButton:hover,
-.threadLink:hover,
-.pageLink:hover {
+.markAllButton:hover {
   background: var(--bg);
-  text-decoration: none;
   transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
 }
+
+/* ---------- Groups ---------- */
 
 .groups {
   display: flex;
@@ -122,14 +142,23 @@
 
 .groupHeader {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   justify-content: space-between;
   gap: var(--sp-4);
   flex-wrap: wrap;
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-lt);
+}
+
+.groupHeaderText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
 }
 
 .groupEyebrow {
-  margin: 0 0 var(--sp-1);
+  margin: 0;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -139,12 +168,60 @@
 
 .groupTitle {
   margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-3);
   font-family: var(--font-display);
-  font-size: 24px;
-  line-height: 1.15;
+  font-size: 22px;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
+
+.groupCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 8px;
+  background: var(--bg-2);
+  color: var(--ink-3);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  border-radius: var(--r-full);
+}
+
+.pageLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-3);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.pageLink:hover {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.pageLink:hover .pageLinkArrow {
+  transform: translateX(2px);
+}
+
+.pageLinkArrow {
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+/* ---------- Cards ---------- */
 
 .cards {
   display: grid;
@@ -153,14 +230,16 @@
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
   background: var(--white);
   border: 1px solid var(--border-lt);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-xs);
-  padding: var(--sp-6);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-4);
+  color: inherit;
+  text-decoration: none;
   transition:
     box-shadow var(--duration-fast) var(--ease-out),
     transform var(--duration-fast) var(--ease-out),
@@ -171,6 +250,16 @@
   box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
   border-color: var(--border);
+  text-decoration: none;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.cardUnread {
+  border-color: var(--border);
 }
 
 .cardTop {
@@ -178,6 +267,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
+  min-height: 22px;
 }
 
 .pills {
@@ -186,11 +276,10 @@
   gap: var(--sp-2);
 }
 
-.statusPill,
-.unreadPill {
+.pill {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: var(--r-full);
   font-size: 10.5px;
   font-weight: 700;
@@ -198,18 +287,18 @@
   text-transform: uppercase;
 }
 
-.statusPill {
+.pillNew {
+  background: var(--blue-lt);
+  color: var(--blue);
+}
+
+.pillResolved {
   background: var(--bg-2);
   color: var(--ink-3);
 }
 
-.unreadPill {
-  background: var(--blue-lt, var(--bg-2));
-  color: var(--zs-deep, var(--ink));
-  border: 1px solid var(--border-lt);
-}
-
 .time {
+  margin-left: auto;
   font-size: 12px;
   color: var(--ink-4);
 }
@@ -219,39 +308,60 @@
   padding: 0 0 0 var(--sp-4);
   border-left: 2px solid var(--border);
   color: var(--ink);
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 14.5px;
+  line-height: 1.6;
 }
 
 .lastComment {
   margin: 0;
   color: var(--ink-3);
   font-size: 13.5px;
-  line-height: 1.6;
+  line-height: 1.55;
+  display: block;
+}
+
+.lastCommentActor {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.lastCommentSep {
+  margin: 0 6px;
+  color: var(--ink-4);
+}
+
+.lastCommentBody {
+  color: var(--ink-3);
 }
 
 .meta {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: var(--sp-3);
+  gap: 6px;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border-lt);
   font-size: 12px;
   color: var(--ink-4);
 }
 
-.actions {
-  display: flex;
-  justify-content: flex-end;
+.metaDot {
+  color: var(--ink-4);
 }
+
+/* ---------- Empty state ---------- */
 
 .emptyState {
   background: var(--white);
   border: 1px solid var(--border-lt);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-xs);
-  padding: var(--sp-8);
+  padding: var(--sp-10) var(--sp-8);
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
+  text-align: center;
+  align-items: center;
 }
 
 .emptyState p {
@@ -267,7 +377,10 @@
   color: var(--ink-3);
   font-size: 14px;
   line-height: 1.65;
+  max-width: 480px;
 }
+
+/* ---------- Responsive ---------- */
 
 @media (max-width: 900px) {
   .cards {
@@ -280,7 +393,21 @@
     padding: 0 var(--sp-5) var(--sp-12);
   }
 
-  .summaryRow {
-    grid-template-columns: 1fr;
+  .statBar {
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+    padding: var(--sp-4);
+  }
+
+  .statDivider {
+    display: none;
+  }
+
+  .stat {
+    flex: 1 1 30%;
+  }
+
+  .statValue {
+    font-size: 24px;
   }
 }

@@ -25,7 +25,10 @@ export default function ComentariosPage() {
         navItems={getGlasswingNav("comentarios")}
       >
         <section className={styles.hero}>
-          <p className={styles.eyebrow}>Inbox global</p>
+          <span className={styles.eyebrow}>
+            <span className={styles.eyebrowDot} aria-hidden="true" />
+            Inbox global
+          </span>
           <h1 className={styles.title}>Comentários de todas as páginas.</h1>
           <p className={styles.subtitle}>
             Acompanhe novas discussões, veja o que ainda está em aberto e entre

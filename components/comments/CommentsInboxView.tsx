@@ -59,7 +59,7 @@ export function CommentsInboxView() {
         case "mine":
           return item.thread.createdBy.email === currentUserEmail;
         case "participating":
-          return !!currentUserEmail
+          return currentUserEmail
             ? item.thread.participantEmails.includes(currentUserEmail)
             : false;
         default:
@@ -96,28 +96,40 @@ export function CommentsInboxView() {
 
   return (
     <section className={styles.section}>
-      <div className={styles.summaryRow}>
-        <div className={styles.summaryCard}>
-          <span className={styles.summaryLabel}>Não lidos</span>
-          <strong className={styles.summaryValue}>{summary.unreadCount}</strong>
+      <div className={styles.statBar}>
+        <div className={styles.stat}>
+          <span className={styles.statLabel}>Total</span>
+          <strong className={styles.statValue}>{summary.totalCount}</strong>
         </div>
-        <div className={styles.summaryCard}>
-          <span className={styles.summaryLabel}>Threads abertas</span>
-          <strong className={styles.summaryValue}>{summary.openCount}</strong>
+        <span className={styles.statDivider} aria-hidden="true" />
+        <div className={styles.stat}>
+          <span className={styles.statLabel}>Em aberto</span>
+          <strong className={styles.statValue}>{summary.openCount}</strong>
         </div>
-        <div className={styles.summaryCard}>
-          <span className={styles.summaryLabel}>Total</span>
-          <strong className={styles.summaryValue}>{summary.totalCount}</strong>
+        <span className={styles.statDivider} aria-hidden="true" />
+        <div className={styles.stat}>
+          <span className={styles.statLabel}>Não lidos</span>
+          <strong
+            className={`${styles.statValue} ${
+              summary.unreadCount > 0 ? styles.statValueAccent : ""
+            }`}
+          >
+            {summary.unreadCount}
+          </strong>
         </div>
       </div>
 
       <div className={styles.toolbar}>
-        <div className={styles.filters}>
+        <div className={styles.filters} role="tablist">
           {FILTERS.map((item) => (
             <button
               key={item.key}
               type="button"
-              className={`${styles.filterButton} ${filter === item.key ? styles.filterButtonActive : ""}`}
+              role="tab"
+              aria-selected={filter === item.key}
+              className={`${styles.filterButton} ${
+                filter === item.key ? styles.filterButtonActive : ""
+              }`}
               onClick={() => setFilter(item.key)}
             >
               {item.label}
@@ -137,7 +149,7 @@ export function CommentsInboxView() {
 
       {loading ? (
         <div className={styles.emptyState}>
-          <p>Carregando atividade de comentários…</p>
+          <p>Carregando atividade…</p>
         </div>
       ) : groups.length === 0 ? (
         <div className={styles.emptyState}>
@@ -152,12 +164,20 @@ export function CommentsInboxView() {
           {groups.map((group) => (
             <section key={group.pageId} className={styles.group}>
               <header className={styles.groupHeader}>
-                <div>
+                <div className={styles.groupHeaderText}>
                   <p className={styles.groupEyebrow}>{group.pageSection}</p>
-                  <h2 className={styles.groupTitle}>{group.pageLabel}</h2>
+                  <h2 className={styles.groupTitle}>
+                    {group.pageLabel}
+                    <span className={styles.groupCount}>
+                      {group.items.length}
+                    </span>
+                  </h2>
                 </div>
                 <Link href={group.pageId} className={styles.pageLink}>
                   Abrir página
+                  <span aria-hidden="true" className={styles.pageLinkArrow}>
+                    →
+                  </span>
                 </Link>
               </header>
 
@@ -166,18 +186,36 @@ export function CommentsInboxView() {
                   const actor =
                     item.thread.lastActivityBy.name ??
                     item.thread.lastActivityBy.email;
+                  const commentCount = item.thread.comments.length;
+                  const participantCount = item.thread.participantEmails.length;
+                  const href = `${item.pageId}?thread=${encodeURIComponent(
+                    item.thread.id,
+                  )}`;
 
                   return (
-                    <article key={item.thread.id} className={styles.card}>
+                    <Link
+                      key={item.thread.id}
+                      href={href}
+                      className={`${styles.card} ${
+                        item.unread ? styles.cardUnread : ""
+                      }`}
+                      aria-label={`Abrir thread: ${item.thread.anchor.quote}`}
+                    >
                       <div className={styles.cardTop}>
                         <div className={styles.pills}>
-                          <span className={styles.statusPill}>
-                            {item.thread.status === "open"
-                              ? "Em aberto"
-                              : "Resolvida"}
-                          </span>
                           {item.unread && (
-                            <span className={styles.unreadPill}>Novo</span>
+                            <span
+                              className={`${styles.pill} ${styles.pillNew}`}
+                            >
+                              Novo
+                            </span>
+                          )}
+                          {item.thread.status === "resolved" && (
+                            <span
+                              className={`${styles.pill} ${styles.pillResolved}`}
+                            >
+                              Resolvida
+                            </span>
                           )}
                         </div>
                         <span className={styles.time}>
@@ -186,37 +224,35 @@ export function CommentsInboxView() {
                       </div>
 
                       <blockquote className={styles.quote}>
-                        {truncate(item.thread.anchor.quote, 220)}
+                        {truncate(item.thread.anchor.quote, 200)}
                       </blockquote>
 
                       <p className={styles.lastComment}>
-                        {truncate(item.lastComment.body, 240)}
+                        <span className={styles.lastCommentActor}>{actor}</span>
+                        <span className={styles.lastCommentSep} aria-hidden="true">
+                          ·
+                        </span>
+                        <span className={styles.lastCommentBody}>
+                          {truncate(item.lastComment.body, 220)}
+                        </span>
                       </p>
 
                       <div className={styles.meta}>
-                        <span>Última atividade por {actor}</span>
                         <span>
-                          {item.thread.comments.length}{" "}
-                          {item.thread.comments.length === 1
-                            ? "comentário"
-                            : "comentários"}
+                          {commentCount}{" "}
+                          {commentCount === 1 ? "comentário" : "comentários"}
+                        </span>
+                        <span className={styles.metaDot} aria-hidden="true">
+                          ·
                         </span>
                         <span>
-                          {item.thread.participantEmails.length} participantes
+                          {participantCount}{" "}
+                          {participantCount === 1
+                            ? "participante"
+                            : "participantes"}
                         </span>
                       </div>
-
-                      <div className={styles.actions}>
-                        <Link
-                          href={`${item.pageId}?thread=${encodeURIComponent(
-                            item.thread.id,
-                          )}`}
-                          className={styles.threadLink}
-                        >
-                          Abrir thread
-                        </Link>
-                      </div>
-                    </article>
+                    </Link>
                   );
                 })}
               </div>
