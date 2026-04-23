@@ -15,7 +15,12 @@ import { Footnotes } from "@/components/glasswing/Footnotes";
 import { TableOfContents } from "@/components/glasswing/TableOfContents";
 import { PhaseOwnership } from "@/components/glasswing/PhaseOwnership";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
+import { Comments } from "@/components/comments/Comments";
+import { loadCommentsStore } from "@/lib/data/comments-store";
+import { getPageThreads } from "@/lib/data/comments";
 import styles from "./page.module.css";
+
+const PAGE_ID = "/dashboard/upstream";
 
 const tocItems = [
   { id: "introducao", label: "Abertura" },
@@ -41,9 +46,11 @@ export const metadata = {
     "Guia do processo Upstream da ZapSign: como o trio formula, valida e prepara o que será construído.",
 };
 
-export default function UpstreamPage() {
+export default async function UpstreamPage() {
+  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
+      <Comments pageId={PAGE_ID} initialThreads={threads}>
       <GlasswingShell
         brand={data.topbar.brand}
         navItems={getGlasswingNav("upstream")}
@@ -64,7 +71,9 @@ export default function UpstreamPage() {
         >
           <EditorialProse>
             {data.introduction.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`upstream.introducao.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -76,7 +85,9 @@ export default function UpstreamPage() {
         >
           <EditorialProse>
             {data.context.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`upstream.contexto.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -95,7 +106,9 @@ export default function UpstreamPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.phases.intro}</p>
+            <p data-comment-block="upstream.passos.intro">
+              {data.phases.intro}
+            </p>
           </EditorialProse>
           <div className={styles.phases}>
             {data.phases.items.map((phase) => (
@@ -141,7 +154,9 @@ export default function UpstreamPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.benchmarks.intro}</p>
+            <p data-comment-block="upstream.dados.intro">
+              {data.benchmarks.intro}
+            </p>
           </EditorialProse>
           <TimelineChart
             title={data.benchmarks.timeline.title}
@@ -166,7 +181,9 @@ export default function UpstreamPage() {
           eyebrow="05 · Vozes"
         >
           <EditorialProse>
-            <p>{data.voices.intro}</p>
+            <p data-comment-block="upstream.vozes.intro">
+              {data.voices.intro}
+            </p>
           </EditorialProse>
           <QuoteCarousel quotes={data.voices.quotes} />
         </EditorialSection>
@@ -177,7 +194,9 @@ export default function UpstreamPage() {
           eyebrow="06 · Artefatos"
         >
           <EditorialProse>
-            <p>{data.plans.intro}</p>
+            <p data-comment-block="upstream.artefatos.intro">
+              {data.plans.intro}
+            </p>
           </EditorialProse>
           <div className={styles.plans}>
             {data.plans.items.map((item) => (
@@ -212,6 +231,7 @@ export default function UpstreamPage() {
           </div>
         </footer>
       </GlasswingShell>
+      </Comments>
     </div>
   );
 }

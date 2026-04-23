@@ -13,7 +13,12 @@ import { QuarterStrip } from "@/components/glasswing/QuarterStrip";
 import { SquadBlock } from "@/components/glasswing/SquadBlock";
 import { PlatformProgress } from "@/components/glasswing/PlatformProgress";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
+import { Comments } from "@/components/comments/Comments";
+import { loadCommentsStore } from "@/lib/data/comments-store";
+import { getPageThreads } from "@/lib/data/comments";
 import styles from "./page.module.css";
+
+const PAGE_ID = "/dashboard/roadmap";
 
 const tocItems = [
   { id: "introducao", label: "Abertura" },
@@ -38,9 +43,11 @@ export const metadata = {
     "Roadmap trimestral da ZapSign: squads, metas e status dos projetos em execução.",
 };
 
-export default function RoadmapPage() {
+export default async function RoadmapPage() {
+  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
+      <Comments pageId={PAGE_ID} initialThreads={threads}>
       <GlasswingShell
         brand={data.topbar.brand}
         navItems={getGlasswingNav("roadmap", "2T26")}
@@ -62,7 +69,9 @@ export default function RoadmapPage() {
         >
           <EditorialProse>
             {data.introduction.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`roadmap.introducao.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -74,7 +83,9 @@ export default function RoadmapPage() {
         >
           <EditorialProse>
             {data.context.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`roadmap.contexto.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -86,7 +97,9 @@ export default function RoadmapPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.principles.intro}</p>
+            <p data-comment-block="roadmap.principios.intro">
+              {data.principles.intro}
+            </p>
           </EditorialProse>
           <div className={styles.phases}>
             {data.principles.items.map((p) => (
@@ -123,7 +136,9 @@ export default function RoadmapPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.quarters.intro}</p>
+            <p data-comment-block="roadmap.ano.intro">
+              {data.quarters.intro}
+            </p>
           </EditorialProse>
           <QuarterStrip items={data.quarters.items} />
         </EditorialSection>
@@ -135,7 +150,9 @@ export default function RoadmapPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.squadsSection.intro}</p>
+            <p data-comment-block="roadmap.squads.intro">
+              {data.squadsSection.intro}
+            </p>
           </EditorialProse>
           <div className={styles.squads}>
             {data.squadsSection.items.map((squad, i) => (
@@ -160,7 +177,9 @@ export default function RoadmapPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.platform.intro}</p>
+            <p data-comment-block="roadmap.plataforma.intro">
+              {data.platform.intro}
+            </p>
           </EditorialProse>
           <PlatformProgress flows={data.platform.flows} />
         </EditorialSection>
@@ -185,6 +204,7 @@ export default function RoadmapPage() {
           </div>
         </footer>
       </GlasswingShell>
+      </Comments>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import styles from "./SceneBlock.module.css";
+import { slugifyForBlockId } from "./_blockId";
 
 type SceneKind = "river" | "ladder" | "pulse";
 
@@ -17,6 +18,7 @@ export function SceneBlock({
   body,
   caption,
 }: SceneBlockProps) {
+  const prefix = `scene.${slugifyForBlockId(title)}`;
   return (
     <section className={styles.scene}>
       <div className={styles.inner}>
@@ -26,10 +28,26 @@ export function SceneBlock({
           {kind === "pulse" && <PulseArt />}
         </div>
         <div className={styles.text}>
-          <span className={styles.eyebrow}>{eyebrow}</span>
-          <h3 className={styles.title}>{title}</h3>
-          <p className={styles.body}>{body}</p>
-          {caption && <p className={styles.caption}>{caption}</p>}
+          <span
+            className={styles.eyebrow}
+            data-comment-block={`${prefix}.eyebrow`}
+          >
+            {eyebrow}
+          </span>
+          <h3 className={styles.title} data-comment-block={`${prefix}.title`}>
+            {title}
+          </h3>
+          <p className={styles.body} data-comment-block={`${prefix}.body`}>
+            {body}
+          </p>
+          {caption && (
+            <p
+              className={styles.caption}
+              data-comment-block={`${prefix}.caption`}
+            >
+              {caption}
+            </p>
+          )}
         </div>
       </div>
     </section>

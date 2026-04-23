@@ -12,6 +12,7 @@ import {
 import { TableOfContents } from "@/components/glasswing/TableOfContents";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
 import { QUARTERS } from "@/lib/data/roadmap";
+import { Comments } from "@/components/comments/Comments";
 import styles from "./page.module.css";
 
 const activeQuarter = QUARTERS.find((q) => q.active) ?? QUARTERS[1];
@@ -110,6 +111,7 @@ export default function DashboardHome() {
 
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
+      <Comments pageId="/dashboard" initialThreads={[]} refreshOnMount>
       <GlasswingShell
         brand="ZapSign | Product Hubble"
         navItems={getGlasswingNav("home")}
@@ -130,13 +132,13 @@ export default function DashboardHome() {
           eyebrow="01 · Abertura"
         >
           <EditorialProse>
-            <p>
+            <p data-comment-block="home.abertura.p1">
               Este é o lugar onde o time de produto da ZapSign guarda memória.
               Não é um conjunto de regras — é o registro honesto de como
               trabalhamos hoje, o que já aprendemos e o que ainda estamos
               descobrindo.
             </p>
-            <p>
+            <p data-comment-block="home.abertura.p2">
               As duas <strong>guidelines</strong> descrevem o ciclo completo de
               uma entrega: do problema ao protótipo (upstream) e do handoff ao
               aprendizado em produção (downstream). O <strong>roadmap</strong>{" "}
@@ -144,7 +146,7 @@ export default function DashboardHome() {
               <em>meta</em> explicam como o próprio guia é editado e o que mudou
               desde a primeira versão.
             </p>
-            <p>
+            <p data-comment-block="home.abertura.p3">
               Leia por curiosidade, consulte na dúvida, abra um PR quando
               discordar. O guia melhora quando mais gente escreve nele.
             </p>
@@ -158,7 +160,7 @@ export default function DashboardHome() {
           wide
         >
           <EditorialProse>
-            <p>
+            <p data-comment-block="home.conteudos.p1">
               Cada leitura é independente — dá pra começar por qualquer uma.
               Mas se esta é a sua primeira visita, a ordem abaixo é o percurso
               mais curto do abstrato (como pensamos) para o concreto (o que
@@ -219,17 +221,17 @@ export default function DashboardHome() {
           eyebrow="03 · Manifesto"
         >
           <EditorialProse>
-            <p>
+            <p data-comment-block="home.manifesto.p1">
               <strong>O problema precede o produto.</strong> Nenhuma solução
               entra em build antes de o time entender — com evidência — qual
               dor está sendo resolvida e para quem.
             </p>
-            <p>
+            <p data-comment-block="home.manifesto.p2">
               <strong>A entrega não acaba no deploy.</strong> Soltamos, medimos
               e ajustamos. O aprendizado registrado vale mais que a entrega
               silenciosa.
             </p>
-            <p>
+            <p data-comment-block="home.manifesto.p3">
               <strong>O guia pertence ao time.</strong> Quem vive o processo
               escreve sobre ele. Toda contribuição — do typo ao capítulo novo
               — é bem-vinda.
@@ -251,6 +253,7 @@ export default function DashboardHome() {
           </div>
         </footer>
       </GlasswingShell>
+      </Comments>
     </div>
   );
 }

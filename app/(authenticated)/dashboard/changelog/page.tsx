@@ -13,8 +13,13 @@ import {
 } from "@/lib/data/changelog.generated";
 import { decorateAll } from "@/lib/data/changelog-review";
 import { loadReviewStore } from "@/lib/data/changelog-review-store";
+import { Comments } from "@/components/comments/Comments";
+import { loadCommentsStore } from "@/lib/data/comments-store";
+import { getPageThreads } from "@/lib/data/comments";
 import { ProductExperiment } from "./ProductExperiment";
 import styles from "./page.module.css";
+
+const PAGE_ID = "/dashboard/changelog";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -43,9 +48,11 @@ export default async function ChangelogPage() {
   const generatedAt = FULL_DATE_FORMATTER.format(
     new Date(CHANGELOG_GENERATED_AT),
   );
+  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
 
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
+      <Comments pageId={PAGE_ID} initialThreads={threads}>
       <GlasswingShell
         brand="ZapSign | Product Hubble"
         navItems={getGlasswingNav("changelog")}
@@ -69,7 +76,7 @@ export default async function ChangelogPage() {
               Essa página é, ela mesma, um experimento.
             </h2>
             <div className={styles.originProse}>
-              <p>
+              <p data-comment-block="changelog.origem.p1">
                 Construída pelo Gabriel em uma tarde, junto com o Cursor e o
                 Claude, pra validar uma hipótese simples:{" "}
                 <strong>
@@ -78,7 +85,7 @@ export default async function ChangelogPage() {
                   mergeados em produção?
                 </strong>
               </p>
-              <p>
+              <p data-comment-block="changelog.origem.p2">
                 O script consulta a API do Bitbucket, puxa os PRs mergeados na{" "}
                 <code>main</code> de <code>truora/web</code> e{" "}
                 <code>truora/api</code> nos últimos 90 dias, e pede a um modelo
@@ -89,7 +96,7 @@ export default async function ChangelogPage() {
                 ficam fora. O resultado é cacheado por PR no repositório, então
                 só PRs novos ou editados custam tokens.
               </p>
-              <p>
+              <p data-comment-block="changelog.origem.p3">
                 Se funcionou? Parcialmente. Você está vendo o resultado logo
                 abaixo, enquadrado como se fosse um produto de verdade. Se
                 pode melhorar? Muito. Por isso está em{" "}
@@ -106,13 +113,13 @@ export default async function ChangelogPage() {
           eyebrow="Leitura"
         >
           <EditorialProse>
-            <p>
+            <p data-comment-block="changelog.introducao.p1">
               Logo abaixo, uma janela encapsula o experimento. Tudo o que
               aparece dentro dela é o produto em si — com sua própria
               identidade, fora das guidelines deste guia. A moldura serve só
               pra lembrar: é uma simulação, não uma página do guia.
             </p>
-            <p>
+            <p data-comment-block="changelog.introducao.p2">
               Cada linha dentro do experimento é um pull request real,
               mergeado na <code>main</code> de <code>truora/web</code> ou{" "}
               <code>truora/api</code>. Uma IA lê o título e a descrição do PR,
@@ -121,7 +128,7 @@ export default async function ChangelogPage() {
               linguagem humana o que mudou e o que isso afeta no dia a dia
               de quem usa o ZapSign.
             </p>
-            <p>
+            <p data-comment-block="changelog.introducao.p3">
               <strong>Quer que sua mudança apareça aqui?</strong> Abra um pull
               request descrevendo o efeito para o cliente. Em questão de horas
               ele é revisado, mergeado e deployado — e, se a IA classificar
@@ -147,6 +154,7 @@ export default async function ChangelogPage() {
         </ExperimentFrame>
         </div>
       </GlasswingShell>
+      </Comments>
     </div>
   );
 }

@@ -17,6 +17,7 @@ export function Footnotes({ items }: FootnotesProps) {
           <span className={styles.number}>{item.number}</span>
           <span
             className={styles.body}
+            data-comment-block={`footnote.${item.number}`}
             dangerouslySetInnerHTML={{ __html: item.html }}
           />
         </li>

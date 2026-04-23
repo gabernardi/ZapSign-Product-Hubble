@@ -27,12 +27,16 @@ export function GlasswingHero({
       </div>
       <div className={styles.inner}>
         <div className={styles.content}>
-          <span className={styles.eyebrow}>
+          <span className={styles.eyebrow} data-comment-block="hero.eyebrow">
             <span className={styles.eyebrowDot} aria-hidden="true" />
             {eyebrow}
           </span>
-          <h1 className={styles.title}>{title}</h1>
-          <p className={styles.subtitle}>{subtitle}</p>
+          <h1 className={styles.title} data-comment-block="hero.title">
+            {title}
+          </h1>
+          <p className={styles.subtitle} data-comment-block="hero.subtitle">
+            {subtitle}
+          </p>
           <a href={continueHref} className={styles.continue}>
             <span>{continueLabel}</span>
             <span aria-hidden="true" className={styles.arrow}>

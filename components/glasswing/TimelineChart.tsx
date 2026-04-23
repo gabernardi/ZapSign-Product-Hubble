@@ -1,4 +1,5 @@
 import styles from "./TimelineChart.module.css";
+import { slugifyForBlockId } from "./_blockId";
 
 interface TimelinePoint {
   label: string;
@@ -21,6 +22,7 @@ export function TimelineChart({
   unit = "%",
   yMax,
 }: TimelineChartProps) {
+  const prefix = `timeline.${slugifyForBlockId(title)}`;
   const width = 720;
   const height = 320;
   const padLeft = 48;
@@ -52,8 +54,17 @@ export function TimelineChart({
   return (
     <figure className={styles.chart}>
       <figcaption className={styles.caption}>
-        <h3 className={styles.title}>{title}</h3>
-        {description && <p className={styles.description}>{description}</p>}
+        <h3 className={styles.title} data-comment-block={`${prefix}.title`}>
+          {title}
+        </h3>
+        {description && (
+          <p
+            className={styles.description}
+            data-comment-block={`${prefix}.description`}
+          >
+            {description}
+          </p>
+        )}
       </figcaption>
 
       <div className={styles.svgWrap}>

@@ -9,7 +9,12 @@ import {
 import { SceneBlock } from "@/components/glasswing/SceneBlock";
 import { TableOfContents } from "@/components/glasswing/TableOfContents";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
+import { Comments } from "@/components/comments/Comments";
+import { loadCommentsStore } from "@/lib/data/comments-store";
+import { getPageThreads } from "@/lib/data/comments";
 import styles from "./page.module.css";
+
+const PAGE_ID = "/dashboard/contribuir";
 
 const SCOPE_COLOR: Record<string, string> = {
   Micro: "mint",
@@ -49,9 +54,11 @@ export const metadata = {
     "Espaço de experimentação do time de produto da ZapSign — do próximo experimento neste site a funcionalidades para o core de assinatura e apostas que podem virar unidade de negócio nova.",
 };
 
-export default function ContribuirPage() {
+export default async function ContribuirPage() {
+  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
+      <Comments pageId={PAGE_ID} initialThreads={threads}>
       <GlasswingShell
         brand={data.topbar.brand}
         navItems={getGlasswingNav("contribuir")}
@@ -74,7 +81,9 @@ export default function ContribuirPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.experiments.intro}</p>
+            <p data-comment-block="contribuir.catalogo.intro">
+              {data.experiments.intro}
+            </p>
           </EditorialProse>
           <ol className={styles.experiments}>
             {data.experiments.items.map((exp) => (
@@ -131,7 +140,9 @@ export default function ContribuirPage() {
         >
           <EditorialProse>
             {data.introduction.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`contribuir.introducao.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -143,7 +154,9 @@ export default function ContribuirPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.principles.intro}</p>
+            <p data-comment-block="contribuir.principios.intro">
+              {data.principles.intro}
+            </p>
           </EditorialProse>
           <div className={styles.principles}>
             {data.principles.items.map((p, i) => {
@@ -172,7 +185,9 @@ export default function ContribuirPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.possibilities.intro}</p>
+            <p data-comment-block="contribuir.possibilidades.intro">
+              {data.possibilities.intro}
+            </p>
           </EditorialProse>
           <div className={styles.possibilities}>
             {data.possibilities.items.map((item, i) => {
@@ -207,7 +222,9 @@ export default function ContribuirPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.steps.intro}</p>
+            <p data-comment-block="contribuir.passos.intro">
+              {data.steps.intro}
+            </p>
           </EditorialProse>
           <ol className={styles.steps}>
             {data.steps.items.map((step) => (
@@ -239,7 +256,9 @@ export default function ContribuirPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.structure.intro}</p>
+            <p data-comment-block="contribuir.estrutura.intro">
+              {data.structure.intro}
+            </p>
           </EditorialProse>
           <div className={styles.locations}>
             {data.structure.locations.map((loc) => (
@@ -262,7 +281,9 @@ export default function ContribuirPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.tools.intro}</p>
+            <p data-comment-block="contribuir.ferramentas.intro">
+              {data.tools.intro}
+            </p>
           </EditorialProse>
           <div className={styles.tools}>
             {data.tools.items.map((tool, i) => {
@@ -297,7 +318,9 @@ export default function ContribuirPage() {
           wide
         >
           <EditorialProse>
-            <p>{data.conventions.intro}</p>
+            <p data-comment-block="contribuir.commits.intro">
+              {data.conventions.intro}
+            </p>
           </EditorialProse>
           <div className={styles.conventionsTable}>
             <div className={styles.conventionsHeader}>
@@ -338,7 +361,9 @@ export default function ContribuirPage() {
         >
           <EditorialProse>
             {data.support.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`contribuir.suporte.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -355,6 +380,7 @@ export default function ContribuirPage() {
           </div>
         </footer>
       </GlasswingShell>
+      </Comments>
     </div>
   );
 }

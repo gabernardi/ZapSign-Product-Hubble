@@ -33,10 +33,25 @@ export function QuoteCarousel({ quotes }: QuoteCarouselProps) {
       </div>
 
       <blockquote key={index} className={styles.quote}>
-        <p className={styles.body}>&ldquo;{current.body}&rdquo;</p>
+        <p
+          className={styles.body}
+          data-comment-block={`quote.${index}.body`}
+        >
+          &ldquo;{current.body}&rdquo;
+        </p>
         <footer className={styles.attribution}>
-          <span className={styles.role}>{current.role}</span>
-          <span className={styles.context}>{current.context}</span>
+          <span
+            className={styles.role}
+            data-comment-block={`quote.${index}.role`}
+          >
+            {current.role}
+          </span>
+          <span
+            className={styles.context}
+            data-comment-block={`quote.${index}.context`}
+          >
+            {current.context}
+          </span>
         </footer>
       </blockquote>
 

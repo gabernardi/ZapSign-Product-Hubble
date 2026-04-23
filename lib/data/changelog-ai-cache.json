@@ -11006,5 +11006,37 @@
     "description": "",
     "impact": "",
     "source": "openai"
+  },
+  "pr:v2:truora/api:2979:174e02c73eef": {
+    "userFacing": false,
+    "reason": "Mudanças internas relacionadas a migrações de banco de dados sem efeito visível.",
+    "title": "",
+    "description": "",
+    "impact": "",
+    "source": "openai"
+  },
+  "pr:v2:truora/api:2981:96886d4de7f2": {
+    "userFacing": true,
+    "reason": "",
+    "title": "Correção do carimbo de tempo para empresa no Peru",
+    "description": "Corrigido o problema em que documentos da empresa 1058198 estavam recebendo o carimbo de tempo com a TSA errada. Agora, documentos sem o campo `tsa_country` definido são corretamente ajustados para 'pe'.",
+    "impact": "Documentos da empresa 1058198 agora recebem o carimbo de tempo correto ao serem enviados para assinatura.",
+    "source": "openai"
+  },
+  "pr:v2:truora/api:2982:affcdbd6785b": {
+    "userFacing": true,
+    "reason": "",
+    "title": "Correção do carimbo de tempo para empresa no Peru",
+    "description": "Corrigido o problema em que documentos da empresa `1058198` estavam recebendo o carimbo de tempo com a TSA errada. Agora, documentos sem o campo `tsa_country` definido são corretamente atribuídos com `'pe'`.",
+    "impact": "Documentos da empresa peruana agora recebem o carimbo de tempo correto, evitando problemas de compliance.",
+    "source": "openai"
+  },
+  "pr:v2:truora/api:2978:e588d906542d": {
+    "userFacing": true,
+    "reason": "Correção de bug que impactava a latência do endpoint.",
+    "title": "Correção na latência do endpoint de upload de documentos extras",
+    "description": "O endpoint de upload de documentos extras apresentava alta latência devido a problemas na conversão de arquivos. Agora, a latência foi reduzida de ~4938ms para ~3092ms, garantindo um desempenho mais estável.",
+    "impact": "O envio de documentos extras agora é mais rápido, melhorando a eficiência no processo de upload.",
+    "source": "openai"
   }
 }

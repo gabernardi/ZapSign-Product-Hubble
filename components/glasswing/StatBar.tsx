@@ -1,4 +1,5 @@
 import styles from "./StatBar.module.css";
+import { slugifyForBlockId } from "./_blockId";
 
 interface StatSeriesItem {
   label: string;
@@ -15,12 +16,22 @@ interface StatBarProps {
 
 export function StatBar({ title, description, series, unit = "%" }: StatBarProps) {
   const max = Math.max(...series.map((s) => s.value), 100);
+  const prefix = `stat.${slugifyForBlockId(title)}`;
 
   return (
     <figure className={styles.stat}>
       <figcaption className={styles.caption}>
-        <h3 className={styles.title}>{title}</h3>
-        {description && <p className={styles.description}>{description}</p>}
+        <h3 className={styles.title} data-comment-block={`${prefix}.title`}>
+          {title}
+        </h3>
+        {description && (
+          <p
+            className={styles.description}
+            data-comment-block={`${prefix}.description`}
+          >
+            {description}
+          </p>
+        )}
       </figcaption>
       <div className={styles.rows}>
         {series.map((item) => {

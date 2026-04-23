@@ -14,7 +14,12 @@ import { Footnotes } from "@/components/glasswing/Footnotes";
 import { TableOfContents } from "@/components/glasswing/TableOfContents";
 import { QuarterStrip } from "@/components/glasswing/QuarterStrip";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
+import { Comments } from "@/components/comments/Comments";
+import { loadCommentsStore } from "@/lib/data/comments-store";
+import { getPageThreads } from "@/lib/data/comments";
 import styles from "./page.module.css";
+
+const PAGE_ID = "/dashboard/roadmap/1t26";
 
 const tocItems = [
   { id: "introducao", label: "Abertura" },
@@ -47,9 +52,11 @@ export const metadata = {
     "Retrospectiva do primeiro trimestre de 2026 da ZapSign: resultados, entregas e aprendizados do trimestre encerrado.",
 };
 
-export default function Roadmap1T26Page() {
+export default async function Roadmap1T26Page() {
+  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
+      <Comments pageId={PAGE_ID} initialThreads={threads}>
       <GlasswingShell
         brand={data.topbar.brand}
         navItems={getGlasswingNav("roadmap", "1T26")}
@@ -71,7 +78,9 @@ export default function Roadmap1T26Page() {
         >
           <EditorialProse>
             {data.introduction.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`roadmap1t26.introducao.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -83,7 +92,9 @@ export default function Roadmap1T26Page() {
         >
           <EditorialProse>
             {data.context.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} data-comment-block={`roadmap1t26.contexto.p${i + 1}`}>
+                {p}
+              </p>
             ))}
           </EditorialProse>
         </EditorialSection>
@@ -95,7 +106,9 @@ export default function Roadmap1T26Page() {
           wide
         >
           <EditorialProse>
-            <p>{data.results.intro}</p>
+            <p data-comment-block="roadmap1t26.resultados.intro">
+              {data.results.intro}
+            </p>
           </EditorialProse>
           <div className={styles.results}>
             {data.results.items.map((r, i) => (
@@ -168,7 +181,9 @@ export default function Roadmap1T26Page() {
           wide
         >
           <EditorialProse>
-            <p>{data.deliveries.intro}</p>
+            <p data-comment-block="roadmap1t26.entregas.intro">
+              {data.deliveries.intro}
+            </p>
           </EditorialProse>
           <div className={styles.groups}>
             {data.deliveries.groups.map((group) => (
@@ -214,7 +229,9 @@ export default function Roadmap1T26Page() {
           wide
         >
           <EditorialProse>
-            <p>{data.learnings.intro}</p>
+            <p data-comment-block="roadmap1t26.aprendizados.intro">
+              {data.learnings.intro}
+            </p>
           </EditorialProse>
           <div className={styles.learnings}>
             <section className={styles.learningColumn}>
@@ -254,7 +271,9 @@ export default function Roadmap1T26Page() {
           wide
         >
           <EditorialProse>
-            <p>{data.continuations.intro}</p>
+            <p data-comment-block="roadmap1t26.continuacoes.intro">
+              {data.continuations.intro}
+            </p>
           </EditorialProse>
           <ol className={styles.continuations}>
             {data.continuations.items.map((item, i) => (
@@ -279,7 +298,9 @@ export default function Roadmap1T26Page() {
           wide
         >
           <EditorialProse>
-            <p>{data.quarters.intro}</p>
+            <p data-comment-block="roadmap1t26.ano.intro">
+              {data.quarters.intro}
+            </p>
           </EditorialProse>
           <QuarterStrip items={data.quarters.items} />
         </EditorialSection>
@@ -304,6 +325,7 @@ export default function Roadmap1T26Page() {
           </div>
         </footer>
       </GlasswingShell>
+      </Comments>
     </div>
   );
 }
