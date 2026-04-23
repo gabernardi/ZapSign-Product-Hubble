@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { BlobNotFoundError, get, put } from "@vercel/blob";
+import { get, put } from "@vercel/blob";
 
 /**
  * Storage JSON minimalista com duas estratégias:
@@ -76,9 +76,11 @@ export async function loadJsonBlob<T>(
       // result === null não é esperado quando não usamos ifNoneMatch e
       // o blob existe — trata como "vazio, usa seed".
     } catch (err) {
-      if (!(err instanceof BlobNotFoundError)) {
-        throw err;
-      }
+      // Qualquer falha de leitura no Blob (not found, 400, rede) cai pro seed
+      // local + emptyValue. Isso mantém o build/prerender estáveis mesmo se o
+      // store estiver em estado inesperado; problemas reais ficam visíveis no
+      // log sem quebrar a página.
+      console.warn(`[json-blob-store] read failed for ${filename}:`, err);
     }
     const seed = await readLocal<T>(filename);
     return seed ?? emptyValue;
