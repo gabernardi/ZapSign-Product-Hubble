@@ -11054,5 +11054,21 @@
     "description": "",
     "impact": "",
     "source": "openai"
+  },
+  "pr:v2:truora/api:2600:4021b5f84e0f": {
+    "userFacing": true,
+    "reason": "",
+    "title": "Edição e cancelamento de assinaturas legadas",
+    "description": "Agora é possível editar e cancelar assinaturas legadas diretamente no sistema. Essa funcionalidade permite um gerenciamento mais eficiente das assinaturas existentes.",
+    "impact": "Com a nova opção, você pode atualizar ou cancelar assinaturas legadas sem complicações.",
+    "source": "openai"
+  },
+  "pr:v2:truora/api:2987:9283de6647ce": {
+    "userFacing": true,
+    "reason": "",
+    "title": "Campo de código secreto opcional nos planos de preços V2",
+    "description": "Agora é possível configurar e editar um código secreto opcional nos planos de preços V2. O campo já existia, mas não era utilizado na API e no backoffice.",
+    "impact": "O código secreto pode ser informado ao criar ou editar planos de preços, permitindo maior flexibilidade na configuração.",
+    "source": "openai"
   }
 }

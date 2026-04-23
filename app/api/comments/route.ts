@@ -1,9 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
-import { getPageThreads } from "@/lib/data/comments";
-import { loadCommentsStore } from "@/lib/data/comments-store";
+import { getThreadsForPage } from "@/lib/comments/db";
 
 const ALLOWED_DOMAINS = ["zapsign.com.br", "truora.com"] as const;
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -22,8 +24,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "invalid_pageId" }, { status: 400 });
   }
 
-  const store = await loadCommentsStore();
-  const threads = getPageThreads(store, pageId);
+  const threads = await getThreadsForPage(pageId, email);
   return NextResponse.json(
     { threads },
     { headers: { "cache-control": "no-store" } },

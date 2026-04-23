@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { SessionProvider } from "@/components/auth/SessionProvider";
 import { CommentsInboxProvider } from "@/components/comments/CommentsInboxProvider";
-import { CommentsStreamProvider } from "@/components/comments/CommentsStreamProvider";
+import { CommentsRealtimeProvider } from "@/components/comments/CommentsRealtimeProvider";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import styles from "./layout.module.css";
@@ -40,16 +40,16 @@ export default function AuthenticatedLayout({
   if (isFullBleed) {
     return (
       <SessionProvider>
-        <CommentsStreamProvider>
+        <CommentsRealtimeProvider>
           <CommentsInboxProvider>{children}</CommentsInboxProvider>
-        </CommentsStreamProvider>
+        </CommentsRealtimeProvider>
       </SessionProvider>
     );
   }
 
   return (
     <SessionProvider>
-      <CommentsStreamProvider>
+      <CommentsRealtimeProvider>
         <CommentsInboxProvider>
           <div className={styles.layout}>
             <Sidebar
@@ -62,7 +62,7 @@ export default function AuthenticatedLayout({
             </div>
           </div>
         </CommentsInboxProvider>
-      </CommentsStreamProvider>
+      </CommentsRealtimeProvider>
     </SessionProvider>
   );
 }

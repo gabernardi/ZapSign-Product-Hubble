@@ -16,8 +16,7 @@ import { TableOfContents } from "@/components/glasswing/TableOfContents";
 import { PhaseOwnership } from "@/components/glasswing/PhaseOwnership";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
 import { Comments } from "@/components/comments/Comments";
-import { loadCommentsStore } from "@/lib/data/comments-store";
-import { getPageThreads } from "@/lib/data/comments";
+import { loadPageCommentsForSsr } from "@/lib/comments/ssr";
 import styles from "./page.module.css";
 
 const PAGE_ID = "/dashboard/downstream";
@@ -47,7 +46,7 @@ export const metadata = {
 };
 
 export default async function DownstreamPage() {
-  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
+  const threads = await loadPageCommentsForSsr(PAGE_ID);
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
       <Comments pageId={PAGE_ID} initialThreads={threads}>

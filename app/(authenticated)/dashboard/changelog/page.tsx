@@ -14,8 +14,7 @@ import {
 import { decorateAll } from "@/lib/data/changelog-review";
 import { loadReviewStore } from "@/lib/data/changelog-review-store";
 import { Comments } from "@/components/comments/Comments";
-import { loadCommentsStore } from "@/lib/data/comments-store";
-import { getPageThreads } from "@/lib/data/comments";
+import { loadPageCommentsForSsr } from "@/lib/comments/ssr";
 import { ProductExperiment } from "./ProductExperiment";
 import styles from "./page.module.css";
 
@@ -48,7 +47,7 @@ export default async function ChangelogPage() {
   const generatedAt = FULL_DATE_FORMATTER.format(
     new Date(CHANGELOG_GENERATED_AT),
   );
-  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
+  const threads = await loadPageCommentsForSsr(PAGE_ID);
 
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>

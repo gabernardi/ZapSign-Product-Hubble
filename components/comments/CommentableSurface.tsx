@@ -20,7 +20,7 @@ import {
   removeHighlights,
   wrapRangeWithSpans,
 } from "./range-utils";
-import type { CommentAnchor } from "@/lib/data/comments";
+import type { CommentAnchor } from "@/lib/comments/types";
 import styles from "./comments.module.css";
 
 interface CommentableSurfaceProps {

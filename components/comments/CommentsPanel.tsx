@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useComments } from "./CommentProvider";
-import { REACTION_EMOJIS, type Comment, type Thread } from "@/lib/data/comments";
+import { REACTION_EMOJIS, type Comment, type Thread } from "@/lib/comments/types";
 import styles from "./comments.module.css";
 
 const TIME_FORMATTER = new Intl.RelativeTimeFormat("pt-BR", {

@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -23,81 +22,20 @@ import type {
   CommentAnchor,
   Thread,
   ThreadStatus,
-} from "@/lib/data/comments";
+} from "@/lib/comments/types";
+import { useCommentsRealtime } from "./CommentsRealtimeProvider";
 import { useCommentsInbox } from "./CommentsInboxProvider";
-import { useCommentsStream } from "./CommentsStreamProvider";
 
 /**
- * Detecta se um override otimista (tipicamente com ID temporário) já foi
- * reconciliado pelo servidor, mesmo que com um ID diferente. Comparamos pelo
- * anchor + o corpo do primeiro comentário + o autor — fingerprint suficiente
- * pra saber que é a "mesma" criação otimista.
- */
-function isEquivalentToServer(
-  override: Thread,
-  serverThreads: readonly Thread[],
-): boolean {
-  const firstOverride = override.comments[0];
-  if (!firstOverride) return false;
-  return serverThreads.some((srv) => {
-    if (srv.id === override.id) return true;
-    if (
-      srv.anchor.blockId !== override.anchor.blockId ||
-      srv.anchor.startOffset !== override.anchor.startOffset ||
-      srv.anchor.endOffset !== override.anchor.endOffset
-    ) {
-      return false;
-    }
-    const firstSrv = srv.comments[0];
-    if (!firstSrv) return false;
-    return (
-      firstSrv.body === firstOverride.body &&
-      firstSrv.createdBy.email.toLowerCase() ===
-        firstOverride.createdBy.email.toLowerCase()
-    );
-  });
-}
-
-/**
- * Mescla threads do stream com overrides otimistas e remoções locais.
+ * Provider por página. Lê threads do provider de realtime (filtrando por
+ * `pageId`), expõe UI state (panel aberto, thread ativa, composer) e
+ * encaminha ações para server actions — aplicando otimismo via helpers
+ * do provider de realtime quando faz sentido.
  *
- * Reconciliação é puramente lógica (baseada em `lastActivityAt` e presença
- * no servidor) — sem timestamps arbitrários. Um `useCallback` separado cuida
- * de limpar overrides/removes que o servidor já refletiu.
+ * `initialThreads` vem do server component (SSR em cima do Postgres) e
+ * serve de fallback enquanto o fetch do realtime provider ainda não
+ * terminou — garante que reload nunca mostra página em branco.
  */
-function applyOverrides(
-  serverThreads: Thread[],
-  overridesById: ReadonlyMap<string, Thread>,
-  removedIds: ReadonlySet<string>,
-): Thread[] {
-  const byId = new Map<string, Thread>(
-    serverThreads.map((t) => [t.id, t]),
-  );
-
-  for (const id of removedIds) {
-    byId.delete(id);
-  }
-
-  for (const [id, override] of overridesById) {
-    const existing = byId.get(id);
-    if (!existing) {
-      // Override "órfão" (ex.: tempId ainda não reconciliado). Só adiciona
-      // se o servidor também não tem um thread equivalente com outro ID —
-      // caso contrário, deixa o servidor vencer pra evitar duplicar na UI.
-      if (!isEquivalentToServer(override, serverThreads)) {
-        byId.set(id, override);
-      }
-      continue;
-    }
-    const localTs = new Date(override.lastActivityAt).getTime();
-    const serverTs = new Date(existing.lastActivityAt).getTime();
-    if (localTs > serverTs) {
-      byId.set(id, override);
-    }
-  }
-
-  return [...byId.values()];
-}
 
 export interface CommentContextValue {
   pageId: string;
@@ -119,12 +57,9 @@ export interface CommentContextValue {
     commentId: string,
     emoji: string,
   ) => Promise<void>;
-  resolveThread: (
-    threadId: string,
-    status: ThreadStatus,
-  ) => Promise<void>;
+  resolveThread: (threadId: string, status: ThreadStatus) => Promise<void>;
   removeComment: (threadId: string, commentId: string) => Promise<void>;
-  /** Reconciliação manual — no modo stream é no-op. */
+  /** No-op no modo real-time. Mantido por compatibilidade. */
   refresh: () => Promise<void>;
   isThreadUnread: (threadId: string) => boolean;
 }
@@ -142,9 +77,13 @@ export function useComments(): CommentContextValue {
 interface CommentProviderProps {
   pageId: string;
   initialThreads: Thread[];
-  /** No modo stream, o hint inicial não importa mais; mantido por compatibilidade. */
+  /** Ignorado no modo realtime. Mantido por compat. */
   refreshOnMount?: boolean;
   children: ReactNode;
+}
+
+function genTempId(prefix: "t" | "c"): string {
+  return `${prefix}_pending_${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function CommentProvider({
@@ -153,28 +92,15 @@ export function CommentProvider({
   children,
 }: CommentProviderProps) {
   const { data: session } = useSession();
-  const { store, lastEventAt } = useCommentsStream();
   const {
-    markThreadRead: markInboxThreadRead,
-    isThreadUnread: isInboxThreadUnread,
-    upsertThread: upsertInboxThread,
-    removeThread: removeInboxThread,
-  } = useCommentsInbox();
-
-  const [overrides, setOverrides] = useState<Map<string, Thread>>(
-    () => new Map(),
-  );
-  const [removedIds, setRemovedIds] = useState<Set<string>>(() => new Set());
-
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
-  const [pendingThreadId, setPendingThreadId] = useState<string | null>(null);
-  const [composeAnchor, setComposeAnchor] = useState<CommentAnchor | null>(
-    null,
-  );
-  const [requestedThreadId, setRequestedThreadId] = useState<string | null>(
-    null,
-  );
+    threads: allThreads,
+    loading,
+    applyLocal,
+    removeLocal,
+    replaceLocal,
+  } = useCommentsRealtime();
+  const { markThreadRead, isThreadUnread: isInboxThreadUnread } =
+    useCommentsInbox();
 
   const sessionEmail = session?.user?.email ?? null;
   const sessionName = session?.user?.name ?? null;
@@ -190,76 +116,35 @@ export function CommentProvider({
     };
   }, [sessionEmail, sessionImage, sessionName]);
 
-  /** Threads base vindas do stream; fallback para initialThreads antes do 1º evento. */
-  const serverThreads = useMemo<Thread[]>(() => {
-    if (lastEventAt === 0) return initialThreads;
-    return store.pages[pageId]?.threads ?? [];
-  }, [store, pageId, initialThreads, lastEventAt]);
-
-  const threads = useMemo<Thread[]>(
-    () => applyOverrides(serverThreads, overrides, removedIds),
-    [serverThreads, overrides, removedIds],
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const [pendingThreadId, setPendingThreadId] = useState<string | null>(null);
+  const [composeAnchor, setComposeAnchor] = useState<CommentAnchor | null>(
+    null,
+  );
+  const [requestedThreadId, setRequestedThreadId] = useState<string | null>(
+    null,
   );
 
   /**
-   * Remove overrides que já estão refletidos no snapshot mais recente do
-   * servidor. Chamado inline dentro das próprias ações do usuário (não em
-   * effect) para evitar cascading renders.
+   * Threads relevantes pra esta página.
+   *
+   * Fallback para initialThreads (SSR):
+   *   - enquanto o fetch inicial global ainda está carregando, OU
+   *   - o fetch já terminou mas este pageId não tem thread no estado
+   *     (caso de uma página que o usuário abriu direto sem passar pela inbox)
    */
-  const pruneReconciled = useCallback(
-    (prevOverrides: Map<string, Thread>, prevRemoved: Set<string>) => {
-      const serverById = new Map(serverThreads.map((t) => [t.id, t]));
-      const nextOv = new Map(prevOverrides);
-      for (const [id, override] of prevOverrides) {
-        const srv = serverById.get(id);
-        if (!srv) continue;
-        const localTs = new Date(override.lastActivityAt).getTime();
-        const serverTs = new Date(srv.lastActivityAt).getTime();
-        if (serverTs >= localTs) nextOv.delete(id);
-      }
-      const serverIds = new Set(serverThreads.map((t) => t.id));
-      const nextRm = new Set(prevRemoved);
-      for (const id of prevRemoved) {
-        if (!serverIds.has(id)) nextRm.delete(id);
-      }
-      return { nextOv, nextRm };
-    },
-    [serverThreads],
-  );
-
-  const upsertLocalOverride = useCallback(
-    (thread: Thread) => {
-      setOverrides((prev) => {
-        const { nextOv } = pruneReconciled(prev, new Set());
-        nextOv.set(thread.id, thread);
-        return nextOv;
-      });
-      setRemovedIds((prev) => {
-        if (!prev.has(thread.id)) return prev;
-        const next = new Set(prev);
-        next.delete(thread.id);
-        return next;
-      });
-    },
-    [pruneReconciled],
-  );
-
-  const markLocalRemoved = useCallback(
-    (threadId: string) => {
-      setRemovedIds((prev) => {
-        const { nextRm } = pruneReconciled(new Map(), prev);
-        nextRm.add(threadId);
-        return nextRm;
-      });
-      setOverrides((prev) => {
-        if (!prev.has(threadId)) return prev;
-        const next = new Map(prev);
-        next.delete(threadId);
-        return next;
-      });
-    },
-    [pruneReconciled],
-  );
+  const threads = useMemo<Thread[]>(() => {
+    const filtered = allThreads.filter((t) => t.pageId === pageId);
+    if (loading && filtered.length === 0) return initialThreads;
+    // Merge initialThreads in caso o realtime ainda não conheça alguma.
+    // Isso cobre threads que foram criadas entre o SSR e o fetch do client,
+    // ou quando a página carrega sem o usuário ainda ter navegado.
+    if (filtered.length === 0 && initialThreads.length > 0 && loading) {
+      return initialThreads;
+    }
+    return filtered;
+  }, [allThreads, pageId, loading, initialThreads]);
 
   const isThreadUnread = useCallback(
     (threadId: string) => isInboxThreadUnread(pageId, threadId),
@@ -294,6 +179,7 @@ export function CommentProvider({
     setComposeAnchor(null);
   }, []);
 
+  // Abre a thread indicada via ?thread=ID quando ela existir no estado.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const syncFromLocation = () => {
@@ -306,7 +192,10 @@ export function CommentProvider({
   }, []);
 
   const requestedThreadExists = useMemo(
-    () => Boolean(requestedThreadId && threads.some((t) => t.id === requestedThreadId)),
+    () =>
+      Boolean(
+        requestedThreadId && threads.some((t) => t.id === requestedThreadId),
+      ),
     [requestedThreadId, threads],
   );
 
@@ -318,19 +207,16 @@ export function CommentProvider({
     return () => window.clearTimeout(id);
   }, [openPanel, requestedThreadId, requestedThreadExists]);
 
-  const markReadRef = useRef(markInboxThreadRead);
-  useEffect(() => {
-    markReadRef.current = markInboxThreadRead;
-  }, [markInboxThreadRead]);
-
+  // Auto-mark read quando a thread ativa entra em foco.
   useEffect(() => {
     if (!panelOpen || !activeThreadId || !currentUserEmail) return;
     if (!isThreadUnread(activeThreadId)) return;
-    void markReadRef.current(pageId, activeThreadId);
+    void markThreadRead(pageId, activeThreadId);
   }, [
     activeThreadId,
     currentUserEmail,
     isThreadUnread,
+    markThreadRead,
     pageId,
     panelOpen,
   ]);
@@ -341,77 +227,51 @@ export function CommentProvider({
       const trimmed = body.trim();
       if (!trimmed) return null;
 
-      // Otimismo upfront: mostra a thread com um ID temporário antes do
-      // servidor responder. Quando a action retornar (incluindo a espera de
-      // propagação do Blob), trocamos o temp pelo thread real.
-      const tempId = `t_optim_${Math.random().toString(36).slice(2, 10)}`;
+      const tempId = genTempId("t");
       const now = new Date().toISOString();
       const optimistic: Thread = {
         id: tempId,
+        pageId,
         anchor,
         status: "open",
         createdAt: now,
         createdBy: localAuthor,
         comments: [
           {
-            id: `c_optim_${Math.random().toString(36).slice(2, 10)}`,
+            id: genTempId("c"),
             body: trimmed,
             createdAt: now,
             createdBy: localAuthor,
             reactions: {},
           },
         ],
-        participantEmails: [localAuthor.email],
+        participantEmails: [localAuthor.email.toLowerCase()],
         lastActivityAt: now,
         lastActivityBy: localAuthor,
-        readStateByUser: { [localAuthor.email.toLowerCase()]: now },
-        lastNotifiedAtByUser: {},
+        readAtForCurrentUser: now,
       };
 
-      upsertLocalOverride(optimistic);
-      upsertInboxThread(pageId, optimistic);
+      applyLocal(optimistic);
       setPendingThreadId(tempId);
       setActiveThreadId(tempId);
       setComposeAnchor(null);
       setPanelOpen(true);
 
       try {
-        const created = await createThreadAction(pageId, anchor, trimmed);
-        // Troca o temp pelo thread real. O SSE também vai emitir — o
-        // `pruneReconciled` limpa overrides quando o server alcança.
-        setOverrides((prev) => {
-          const next = new Map(prev);
-          next.delete(tempId);
-          next.set(created.id, created);
-          return next;
-        });
-        removeInboxThread(pageId, tempId);
-        upsertInboxThread(pageId, created);
-        setPendingThreadId(created.id);
-        setActiveThreadId((curr) => (curr === tempId ? created.id : curr));
-        return created;
+        const real = await createThreadAction(pageId, anchor, trimmed);
+        replaceLocal(tempId, real);
+        setActiveThreadId((curr) => (curr === tempId ? real.id : curr));
+        setPendingThreadId(real.id);
+        return real;
       } catch (err) {
         console.error("createThread failed", err);
-        // Rollback: remove o otimista.
-        setOverrides((prev) => {
-          if (!prev.has(tempId)) return prev;
-          const next = new Map(prev);
-          next.delete(tempId);
-          return next;
-        });
-        removeInboxThread(pageId, tempId);
+        removeLocal(tempId);
         setActiveThreadId((curr) => (curr === tempId ? null : curr));
         setPendingThreadId((curr) => (curr === tempId ? null : curr));
         return null;
       }
     },
-    [
-      localAuthor,
-      pageId,
-      removeInboxThread,
-      upsertInboxThread,
-      upsertLocalOverride,
-    ],
+    [applyLocal, localAuthor, pageId, removeLocal, replaceLocal],
   );
 
   const replyToThread = useCallback(
@@ -419,51 +279,49 @@ export function CommentProvider({
       if (!localAuthor) return;
       const trimmed = body.trim();
       if (!trimmed) return;
-      const now = new Date().toISOString();
-      const optimisticId = `c_optim_${Math.random().toString(36).slice(2, 8)}`;
       const current = threads.find((t) => t.id === threadId);
       if (!current) return;
+
+      const now = new Date().toISOString();
+      const optimisticComment = {
+        id: genTempId("c"),
+        body: trimmed,
+        createdAt: now,
+        createdBy: localAuthor,
+        reactions: {},
+      };
       const optimistic: Thread = {
         ...current,
-        comments: [
-          ...current.comments,
-          {
-            id: optimisticId,
-            body: trimmed,
-            createdAt: now,
-            createdBy: localAuthor,
-            reactions: {},
-          },
-        ],
+        comments: [...current.comments, optimisticComment],
         lastActivityAt: now,
         lastActivityBy: localAuthor,
-        participantEmails: current.participantEmails.includes(localAuthor.email)
+        participantEmails: current.participantEmails.includes(
+          localAuthor.email.toLowerCase(),
+        )
           ? current.participantEmails
-          : [...current.participantEmails, localAuthor.email],
+          : [...current.participantEmails, localAuthor.email.toLowerCase()],
+        readAtForCurrentUser: now,
       };
-      upsertLocalOverride(optimistic);
-      upsertInboxThread(pageId, optimistic);
+      applyLocal(optimistic);
+
       try {
         await addCommentAction(pageId, threadId, trimmed);
-        // O servidor vai emitir o snapshot real pelo stream; o override expira
-        // assim que o server refletir o mesmo `lastActivityAt` ou mais novo.
+        // Pusher vai entregar `thread.upserted` com o estado canônico,
+        // incluindo o ID real do comentário — `applyLocal` por id de thread
+        // faz o merge certo.
       } catch (err) {
         console.error("replyToThread failed", err);
-        // Remove o override otimista para deixar o servidor ganhar.
-        setOverrides((prev) => {
-          const next = new Map(prev);
-          next.delete(threadId);
-          return next;
-        });
+        // Rollback: volta ao estado sem o comentário otimista.
+        applyLocal(current);
       }
     },
-    [localAuthor, pageId, threads, upsertInboxThread, upsertLocalOverride],
+    [applyLocal, localAuthor, pageId, threads],
   );
 
   const reactToComment = useCallback(
     async (threadId: string, commentId: string, emoji: string) => {
       if (!localAuthor) return;
-      const email = localAuthor.email;
+      const email = localAuthor.email.toLowerCase();
       const current = threads.find((t) => t.id === threadId);
       if (!current) return;
       const optimistic: Thread = {
@@ -475,109 +333,69 @@ export function CommentProvider({
           const nextList = has
             ? list.filter((e) => e !== email)
             : [...list, email];
-          const nextReactions = { ...c.reactions };
-          if (nextList.length === 0) {
-            delete nextReactions[emoji];
-          } else {
-            nextReactions[emoji] = nextList;
-          }
-          return { ...c, reactions: nextReactions };
+          const next = { ...c.reactions };
+          if (nextList.length === 0) delete next[emoji];
+          else next[emoji] = nextList;
+          return { ...c, reactions: next };
         }),
-        lastActivityAt: new Date().toISOString(),
       };
-      upsertLocalOverride(optimistic);
+      applyLocal(optimistic);
       try {
         await toggleReactionAction(pageId, threadId, commentId, emoji);
       } catch (err) {
         console.error("toggleReaction failed", err);
-        setOverrides((prev) => {
-          const next = new Map(prev);
-          next.delete(threadId);
-          return next;
-        });
+        applyLocal(current);
       }
     },
-    [localAuthor, pageId, threads, upsertLocalOverride],
+    [applyLocal, localAuthor, pageId, threads],
   );
 
   const resolveThread = useCallback(
     async (threadId: string, status: ThreadStatus) => {
       const current = threads.find((t) => t.id === threadId);
       if (!current) return;
-      const optimistic: Thread = {
-        ...current,
-        status,
-        lastActivityAt: new Date().toISOString(),
-      };
-      upsertLocalOverride(optimistic);
-      upsertInboxThread(pageId, optimistic);
+      const optimistic: Thread = { ...current, status };
+      applyLocal(optimistic);
       try {
         await setThreadStatusAction(pageId, threadId, status);
       } catch (err) {
         console.error("setThreadStatus failed", err);
-        setOverrides((prev) => {
-          const next = new Map(prev);
-          next.delete(threadId);
-          return next;
-        });
+        applyLocal(current);
       }
     },
-    [pageId, threads, upsertInboxThread, upsertLocalOverride],
+    [applyLocal, pageId, threads],
   );
 
   const removeComment = useCallback(
     async (threadId: string, commentId: string) => {
       const current = threads.find((t) => t.id === threadId);
       if (!current) return;
-      const remainingComments = current.comments.filter(
-        (c) => c.id !== commentId,
-      );
-      const wouldRemoveThread = remainingComments.length === 0;
+      const remaining = current.comments.filter((c) => c.id !== commentId);
+      const wouldRemoveThread = remaining.length === 0;
 
       if (wouldRemoveThread) {
-        markLocalRemoved(threadId);
+        removeLocal(threadId);
         setActiveThreadId((curr) => (curr === threadId ? null : curr));
-        removeInboxThread(pageId, threadId);
       } else {
         const optimistic: Thread = {
           ...current,
-          comments: remainingComments,
-          lastActivityAt: new Date().toISOString(),
+          comments: remaining,
         };
-        upsertLocalOverride(optimistic);
-        upsertInboxThread(pageId, optimistic);
+        applyLocal(optimistic);
       }
 
       try {
         await deleteCommentAction(pageId, threadId, commentId);
       } catch (err) {
         console.error("deleteComment failed", err);
-        // Rollback: limpa overrides/remoções locais; stream traz a verdade.
-        setOverrides((prev) => {
-          const next = new Map(prev);
-          next.delete(threadId);
-          return next;
-        });
-        setRemovedIds((prev) => {
-          if (!prev.has(threadId)) return prev;
-          const next = new Set(prev);
-          next.delete(threadId);
-          return next;
-        });
+        applyLocal(current);
       }
     },
-    [
-      markLocalRemoved,
-      pageId,
-      removeInboxThread,
-      threads,
-      upsertInboxThread,
-      upsertLocalOverride,
-    ],
+    [applyLocal, pageId, removeLocal, threads],
   );
 
   const refresh = useCallback(async () => {
-    // No modo stream, não há polling a disparar. Mantido por compatibilidade.
+    /* no-op */
   }, []);
 
   const value = useMemo<CommentContextValue>(

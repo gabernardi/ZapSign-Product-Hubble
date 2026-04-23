@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getInboxItems, getInboxSummary } from "@/lib/data/comments";
-import { loadCommentsStore } from "@/lib/data/comments-store";
+import {
+  getAllThreads,
+  toInboxItems,
+  toInboxSummary,
+} from "@/lib/comments/db";
 
 const ALLOWED_DOMAINS = ["zapsign.com.br", "truora.com"] as const;
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const session = await auth();
@@ -17,12 +23,11 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const store = await loadCommentsStore();
+  const threads = await getAllThreads(email);
+  const items = toInboxItems(threads);
+  const summary = toInboxSummary(items);
   return NextResponse.json(
-    {
-      items: getInboxItems(store, email),
-      summary: getInboxSummary(store, email),
-    },
+    { items, summary },
     { headers: { "cache-control": "no-store" } },
   );
 }

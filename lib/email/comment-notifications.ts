@@ -1,4 +1,4 @@
-import type { Author, Thread } from "@/lib/data/comments";
+import type { Author, Thread } from "@/lib/comments/types";
 import { getCommentsAppBaseUrl, sendResendEmail } from "./resend";
 
 function truncate(value: string, max = 180): string {

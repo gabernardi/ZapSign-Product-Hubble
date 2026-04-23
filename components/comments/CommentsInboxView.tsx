@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useCommentsInbox } from "./CommentsInboxProvider";
-import type { CommentInboxItem } from "@/lib/data/comments";
+import type { CommentInboxItem } from "@/lib/comments/types";
 import styles from "./comments-inbox.module.css";
 
 const TIME_FORMATTER = new Intl.RelativeTimeFormat("pt-BR", { style: "short" });

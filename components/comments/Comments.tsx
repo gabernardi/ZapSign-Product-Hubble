@@ -5,7 +5,7 @@ import { CommentProvider } from "./CommentProvider";
 import { CommentableSurface } from "./CommentableSurface";
 import { CommentsPanel } from "./CommentsPanel";
 import { CommentsToggle } from "./CommentsToggle";
-import type { Thread } from "@/lib/data/comments";
+import type { Thread } from "@/lib/comments/types";
 
 interface CommentsProps {
   pageId: string;

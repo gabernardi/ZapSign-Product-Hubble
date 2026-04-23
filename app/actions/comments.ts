@@ -2,29 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import type { Author, CommentAnchor, Thread, ThreadStatus } from "@/lib/comments/types";
 import {
-  addComment as addCommentHelper,
-  addThread as addThreadHelper,
-  deleteComment as deleteCommentHelper,
-  getThreadById,
-  markAllThreadsRead as markAllThreadsReadHelper,
-  markThreadRead as markThreadReadHelper,
-  setThreadStatus as setThreadStatusHelper,
-  toggleReaction as toggleReactionHelper,
-  type Author,
-  type CommentAnchor,
-  type Thread,
-  type ThreadStatus,
-} from "@/lib/data/comments";
-import {
-  loadCommentsStore,
-  saveCommentsStore,
-} from "@/lib/data/comments-store";
+  addCommentToThread,
+  createThread as createThreadDb,
+  deleteComment as deleteCommentDb,
+  markAllThreadsRead as markAllThreadsReadDb,
+  markThreadRead as markThreadReadDb,
+  setThreadStatus as setThreadStatusDb,
+  toggleReaction as toggleReactionDb,
+} from "@/lib/comments/db";
+import { publishCommentsEvent } from "@/lib/comments/pusher-server";
 import {
   notifyCommentThreadParticipants,
   notifyNewCommentThread,
 } from "@/lib/email/comment-notifications";
-import { publishStoreSnapshot } from "@/lib/comments/events-bus";
 
 const ALLOWED_DOMAINS = ["zapsign.com.br", "truora.com"] as const;
 
@@ -43,7 +35,6 @@ async function requireAuthor(): Promise<Author> {
 }
 
 function assertValidPageId(pageId: string): void {
-  // Somente caminhos absolutos simples do dashboard são aceitos.
   if (!pageId.startsWith("/") || pageId.length > 200) {
     throw new Error("pageId inválido.");
   }
@@ -77,10 +68,13 @@ export async function createThread(
     throw new Error("Âncora inválida.");
   }
 
-  const store = await loadCommentsStore();
-  const thread = addThreadHelper(store, pageId, anchor, trimmed, author);
-  await saveCommentsStore(store);
-  publishStoreSnapshot(store);
+  const thread = await createThreadDb({
+    pageId,
+    anchor,
+    author,
+    body: trimmed,
+  });
+  await publishCommentsEvent({ type: "thread.upserted", thread });
   revalidatePath(pageId);
   void notifyNewCommentThread({ pageId, thread, actor: author });
   return thread;
@@ -95,20 +89,22 @@ export async function addComment(
   const author = await requireAuthor();
   const trimmed = assertValidBody(body);
 
-  const store = await loadCommentsStore();
-  const comment = addCommentHelper(store, pageId, threadId, trimmed, author);
-  if (!comment) throw new Error("Thread não encontrada.");
-  const thread = getThreadById(store, pageId, threadId);
-  if (!thread) throw new Error("Thread não encontrada.");
-  await saveCommentsStore(store);
-  publishStoreSnapshot(store);
-  revalidatePath(pageId);
-  void notifyCommentThreadParticipants({
-    pageId,
-    thread,
-    actor: author,
-    commentBody: comment.body,
+  const thread = await addCommentToThread({
+    threadId,
+    body: trimmed,
+    author,
   });
+  await publishCommentsEvent({ type: "thread.upserted", thread });
+  revalidatePath(pageId);
+  const latest = thread.comments[thread.comments.length - 1];
+  if (latest) {
+    void notifyCommentThreadParticipants({
+      pageId,
+      thread,
+      actor: author,
+      commentBody: latest.body,
+    });
+  }
 }
 
 export async function toggleReaction(
@@ -123,18 +119,9 @@ export async function toggleReaction(
     throw new Error("Emoji inválido.");
   }
 
-  const store = await loadCommentsStore();
-  const ok = toggleReactionHelper(
-    store,
-    pageId,
-    threadId,
-    commentId,
-    emoji,
-    author.email,
-  );
-  if (!ok) throw new Error("Comentário não encontrado.");
-  await saveCommentsStore(store);
-  publishStoreSnapshot(store);
+  const thread = await toggleReactionDb(threadId, commentId, emoji, author.email);
+  if (!thread) throw new Error("Comentário não encontrado.");
+  await publishCommentsEvent({ type: "thread.upserted", thread });
   revalidatePath(pageId);
 }
 
@@ -144,15 +131,13 @@ export async function setThreadStatus(
   status: ThreadStatus,
 ): Promise<void> {
   assertValidPageId(pageId);
-  await requireAuthor();
+  const author = await requireAuthor();
   if (status !== "open" && status !== "resolved") {
     throw new Error("Status inválido.");
   }
-  const store = await loadCommentsStore();
-  const ok = setThreadStatusHelper(store, pageId, threadId, status);
-  if (!ok) throw new Error("Thread não encontrada.");
-  await saveCommentsStore(store);
-  publishStoreSnapshot(store);
+  const thread = await setThreadStatusDb(threadId, status, author);
+  if (!thread) throw new Error("Thread não encontrada.");
+  await publishCommentsEvent({ type: "thread.upserted", thread });
   revalidatePath(pageId);
 }
 
@@ -163,21 +148,22 @@ export async function deleteComment(
 ): Promise<{ threadRemoved: boolean }> {
   assertValidPageId(pageId);
   const author = await requireAuthor();
-  const store = await loadCommentsStore();
-  const result = deleteCommentHelper(
-    store,
-    pageId,
-    threadId,
-    commentId,
-    author.email,
-  );
-  if (!result.ok) {
+  const result = await deleteCommentDb(threadId, commentId, author.email);
+  if (!result) {
     throw new Error("Não foi possível remover o comentário.");
   }
-  await saveCommentsStore(store);
-  publishStoreSnapshot(store);
+  if (result.kind === "thread-deleted") {
+    await publishCommentsEvent({
+      type: "thread.deleted",
+      threadId: result.threadId,
+      pageId: result.pageId,
+    });
+    revalidatePath(pageId);
+    return { threadRemoved: true };
+  }
+  await publishCommentsEvent({ type: "thread.upserted", thread: result.thread });
   revalidatePath(pageId);
-  return { threadRemoved: result.threadRemoved };
+  return { threadRemoved: false };
 }
 
 export async function markThreadRead(
@@ -186,18 +172,25 @@ export async function markThreadRead(
 ): Promise<void> {
   assertValidPageId(pageId);
   const author = await requireAuthor();
-  const store = await loadCommentsStore();
-  const ok = markThreadReadHelper(store, pageId, threadId, author.email);
-  if (!ok) throw new Error("Thread não encontrada.");
-  await saveCommentsStore(store);
-  publishStoreSnapshot(store);
+  await markThreadReadDb(threadId, author.email);
+  // O evento `thread.read` é direcionado ao próprio usuário (para
+  // sincronizar abas/dispositivos). Outros usuários ignoram pelo email.
+  await publishCommentsEvent({
+    type: "thread.read",
+    threadId,
+    userEmail: author.email,
+    readAt: new Date().toISOString(),
+  });
 }
 
 export async function markAllThreadsRead(): Promise<{ updated: number }> {
   const author = await requireAuthor();
-  const store = await loadCommentsStore();
-  const updated = markAllThreadsReadHelper(store, author.email);
-  await saveCommentsStore(store);
-  publishStoreSnapshot(store);
-  return { updated };
+  await markAllThreadsReadDb(author.email);
+  const readAt = new Date().toISOString();
+  await publishCommentsEvent({
+    type: "thread.all-read",
+    userEmail: author.email,
+    readAt,
+  });
+  return { updated: 0 };
 }

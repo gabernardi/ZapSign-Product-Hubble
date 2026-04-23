@@ -20,17 +20,48 @@ Abra [http://localhost:3000](http://localhost:3000).
 - `AUTH_SECRET`
 - `NEXTAUTH_URL`
 
-### Notificações de comentários
+### Notificações de comentários (e-mail)
 - `RESEND_API_KEY`: chave da conta Resend usada para enviar notificações.
 - `COMMENTS_FROM_EMAIL`: remetente usado nos e-mails de comentários.
 - `APP_BASE_URL`: URL base usada para montar links profundos para a thread.
 
 Se `APP_BASE_URL` não estiver definida, o app tenta usar `NEXTAUTH_URL` e depois `VERCEL_URL`.
 
+### Banco de dados (Neon / Postgres) — obrigatório para comentários
+- `DATABASE_URL`: connection string do Neon. Exemplo:
+  `postgres://user:pass@ep-xxx-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require`
+
+Crie um projeto gratuito em [neon.tech](https://neon.tech), copie a connection
+string do dashboard (aba **Connection Details** → **Pooled connection**) e cole
+em `DATABASE_URL`. Depois aplique o schema:
+
+```bash
+npm run db:migrate
+```
+
+O script é idempotente (usa `CREATE TABLE IF NOT EXISTS`) e pode rodar sempre
+que o schema mudar.
+
+### Real-time (Pusher Channels) — obrigatório para real-time de comentários
+- `PUSHER_APP_ID`
+- `PUSHER_KEY`
+- `PUSHER_SECRET`
+- `PUSHER_CLUSTER` (ex: `us2`, `sa1`)
+- `NEXT_PUBLIC_PUSHER_KEY` (mesmo valor de `PUSHER_KEY`, exposto ao client)
+- `NEXT_PUBLIC_PUSHER_CLUSTER` (mesmo valor de `PUSHER_CLUSTER`, exposto ao client)
+
+Crie uma app gratuita em [pusher.com/channels](https://pusher.com/channels). No
+dashboard da app, aba **App Keys**, copie `app_id`, `key`, `secret` e `cluster`.
+
+Se as envs do Pusher não estiverem configuradas, o app continua funcionando —
+apenas sem propagação em tempo real (cada cliente vê seu estado após reload).
+
 ## Comentários globais
-O sistema de comentários agora suporta:
+O sistema de comentários suporta:
 
 - inbox global em `/dashboard/comentarios`
 - badge global de não lidos
 - deep-link para thread com `?thread=<id>`
 - notificações por e-mail via Resend para novas interações
+- real-time via WebSockets (Pusher Channels) — comentários aparecem
+  instantaneamente em todas as abas e navegadores conectados

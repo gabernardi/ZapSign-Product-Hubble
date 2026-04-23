@@ -1,7 +1,6 @@
 import { managementTipsData as data } from "@/lib/data/management-tips";
 import { Comments } from "@/components/comments/Comments";
-import { loadCommentsStore } from "@/lib/data/comments-store";
-import { getPageThreads } from "@/lib/data/comments";
+import { loadPageCommentsForSsr } from "@/lib/comments/ssr";
 import { GuideHeader } from "@/components/guide/GuideHeader";
 import { SectionLabel } from "@/components/guide/SectionLabel";
 import { PrincipleCard } from "@/components/guide/PrincipleCard";
@@ -22,7 +21,7 @@ import styles from "./management-tips.module.css";
 const PAGE_ID = "/dashboard/management-tips";
 
 export default async function ManagementTipsPage() {
-  const threads = getPageThreads(await loadCommentsStore(), PAGE_ID);
+  const threads = await loadPageCommentsForSsr(PAGE_ID);
   return (
     <Comments pageId={PAGE_ID} initialThreads={threads}>
     <div className={styles.page} data-comment-block="management-tips.page">
