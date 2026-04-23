@@ -26,7 +26,53 @@ import type {
 } from "@/lib/data/comments";
 import { useCommentsInbox } from "./CommentsInboxProvider";
 
-const POLL_INTERVAL_MS = 15_000;
+const POLL_INTERVAL_MS = 3_000;
+const OPTIMISTIC_GRACE_MS = 30_000;
+
+/**
+ * Combina threads locais (otimistas) com a resposta do servidor. Se o local
+ * tem `lastActivityAt` mais novo, mantemos o local — evita flashes de "sumiu
+ * e voltou" enquanto o Blob termina de propagar. Threads recém-criadas ou
+ * deletadas localmente continuam refletindo a intenção do usuário por até
+ * `OPTIMISTIC_GRACE_MS`.
+ */
+function mergeThreads(
+  local: Thread[],
+  server: Thread[],
+  removedIds: ReadonlySet<string>,
+): Thread[] {
+  const localById = new Map(local.map((t) => [t.id, t]));
+  const serverById = new Map(server.map((t) => [t.id, t]));
+  const now = Date.now();
+  const result: Thread[] = [];
+  const used = new Set<string>();
+
+  for (const serverThread of server) {
+    if (removedIds.has(serverThread.id)) continue;
+    const localThread = localById.get(serverThread.id);
+    if (
+      localThread &&
+      new Date(localThread.lastActivityAt).getTime() >
+        new Date(serverThread.lastActivityAt).getTime()
+    ) {
+      result.push(localThread);
+    } else {
+      result.push(serverThread);
+    }
+    used.add(serverThread.id);
+  }
+
+  for (const localThread of local) {
+    if (used.has(localThread.id)) continue;
+    if (serverById.has(localThread.id)) continue;
+    const age = now - new Date(localThread.lastActivityAt).getTime();
+    if (age < OPTIMISTIC_GRACE_MS) {
+      result.push(localThread);
+    }
+  }
+
+  return result;
+}
 
 export interface CommentContextValue {
   pageId: string;
@@ -100,6 +146,21 @@ export function CommentProvider({
     null,
   );
   const [requestedThreadId, setRequestedThreadId] = useState<string | null>(null);
+  const removedThreadIdsRef = useRef<Map<string, number>>(new Map());
+
+  const markThreadRemovedLocally = useCallback((threadId: string) => {
+    removedThreadIdsRef.current.set(threadId, Date.now());
+  }, []);
+
+  const getActiveRemovedThreadIds = useCallback((): Set<string> => {
+    const now = Date.now();
+    const active = new Set<string>();
+    for (const [id, at] of removedThreadIdsRef.current) {
+      if (now - at < OPTIMISTIC_GRACE_MS) active.add(id);
+      else removedThreadIdsRef.current.delete(id);
+    }
+    return active;
+  }, []);
 
   const sessionEmail = session?.user?.email ?? null;
   const sessionName = session?.user?.name ?? null;
@@ -128,12 +189,13 @@ export function CommentProvider({
       if (!res.ok) return;
       const data = (await res.json()) as { threads: Thread[] };
       if (Array.isArray(data.threads)) {
-        setThreads(data.threads);
+        const removed = getActiveRemovedThreadIds();
+        setThreads((prev) => mergeThreads(prev, data.threads, removed));
       }
     } catch {
       // silencioso — o usuário verá o estado otimista até o próximo ciclo
     }
-  }, [pageId]);
+  }, [getActiveRemovedThreadIds, pageId]);
 
   const isThreadUnread = useCallback(
     (threadId: string) => isInboxThreadUnread(pageId, threadId),
@@ -233,14 +295,15 @@ export function CommentProvider({
         setComposeAnchor(null);
         setPanelOpen(true);
         upsertInboxThread(pageId, created);
-        void refreshInbox();
+        // Não refetch aqui: o CDN do Blob pode servir stale por alguns segundos
+        // e sobrescrever nosso otimismo. O polling regular reconcilia.
         return created;
       } catch (err) {
         console.error("createThread failed", err);
         return null;
       }
     },
-    [localAuthor, pageId, refreshInbox, upsertInboxThread],
+    [localAuthor, pageId, upsertInboxThread],
   );
 
   const replyToThread = useCallback(
@@ -282,8 +345,7 @@ export function CommentProvider({
       }
       try {
         await addCommentAction(pageId, threadId, trimmed);
-        await refresh();
-        void refreshInbox();
+        // Estado otimista é autoritativo; polling reconcilia depois.
       } catch (err) {
         console.error("replyToThread failed", err);
         setThreads((prev) =>
@@ -298,7 +360,7 @@ export function CommentProvider({
         );
       }
     },
-    [localAuthor, pageId, refresh, refreshInbox, upsertInboxThread],
+    [localAuthor, pageId, upsertInboxThread],
   );
 
   const reactToComment = useCallback(
@@ -350,45 +412,62 @@ export function CommentProvider({
       });
       try {
         await setThreadStatusAction(pageId, threadId, status);
-        void refreshInbox();
       } catch (err) {
         console.error("setThreadStatus failed", err);
         await refresh();
       }
     },
-    [pageId, refresh, refreshInbox, upsertInboxThread],
+    [pageId, refresh, upsertInboxThread],
   );
 
   const removeComment = useCallback(
     async (threadId: string, commentId: string) => {
-      try {
-        const result = await deleteCommentAction(pageId, threadId, commentId);
-        if (result.threadRemoved) {
-          setThreads((prev) => prev.filter((t) => t.id !== threadId));
-          setActiveThreadId((curr) => (curr === threadId ? null : curr));
-          removeInboxThread(pageId, threadId);
-        } else {
-          setThreads((prev) => {
-            const next = prev.map((t) =>
-              t.id === threadId
-                ? {
-                    ...t,
-                    comments: t.comments.filter((c) => c.id !== commentId),
-                  }
-                : t,
-            );
-            const updated = next.find((t) => t.id === threadId);
-            if (updated) upsertInboxThread(pageId, updated);
-            return next;
-          });
+      // Otimismo primeiro — UI reage na hora, mesmo antes do fetch.
+      const previousThreads = threads;
+      setThreads((prev) => {
+        const target = prev.find((t) => t.id === threadId);
+        if (!target) return prev;
+        const remainingComments = target.comments.filter(
+          (c) => c.id !== commentId,
+        );
+        if (remainingComments.length === 0) {
+          return prev.filter((t) => t.id !== threadId);
         }
-        void refreshInbox();
+        return prev.map((t) =>
+          t.id === threadId ? { ...t, comments: remainingComments } : t,
+        );
+      });
+      const target = previousThreads.find((t) => t.id === threadId);
+      const wouldRemoveThread =
+        target && target.comments.filter((c) => c.id !== commentId).length === 0;
+      if (wouldRemoveThread) {
+        setActiveThreadId((curr) => (curr === threadId ? null : curr));
+        markThreadRemovedLocally(threadId);
+        removeInboxThread(pageId, threadId);
+      } else if (target) {
+        upsertInboxThread(pageId, {
+          ...target,
+          comments: target.comments.filter((c) => c.id !== commentId),
+        });
+      }
+
+      try {
+        await deleteCommentAction(pageId, threadId, commentId);
       } catch (err) {
         console.error("deleteComment failed", err);
+        // Rollback: volta pro estado anterior e refaz do servidor.
+        setThreads(previousThreads);
         await refresh();
       }
     },
-    [pageId, refresh, refreshInbox, removeInboxThread, upsertInboxThread],
+    [
+      markThreadRemovedLocally,
+      pageId,
+      refresh,
+      removeInboxThread,
+      threads,
+      upsertInboxThread,
+    ],
   );
 
   const value = useMemo<CommentContextValue>(
