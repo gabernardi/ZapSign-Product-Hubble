@@ -193,16 +193,16 @@ export const contribuirData = {
   steps: {
     label: "Do clone ao deploy.",
     intro:
-      "O caminho feliz assume que você tem acesso ao repositório privado da ZapSign no GitHub e o Cursor instalado. Se faltar algo, pula pro final — tem uma seção só pra desbloquear.",
+      "O caminho feliz assume que você tem o Cursor instalado e consegue clonar do GitHub. O repositório é público, então não precisa de acesso especial — só clonar e rodar. Se faltar algo, pula pro final: tem uma seção só pra desbloquear.",
     items: [
       {
         number: "01",
         duration: "5 min",
         name: "Clonar o repositório",
-        body: "No GitHub, copie o link do repo product-zs e clone. Se você usa Cursor, clone direto pelo comando \"Clone repository\" — ele já abre o projeto pronto pra editar.",
+        body: "Copie o link do repo ZapSign-Product-Hubble no GitHub e clone. Se você usa Cursor, clone direto pelo comando \"Clone repository\" — ele já abre o projeto pronto pra editar.",
         highlights: [
-          "git clone git@github.com:zapsign/product-zs.git",
-          "cd product-zs",
+          "git clone https://github.com/gabernardi/ZapSign-Product-Hubble.git",
+          "cd ZapSign-Product-Hubble",
           "npm install",
           "npm run dev  →  abre em http://localhost:3000",
         ],
