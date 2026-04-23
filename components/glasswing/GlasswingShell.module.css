@@ -58,24 +58,30 @@
 }
 
 .brandText {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   white-space: nowrap;
+  line-height: 1;
 }
 
 .brandCompany {
-  color: var(--gw-ink);
-  font-weight: 500;
+  color: var(--gw-ink-2);
+  font-weight: 400;
+  letter-spacing: -0.004em;
 }
 
 .brandSep {
-  color: var(--gw-ink-3);
-  font-weight: 400;
+  color: var(--gw-ink-4);
+  font-weight: 300;
+  font-size: 0.92em;
+  transform: translateY(-0.5px);
 }
 
 .brandProduct {
   color: var(--gw-ink);
   font-weight: 600;
-  letter-spacing: -0.008em;
+  letter-spacing: -0.012em;
 }
 
 .rightCluster {
