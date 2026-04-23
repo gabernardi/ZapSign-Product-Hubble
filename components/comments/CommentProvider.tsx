@@ -11,7 +11,6 @@ import {
   type ReactNode,
 } from "react";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 import {
   addComment as addCommentAction,
   createThread as createThreadAction,
@@ -86,8 +85,6 @@ export function CommentProvider({
   children,
 }: CommentProviderProps) {
   const { data: session } = useSession();
-  const searchParams = useSearchParams();
-  const requestedThreadId = searchParams.get("thread");
   const {
     refresh: refreshInbox,
     markThreadRead: markInboxThreadRead,
@@ -100,6 +97,7 @@ export function CommentProvider({
   const [composeAnchor, setComposeAnchor] = useState<CommentAnchor | null>(
     null,
   );
+  const [requestedThreadId, setRequestedThreadId] = useState<string | null>(null);
 
   const sessionEmail = session?.user?.email ?? null;
   const sessionName = session?.user?.name ?? null;
@@ -166,6 +164,17 @@ export function CommentProvider({
 
   const cancelCompose = useCallback(() => {
     setComposeAnchor(null);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncFromLocation = () => {
+      const params = new URLSearchParams(window.location.search);
+      setRequestedThreadId(params.get("thread"));
+    };
+    syncFromLocation();
+    window.addEventListener("popstate", syncFromLocation);
+    return () => window.removeEventListener("popstate", syncFromLocation);
   }, []);
 
   useEffect(() => {

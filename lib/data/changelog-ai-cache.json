@@ -11038,5 +11038,21 @@
     "description": "O endpoint de upload de documentos extras apresentava alta latência devido a problemas na conversão de arquivos. Agora, a latência foi reduzida de ~4938ms para ~3092ms, garantindo um desempenho mais estável.",
     "impact": "O envio de documentos extras agora é mais rápido, melhorando a eficiência no processo de upload.",
     "source": "openai"
+  },
+  "pr:v2:truora/web:1675:65b664e9a2c7": {
+    "userFacing": false,
+    "reason": "Mudanças internas para rastreamento de eventos, sem impacto direto no cliente.",
+    "title": "",
+    "description": "",
+    "impact": "",
+    "source": "openai"
+  },
+  "pr:v2:truora/api:2984:c267cfc822b5": {
+    "userFacing": false,
+    "reason": "Mudanças internas em migrations do Django sem efeito visível ao usuário.",
+    "title": "",
+    "description": "",
+    "impact": "",
+    "source": "openai"
   }
 }
