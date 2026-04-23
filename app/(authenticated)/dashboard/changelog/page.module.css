@@ -1,17 +1,4 @@
 .page {
-  --gw-bg: #0A0A0A;
-  --gw-surface: #111111;
-  --gw-surface-2: #161616;
-  --gw-surface-3: #1A1A1A;
-
-  --gw-ink: #FFFFFF;
-  --gw-ink-2: rgba(255, 255, 255, 0.78);
-  --gw-ink-3: rgba(255, 255, 255, 0.58);
-  --gw-ink-4: rgba(255, 255, 255, 0.38);
-
-  --gw-rule: rgba(255, 255, 255, 0.08);
-  --gw-rule-strong: rgba(255, 255, 255, 0.18);
-
   --gw-accent: #A8E6CF;
   --gw-accent-2: #7FA6FA;
   --gw-accent-soft: rgba(168, 230, 207, 0.14);
@@ -149,7 +136,7 @@
 .originProse code {
   font-family: var(--gw-font-mono);
   font-size: 14px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--gw-veil-3);
   border: 1px solid var(--gw-rule);
   padding: 1px 6px;
   border-radius: 4px;
