@@ -17,6 +17,7 @@ import {
 import type {
   CommentInboxItem,
   CommentInboxSummary,
+  Thread,
 } from "@/lib/data/comments";
 
 const POLL_INTERVAL_MS = 30_000;
@@ -30,11 +31,60 @@ interface CommentsInboxContextValue {
   markThreadRead: (pageId: string, threadId: string) => Promise<void>;
   markAllRead: () => Promise<void>;
   isThreadUnread: (pageId: string, threadId: string) => boolean;
+  /**
+   * Atualiza (ou insere) uma thread no cache local da inbox. Chamado pelo
+   * `CommentProvider` após ações locais para refletir a mudança na UI global
+   * antes da resposta do servidor chegar.
+   */
+  upsertThread: (pageId: string, thread: Thread) => void;
+  /**
+   * Remove uma thread do cache local da inbox (ex.: delete do último
+   * comentário que resulta em remoção da thread inteira).
+   */
+  removeThread: (pageId: string, threadId: string) => void;
 }
 
 const CommentsInboxContext = createContext<CommentsInboxContextValue | null>(
   null,
 );
+
+const COMMENT_PAGE_META: Record<
+  string,
+  { label: string; section: string }
+> = {
+  "/dashboard": { label: "Dashboard", section: "Workspace" },
+  "/dashboard/upstream": { label: "Upstream", section: "Guidelines" },
+  "/dashboard/downstream": { label: "Downstream", section: "Guidelines" },
+  "/dashboard/papeis": {
+    label: "Papéis & Responsabilidades",
+    section: "Guidelines",
+  },
+  "/dashboard/roadmap": { label: "Roadmap", section: "Roadmap" },
+  "/dashboard/contribuir": { label: "Laboratório", section: "Laboratório" },
+  "/dashboard/changelog": { label: "Changelog", section: "Laboratório" },
+  "/dashboard/management-tips": { label: "Liderança", section: "Processo" },
+};
+
+function pageMeta(pageId: string): { label: string; section: string } {
+  if (pageId.startsWith("/dashboard/roadmap/")) {
+    const quarter = pageId.split("/").pop()?.toUpperCase() ?? "Roadmap";
+    return { label: `Roadmap ${quarter}`, section: "Roadmap" };
+  }
+  return (
+    COMMENT_PAGE_META[pageId] ?? {
+      label: pageId.replace("/dashboard/", "").replaceAll("-", " "),
+      section: "Outras páginas",
+    }
+  );
+}
+
+function sortByActivity(items: CommentInboxItem[]): CommentInboxItem[] {
+  return [...items].sort(
+    (a, b) =>
+      new Date(b.thread.lastActivityAt).getTime() -
+      new Date(a.thread.lastActivityAt).getTime(),
+  );
+}
 
 function applyThreadRead(
   items: CommentInboxItem[],
@@ -134,6 +184,62 @@ export function CommentsInboxProvider({ children }: { children: ReactNode }) {
     [items],
   );
 
+  const upsertThread = useCallback(
+    (pageId: string, thread: Thread) => {
+      const lastComment = thread.comments[thread.comments.length - 1];
+      if (!lastComment) {
+        setItems((prev) =>
+          prev.filter(
+            (item) => !(item.pageId === pageId && item.thread.id === thread.id),
+          ),
+        );
+        return;
+      }
+      setItems((prev) => {
+        const meta = pageMeta(pageId);
+        const existing = prev.find(
+          (item) => item.pageId === pageId && item.thread.id === thread.id,
+        );
+        const nextItem: CommentInboxItem = existing
+          ? {
+              ...existing,
+              thread,
+              lastComment,
+              // Mantém estado de unread otimista: ação do próprio usuário
+              // marca como lido; atividade de outros só vira "unread" via
+              // refresh do servidor.
+              unread:
+                currentUserEmail &&
+                lastComment.createdBy.email.toLowerCase() ===
+                  currentUserEmail.toLowerCase()
+                  ? false
+                  : existing.unread,
+            }
+          : {
+              pageId,
+              pageLabel: meta.label,
+              pageSection: meta.section,
+              thread,
+              lastComment,
+              unread: false,
+            };
+        const without = prev.filter(
+          (item) => !(item.pageId === pageId && item.thread.id === thread.id),
+        );
+        return sortByActivity([...without, nextItem]);
+      });
+    },
+    [currentUserEmail],
+  );
+
+  const removeThread = useCallback((pageId: string, threadId: string) => {
+    setItems((prev) =>
+      prev.filter(
+        (item) => !(item.pageId === pageId && item.thread.id === threadId),
+      ),
+    );
+  }, []);
+
   const value = useMemo<CommentsInboxContextValue>(
     () => ({
       items,
@@ -144,6 +250,8 @@ export function CommentsInboxProvider({ children }: { children: ReactNode }) {
       markThreadRead,
       markAllRead,
       isThreadUnread,
+      upsertThread,
+      removeThread,
     }),
     [
       items,
@@ -154,6 +262,8 @@ export function CommentsInboxProvider({ children }: { children: ReactNode }) {
       markThreadRead,
       markAllRead,
       isThreadUnread,
+      upsertThread,
+      removeThread,
     ],
   );
 

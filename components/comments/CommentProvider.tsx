@@ -89,6 +89,8 @@ export function CommentProvider({
     refresh: refreshInbox,
     markThreadRead: markInboxThreadRead,
     isThreadUnread: isInboxThreadUnread,
+    upsertThread: upsertInboxThread,
+    removeThread: removeInboxThread,
   } = useCommentsInbox();
   const [threads, setThreads] = useState<Thread[]>(initialThreads);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -230,14 +232,15 @@ export function CommentProvider({
         setActiveThreadId(created.id);
         setComposeAnchor(null);
         setPanelOpen(true);
-        await refreshInbox();
+        upsertInboxThread(pageId, created);
+        void refreshInbox();
         return created;
       } catch (err) {
         console.error("createThread failed", err);
         return null;
       }
     },
-    [localAuthor, pageId, refreshInbox],
+    [localAuthor, pageId, refreshInbox, upsertInboxThread],
   );
 
   const replyToThread = useCallback(
@@ -247,8 +250,9 @@ export function CommentProvider({
       if (!trimmed) return;
       const now = new Date().toISOString();
       const optimisticId = `c_optim_${Math.random().toString(36).slice(2, 8)}`;
-      setThreads((prev) =>
-        prev.map((t) =>
+      let optimisticThread: Thread | null = null;
+      setThreads((prev) => {
+        const next = prev.map((t) =>
           t.id === threadId
             ? {
                 ...t,
@@ -262,14 +266,24 @@ export function CommentProvider({
                     reactions: {},
                   },
                 ],
+                lastActivityAt: now,
+                lastActivityBy: localAuthor,
+                participantEmails: t.participantEmails.includes(localAuthor.email)
+                  ? t.participantEmails
+                  : [...t.participantEmails, localAuthor.email],
               }
             : t,
-        ),
-      );
+        );
+        optimisticThread = next.find((t) => t.id === threadId) ?? null;
+        return next;
+      });
+      if (optimisticThread) {
+        upsertInboxThread(pageId, optimisticThread);
+      }
       try {
         await addCommentAction(pageId, threadId, trimmed);
         await refresh();
-        await refreshInbox();
+        void refreshInbox();
       } catch (err) {
         console.error("replyToThread failed", err);
         setThreads((prev) =>
@@ -284,7 +298,7 @@ export function CommentProvider({
         );
       }
     },
-    [localAuthor, pageId, refresh, refreshInbox],
+    [localAuthor, pageId, refresh, refreshInbox, upsertInboxThread],
   );
 
   const reactToComment = useCallback(
@@ -326,18 +340,23 @@ export function CommentProvider({
 
   const resolveThread = useCallback(
     async (threadId: string, status: ThreadStatus) => {
-      setThreads((prev) =>
-        prev.map((t) => (t.id === threadId ? { ...t, status } : t)),
-      );
+      setThreads((prev) => {
+        const next = prev.map((t) =>
+          t.id === threadId ? { ...t, status } : t,
+        );
+        const updated = next.find((t) => t.id === threadId);
+        if (updated) upsertInboxThread(pageId, updated);
+        return next;
+      });
       try {
         await setThreadStatusAction(pageId, threadId, status);
-        await refreshInbox();
+        void refreshInbox();
       } catch (err) {
         console.error("setThreadStatus failed", err);
         await refresh();
       }
     },
-    [pageId, refresh, refreshInbox],
+    [pageId, refresh, refreshInbox, upsertInboxThread],
   );
 
   const removeComment = useCallback(
@@ -347,25 +366,29 @@ export function CommentProvider({
         if (result.threadRemoved) {
           setThreads((prev) => prev.filter((t) => t.id !== threadId));
           setActiveThreadId((curr) => (curr === threadId ? null : curr));
+          removeInboxThread(pageId, threadId);
         } else {
-          setThreads((prev) =>
-            prev.map((t) =>
+          setThreads((prev) => {
+            const next = prev.map((t) =>
               t.id === threadId
                 ? {
                     ...t,
                     comments: t.comments.filter((c) => c.id !== commentId),
                   }
                 : t,
-            ),
-          );
+            );
+            const updated = next.find((t) => t.id === threadId);
+            if (updated) upsertInboxThread(pageId, updated);
+            return next;
+          });
         }
-        await refreshInbox();
+        void refreshInbox();
       } catch (err) {
         console.error("deleteComment failed", err);
         await refresh();
       }
     },
-    [pageId, refresh, refreshInbox],
+    [pageId, refresh, refreshInbox, removeInboxThread, upsertInboxThread],
   );
 
   const value = useMemo<CommentContextValue>(
