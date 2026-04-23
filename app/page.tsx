@@ -69,12 +69,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </span>
 
           <h1 className={styles.title}>
-            Entre com sua conta ZapSign.
+            Entre no Product Hubble.
           </h1>
 
           <p className={styles.subtitle}>
-            Guia interno do time de produto. Disponível para contas
-            corporativas <strong>@zapsign.com.br</strong> e{" "}
+            A central de produto da ZapSign — roadmap, decisões e aprendizados
+            do time. Acesso com contas <strong>@zapsign.com.br</strong> e{" "}
             <strong>@truora.com</strong>.
           </p>
 
@@ -89,8 +89,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           )}
 
           <p className={styles.note}>
-            Ao entrar, você concorda com o uso interno deste guia pelo time de
-            produto. Sessões expiram automaticamente após período de inatividade.
+            Sem acesso? Fale com o time de produto.
           </p>
         </div>
       </main>
