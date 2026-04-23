@@ -24,7 +24,7 @@ const STORAGE_KEY = "zs-theme";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function readStoredPreference(): ThemePreference {
-  if (typeof window === "undefined") return "dark";
+  if (typeof window === "undefined") return "light";
   try {
     const value = window.localStorage.getItem(STORAGE_KEY);
     if (value === "light" || value === "dark" || value === "system") {
@@ -33,17 +33,17 @@ function readStoredPreference(): ThemePreference {
   } catch {
     // localStorage unavailable (private mode, SSR edge). Fall through.
   }
-  // No stored preference: Hubble ships with dark as the default. Users can
-  // still opt into light or system via the theme toggle.
-  return "dark";
+  // No stored preference: Hubble ships with light as the default. Users can
+  // still opt into dark or system via the theme toggle.
+  return "light";
 }
 
 function resolvePreference(pref: ThemePreference): ResolvedTheme {
   if (pref === "light" || pref === "dark") return pref;
-  if (typeof window === "undefined") return "dark";
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "dark";
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 function applyResolved(pref: ThemePreference, resolved: ResolvedTheme) {
@@ -122,7 +122,7 @@ export function useTheme(): ThemeContextValue {
     // happen in production, but keeps storybook/tests simple).
     return {
       preference: "system",
-      resolved: "dark",
+      resolved: "light",
       setPreference: () => {},
       toggle: () => {},
     };
@@ -144,8 +144,8 @@ export const THEME_INIT_SCRIPT = `(() => {
     } else if (v === 'system') {
       document.documentElement.removeAttribute('data-theme');
     } else {
-      // No stored preference: default to dark to match Hubble's ship state.
-      document.documentElement.setAttribute('data-theme', 'dark');
+      // No stored preference: default to light to match Hubble's ship state.
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   } catch (e) {}
 })();`;

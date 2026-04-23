@@ -165,21 +165,24 @@
      Shared tokens used by full-bleed pages
      (dashboard, upstream, downstream, roadmap,
       contribuir, changelog, login).
-     Default = dark. Overridden by [data-theme]
+     Default = light. Overridden by [data-theme]
      and prefers-color-scheme below.
      ══════════════════════════════════════════ */
-  --gw-bg:          #0A0A0A;
-  --gw-surface:     #111111;
-  --gw-surface-2:   #161616;
-  --gw-surface-3:   #1A1A1A;
+  --gw-bg:          #FFFFFF;
+  --gw-surface:     #FAFAFA;
+  --gw-surface-2:   #F4F4F5;
+  --gw-surface-3:   #EBEBEB;
 
-  --gw-ink:         #FFFFFF;
-  --gw-ink-2:       rgba(255, 255, 255, 0.78);
-  --gw-ink-3:       rgba(255, 255, 255, 0.58);
-  --gw-ink-4:       rgba(255, 255, 255, 0.38);
+  --gw-ink:         #0A0A0A;
+  --gw-ink-2:       rgba(10, 10, 10, 0.78);
+  --gw-ink-3:       rgba(10, 10, 10, 0.54);
+  --gw-ink-4:       rgba(10, 10, 10, 0.38);
 
-  --gw-rule:        rgba(255, 255, 255, 0.10);
-  --gw-rule-strong: rgba(255, 255, 255, 0.22);
+  --gw-rule:        rgba(10, 10, 10, 0.10);
+  --gw-rule-strong: rgba(10, 10, 10, 0.20);
+
+  /* Invert white brand asset so it reads on light surfaces. */
+  --gw-brand-mark-filter: invert(1);
 
   /* Semantic veils built on top of --gw-ink — automatically adapt
      to light / dark by mixing the current ink color with transparent. */
@@ -190,30 +193,29 @@
   --gw-veil-5:      color-mix(in srgb, var(--gw-ink) 12%, transparent);
 
   /* Color scheme hint for form controls, scrollbars, etc. */
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-/* Light mode — default when the system prefers light and the user
-   hasn't explicitly chosen a theme. */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --gw-bg:          #FFFFFF;
-    --gw-surface:     #FAFAFA;
-    --gw-surface-2:   #F4F4F5;
-    --gw-surface-3:   #EBEBEB;
+/* Dark mode — applied when the system prefers dark and the user
+   hasn't explicitly chosen light via the theme toggle. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --gw-bg:          #0A0A0A;
+    --gw-surface:     #111111;
+    --gw-surface-2:   #161616;
+    --gw-surface-3:   #1A1A1A;
 
-    --gw-ink:         #0A0A0A;
-    --gw-ink-2:       rgba(10, 10, 10, 0.78);
-    --gw-ink-3:       rgba(10, 10, 10, 0.54);
-    --gw-ink-4:       rgba(10, 10, 10, 0.38);
+    --gw-ink:         #FFFFFF;
+    --gw-ink-2:       rgba(255, 255, 255, 0.78);
+    --gw-ink-3:       rgba(255, 255, 255, 0.58);
+    --gw-ink-4:       rgba(255, 255, 255, 0.38);
 
-    --gw-rule:        rgba(10, 10, 10, 0.10);
-    --gw-rule-strong: rgba(10, 10, 10, 0.20);
+    --gw-rule:        rgba(255, 255, 255, 0.10);
+    --gw-rule-strong: rgba(255, 255, 255, 0.22);
 
-    /* Invert white brand asset so it reads on light surfaces. */
-    --gw-brand-mark-filter: invert(1);
+    --gw-brand-mark-filter: none;
 
-    color-scheme: light;
+    color-scheme: dark;
   }
 }
 

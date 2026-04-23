@@ -176,39 +176,39 @@
    de código decide). .navItem.navItemLab também sobe a specificity
    pra 0,2,0 como camada extra de segurança. */
 
-/* Tokens do flair: valores neon pro modo escuro (padrão) */
+/* Tokens do flair: valores sóbrios pro modo claro (padrão) */
 .navItem.navItemLab,
 .navFlair {
-  --lab-grad-1: #B6FF7A;
-  --lab-grad-2: #7BE9FF;
-  --lab-grad-3: #C7A4FF;
-  --lab-glow-1: rgba(182, 255, 122, 0.4);
-  --lab-glow-2: rgba(123, 233, 255, 0.25);
-  --lab-glow-3: rgba(199, 164, 255, 0.35);
-}
-
-/* Modo claro por preferência do sistema */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .navItem.navItemLab,
-  :root:not([data-theme="dark"]) .navFlair {
-    --lab-grad-1: #1F9A5E;
-    --lab-grad-2: #1E6FD9;
-    --lab-grad-3: #6B3FCF;
-    --lab-glow-1: rgba(31, 154, 94, 0.35);
-    --lab-glow-2: rgba(30, 111, 217, 0.25);
-    --lab-glow-3: rgba(107, 63, 207, 0.3);
-  }
-}
-
-/* Modo claro explícito (override do usuário) */
-:root[data-theme="light"] .navItem.navItemLab,
-:root[data-theme="light"] .navFlair {
   --lab-grad-1: #1F9A5E;
   --lab-grad-2: #1E6FD9;
   --lab-grad-3: #6B3FCF;
   --lab-glow-1: rgba(31, 154, 94, 0.35);
   --lab-glow-2: rgba(30, 111, 217, 0.25);
   --lab-glow-3: rgba(107, 63, 207, 0.3);
+}
+
+/* Modo escuro por preferência do sistema */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .navItem.navItemLab,
+  :root:not([data-theme="light"]) .navFlair {
+    --lab-grad-1: #B6FF7A;
+    --lab-grad-2: #7BE9FF;
+    --lab-grad-3: #C7A4FF;
+    --lab-glow-1: rgba(182, 255, 122, 0.4);
+    --lab-glow-2: rgba(123, 233, 255, 0.25);
+    --lab-glow-3: rgba(199, 164, 255, 0.35);
+  }
+}
+
+/* Modo escuro explícito (override do usuário) */
+:root[data-theme="dark"] .navItem.navItemLab,
+:root[data-theme="dark"] .navFlair {
+  --lab-grad-1: #B6FF7A;
+  --lab-grad-2: #7BE9FF;
+  --lab-grad-3: #C7A4FF;
+  --lab-glow-1: rgba(182, 255, 122, 0.4);
+  --lab-glow-2: rgba(123, 233, 255, 0.25);
+  --lab-glow-3: rgba(199, 164, 255, 0.35);
 }
 
 .navItem.navItemLab {
