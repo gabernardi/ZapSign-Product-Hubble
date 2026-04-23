@@ -63,7 +63,9 @@ export async function loadJsonBlob<T>(
   filename: string,
   emptyValue: T,
 ): Promise<T> {
-  if (blobEnabled()) {
+  const enabled = blobEnabled();
+  console.info(`[json-blob-store] load start filename=${filename} blob=${enabled}`);
+  if (enabled) {
     try {
       const meta = await head(filename);
       const cacheBuster = meta.uploadedAt
@@ -75,20 +77,33 @@ export async function loadJsonBlob<T>(
       });
       if (res.ok) {
         const text = await res.text();
+        console.info(
+          `[json-blob-store] load ok filename=${filename} bytes=${text.length}`,
+        );
         return JSON.parse(text) as T;
       }
       console.warn(
-        `[json-blob-store] fetch failed for ${filename}: ${res.status} ${res.statusText}`,
+        `[json-blob-store] fetch failed filename=${filename} status=${res.status} ${res.statusText}`,
       );
     } catch (err) {
       // Blob ainda não existe (primeiro deploy) ou leitura falhou: cai pro
       // seed local + emptyValue. Erros reais ficam visíveis no log sem
       // quebrar o prerender/runtime.
-      if (!(err instanceof BlobNotFoundError)) {
-        console.warn(`[json-blob-store] read failed for ${filename}:`, err);
+      if (err instanceof BlobNotFoundError) {
+        console.info(
+          `[json-blob-store] blob not found filename=${filename} (using seed)`,
+        );
+      } else {
+        console.warn(
+          `[json-blob-store] read failed filename=${filename}:`,
+          err,
+        );
       }
     }
     const seed = await readLocal<T>(filename);
+    console.info(
+      `[json-blob-store] load fallback filename=${filename} seed=${Boolean(seed)}`,
+    );
     return seed ?? emptyValue;
   }
 
@@ -100,15 +115,26 @@ export async function saveJsonBlob<T>(
   filename: string,
   value: T,
 ): Promise<void> {
-  if (blobEnabled()) {
-    await put(filename, JSON.stringify(value, null, 2) + "\n", {
+  const enabled = blobEnabled();
+  console.info(
+    `[json-blob-store] save start filename=${filename} blob=${enabled}`,
+  );
+  if (enabled) {
+    const body = JSON.stringify(value, null, 2) + "\n";
+    const result = await put(filename, body, {
       access: "public",
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: "application/json",
       cacheControlMaxAge: CACHE_TTL_SECONDS,
     });
+    console.info(
+      `[json-blob-store] save ok filename=${filename} bytes=${body.length} pathname=${result.pathname} url=${result.url}`,
+    );
     return;
   }
   await writeLocal(filename, value);
+  console.info(
+    `[json-blob-store] save local filename=${filename} (dev mode, not persistent on Vercel)`,
+  );
 }
