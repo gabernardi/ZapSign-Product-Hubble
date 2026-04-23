@@ -28,10 +28,41 @@ import { useCommentsInbox } from "./CommentsInboxProvider";
 import { useCommentsStream } from "./CommentsStreamProvider";
 
 /**
+ * Detecta se um override otimista (tipicamente com ID temporário) já foi
+ * reconciliado pelo servidor, mesmo que com um ID diferente. Comparamos pelo
+ * anchor + o corpo do primeiro comentário + o autor — fingerprint suficiente
+ * pra saber que é a "mesma" criação otimista.
+ */
+function isEquivalentToServer(
+  override: Thread,
+  serverThreads: readonly Thread[],
+): boolean {
+  const firstOverride = override.comments[0];
+  if (!firstOverride) return false;
+  return serverThreads.some((srv) => {
+    if (srv.id === override.id) return true;
+    if (
+      srv.anchor.blockId !== override.anchor.blockId ||
+      srv.anchor.startOffset !== override.anchor.startOffset ||
+      srv.anchor.endOffset !== override.anchor.endOffset
+    ) {
+      return false;
+    }
+    const firstSrv = srv.comments[0];
+    if (!firstSrv) return false;
+    return (
+      firstSrv.body === firstOverride.body &&
+      firstSrv.createdBy.email.toLowerCase() ===
+        firstOverride.createdBy.email.toLowerCase()
+    );
+  });
+}
+
+/**
  * Mescla threads do stream com overrides otimistas e remoções locais.
  *
  * Reconciliação é puramente lógica (baseada em `lastActivityAt` e presença
- * no servidor) — sem timestamps arbitrários. Um `useEffect` separado cuida
+ * no servidor) — sem timestamps arbitrários. Um `useCallback` separado cuida
  * de limpar overrides/removes que o servidor já refletiu.
  */
 function applyOverrides(
@@ -50,7 +81,12 @@ function applyOverrides(
   for (const [id, override] of overridesById) {
     const existing = byId.get(id);
     if (!existing) {
-      byId.set(id, override);
+      // Override "órfão" (ex.: tempId ainda não reconciliado). Só adiciona
+      // se o servidor também não tem um thread equivalente com outro ID —
+      // caso contrário, deixa o servidor vencer pra evitar duplicar na UI.
+      if (!isEquivalentToServer(override, serverThreads)) {
+        byId.set(id, override);
+      }
       continue;
     }
     const localTs = new Date(override.lastActivityAt).getTime();
@@ -304,21 +340,78 @@ export function CommentProvider({
       if (!localAuthor) return null;
       const trimmed = body.trim();
       if (!trimmed) return null;
+
+      // Otimismo upfront: mostra a thread com um ID temporário antes do
+      // servidor responder. Quando a action retornar (incluindo a espera de
+      // propagação do Blob), trocamos o temp pelo thread real.
+      const tempId = `t_optim_${Math.random().toString(36).slice(2, 10)}`;
+      const now = new Date().toISOString();
+      const optimistic: Thread = {
+        id: tempId,
+        anchor,
+        status: "open",
+        createdAt: now,
+        createdBy: localAuthor,
+        comments: [
+          {
+            id: `c_optim_${Math.random().toString(36).slice(2, 10)}`,
+            body: trimmed,
+            createdAt: now,
+            createdBy: localAuthor,
+            reactions: {},
+          },
+        ],
+        participantEmails: [localAuthor.email],
+        lastActivityAt: now,
+        lastActivityBy: localAuthor,
+        readStateByUser: { [localAuthor.email.toLowerCase()]: now },
+        lastNotifiedAtByUser: {},
+      };
+
+      upsertLocalOverride(optimistic);
+      upsertInboxThread(pageId, optimistic);
+      setPendingThreadId(tempId);
+      setActiveThreadId(tempId);
+      setComposeAnchor(null);
+      setPanelOpen(true);
+
       try {
         const created = await createThreadAction(pageId, anchor, trimmed);
-        upsertLocalOverride(created);
-        setPendingThreadId(created.id);
-        setActiveThreadId(created.id);
-        setComposeAnchor(null);
-        setPanelOpen(true);
+        // Troca o temp pelo thread real. O SSE também vai emitir — o
+        // `pruneReconciled` limpa overrides quando o server alcança.
+        setOverrides((prev) => {
+          const next = new Map(prev);
+          next.delete(tempId);
+          next.set(created.id, created);
+          return next;
+        });
+        removeInboxThread(pageId, tempId);
         upsertInboxThread(pageId, created);
+        setPendingThreadId(created.id);
+        setActiveThreadId((curr) => (curr === tempId ? created.id : curr));
         return created;
       } catch (err) {
         console.error("createThread failed", err);
+        // Rollback: remove o otimista.
+        setOverrides((prev) => {
+          if (!prev.has(tempId)) return prev;
+          const next = new Map(prev);
+          next.delete(tempId);
+          return next;
+        });
+        removeInboxThread(pageId, tempId);
+        setActiveThreadId((curr) => (curr === tempId ? null : curr));
+        setPendingThreadId((curr) => (curr === tempId ? null : curr));
         return null;
       }
     },
-    [localAuthor, pageId, upsertInboxThread, upsertLocalOverride],
+    [
+      localAuthor,
+      pageId,
+      removeInboxThread,
+      upsertInboxThread,
+      upsertLocalOverride,
+    ],
   );
 
   const replyToThread = useCallback(
