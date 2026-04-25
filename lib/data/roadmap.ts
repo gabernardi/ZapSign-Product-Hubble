@@ -11,6 +11,7 @@ export type ProjectStatus =
   | "development"
   | "design"
   | "discovery"
+  | "blocked"
   | "validated"
   | "conditional"
   | "production"
@@ -219,23 +220,30 @@ const Q2_SQUADS: RoadmapSquad[] = [
         id: "gr-003",
         title: "Gestão de assinatura v2 — Produção",
         description:
-          "Cliente gerencia o plano sem precisar cancelar e recomprar.",
+          "Página em que o cliente vê o que o plano oferece, gerencia informações de pagamento e adiciona add-ons e créditos.",
         status: "design",
         continuation: true,
       },
       {
         id: "gr-004",
+        title: "Mudança de planos v2 — Produção",
+        description:
+          "Cliente gerencia o plano sem precisar cancelar e recomprar.",
+        status: "blocked",
+      },
+      {
+        id: "gr-005",
         title: "Planos LATAM adaptados à estrutura BR",
         description:
           "Adaptar estrutura de planos para CO, MX, PE, CL e AR.",
         status: "design",
       },
       {
-        id: "gr-005",
+        id: "gr-006",
         title: "Definição de paywalls",
         description:
           "Pontos de conversão com CTA claro para upgrade dentro da plataforma.",
-        status: "design",
+        status: "development",
       },
     ],
   },

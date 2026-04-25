@@ -285,6 +285,11 @@
   border-style: dashed;
 }
 
+.status_blocked {
+  color: var(--gw-ink-3);
+  border-style: dashed;
+}
+
 .status_conditional {
   color: var(--gw-ink-3);
   border-style: dashed;
