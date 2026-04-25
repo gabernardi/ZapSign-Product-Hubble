@@ -205,7 +205,6 @@ const Q2_SQUADS: RoadmapSquad[] = [
         description:
           "Redesign do fluxo de planos. Principal motivo de contato com o suporte.",
         status: "development",
-        continuation: true,
       },
       {
         id: "gr-002",
@@ -213,7 +212,6 @@ const Q2_SQUADS: RoadmapSquad[] = [
         description:
           "Novo fluxo de compra para reduzir fricção e aumentar conversão.",
         status: "development",
-        continuation: true,
       },
       {
         id: "gr-003",
@@ -221,7 +219,6 @@ const Q2_SQUADS: RoadmapSquad[] = [
         description:
           "Cliente gerencia o plano sem precisar cancelar e recomprar.",
         status: "design",
-        continuation: true,
       },
       {
         id: "gr-004",
