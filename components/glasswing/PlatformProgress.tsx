@@ -5,6 +5,7 @@ const STATUS_LABEL: Record<ProjectStatus, string> = {
   development: "Em desenvolvimento",
   design: "Design",
   discovery: "Discovery",
+  blocked: "Bloqueado",
   validated: "Validado",
   conditional: "Condicional",
   production: "Em produção",
