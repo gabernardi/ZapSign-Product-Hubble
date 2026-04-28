@@ -61,13 +61,15 @@ jobs:
           url="${base}/api/cron/smsdev-balance"
           echo "POST ${url}"
 
-          # -s silencioso, -S mostra erro, -o salva body, -w só imprime status.
+          # -s silencioso, -S mostra erro, -o salva body, -w imprime status + URL final.
+          # -L segue redirects (Vercel pode redirecionar apex→www ou similar).
+          # --post-redir=all garante que POST continue como POST após 301/302/303.
           # Sem -f para não falhar imediatamente em 4xx/5xx — queremos ver o body.
           curl_exit=0
-          http_code=$(
-            curl -sS \
+          curl_meta=$(
+            curl -sS -L --post-redir=all \
               -o /tmp/response.body \
-              -w "%{http_code}" \
+              -w "http_code=%{http_code}\nurl_effective=%{url_effective}\nnum_redirects=%{num_redirects}\n" \
               -X POST \
               -H "Authorization: Bearer ${CRON_SECRET}" \
               -H "content-type: application/json" \
@@ -76,7 +78,8 @@ jobs:
           ) || curl_exit=$?
 
           echo "curl_exit=${curl_exit}"
-          echo "http_code=${http_code:-<none>}"
+          echo "${curl_meta}"
+          http_code=$(printf '%s' "${curl_meta}" | awk -F= '/^http_code=/ {print $2}')
           echo "--- response body ---"
           cat /tmp/response.body 2>/dev/null || echo "(empty)"
           echo
