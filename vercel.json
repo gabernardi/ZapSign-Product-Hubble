@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/cron/smsdev-balance",
-      "schedule": "0 12,0 * * *"
+      "schedule": "0 12 * * *"
     }
   ]
 }

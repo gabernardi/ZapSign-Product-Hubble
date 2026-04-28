@@ -68,8 +68,8 @@ apenas sem propagação em tempo real (cada cliente vê seu estado após reload)
 
 #### Cron de saldo SMS Dev → Google Chat
 
-A cada 12h, o cron `/api/cron/smsdev-balance` consulta o saldo e posta
-um card no espaço do Google Chat configurado.
+Uma vez por dia, o cron `/api/cron/smsdev-balance` consulta o saldo e
+posta um card no espaço do Google Chat configurado.
 
 - `GOOGLE_CHAT_WEBHOOK_URL` (obrigatório): webhook do espaço do Google
   Chat. Gere em **Apps & Integrações → Webhooks** dentro do espaço.
@@ -77,8 +77,12 @@ um card no espaço do Google Chat configurado.
   como `Authorization: Bearer <CRON_SECRET>` ao acionar o cron. Gere
   com `openssl rand -hex 32`.
 
-O schedule está em `vercel.json` (`0 12,0 * * *` UTC = 09:00 e 21:00
-BRT). Para testar manualmente:
+O schedule está em `vercel.json` (`0 12 * * *` UTC = **09:00 BRT**).
+O plano Hobby da Vercel limita cron jobs a uma execução por dia — para
+rodar 2x/dia ou mais, é preciso plano Pro ou um agendador externo
+(GitHub Actions, cron-job.org) que chame o mesmo endpoint.
+
+Para testar manualmente:
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
