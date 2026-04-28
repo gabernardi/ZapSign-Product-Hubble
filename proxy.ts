@@ -28,11 +28,12 @@ export default auth((req) => {
 });
 
 export const config = {
-  // Exclude Next.js internals, the NextAuth handler, and any static asset
+  // Exclude Next.js internals, the NextAuth handler, cron endpoints
+  // (autenticados via Bearer token, não Google), and any static asset
   // in /public (anything with an extension we care about). Without this,
   // requests like /zapsign-mark-white.png on the unauthenticated login
   // page get redirected to "/", rendering as broken <img>.
   matcher: [
-    "/((?!_next/static|_next/image|api/auth|favicon\\.ico|.+\\.(?:png|jpg|jpeg|gif|svg|webp|ico|txt|xml|woff|woff2|ttf|otf|mp4|webm)$).*)",
+    "/((?!_next/static|_next/image|api/auth|api/cron|favicon\\.ico|.+\\.(?:png|jpg|jpeg|gif|svg|webp|ico|txt|xml|woff|woff2|ttf|otf|mp4|webm)$).*)",
   ],
 };
