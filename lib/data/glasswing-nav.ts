@@ -9,7 +9,9 @@ type ActiveKey =
   | "comentarios"
   | "home"
   | "contribuir"
-  | "changelog";
+  | "changelog"
+  | "ferramentas"
+  | "ferramentas-sms-dev";
 
 export function getGlasswingNav(
   active: ActiveKey = "home",
@@ -87,6 +89,27 @@ export function getGlasswingNav(
           badge: "LAB-001",
           description:
             "Histórico automatizado gerado dos commits da main.",
+        },
+      ],
+    },
+    {
+      label: "Ferramentas",
+      active:
+        active === "ferramentas" || active === "ferramentas-sms-dev",
+      children: [
+        {
+          label: "Todas as ferramentas",
+          href: "/dashboard/ferramentas",
+          active: active === "ferramentas",
+          description:
+            "Utilitários internos do time — consultas, atalhos e automações.",
+        },
+        {
+          label: "Saldo SMS Dev",
+          href: "/dashboard/ferramentas/sms-dev",
+          active: active === "ferramentas-sms-dev",
+          description:
+            "Consulta o saldo da conta SMS Dev e alerta quando está acabando.",
         },
       ],
     },

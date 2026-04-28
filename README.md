@@ -56,6 +56,15 @@ dashboard da app, aba **App Keys**, copie `app_id`, `key`, `secret` e `cluster`.
 Se as envs do Pusher não estiverem configuradas, o app continua funcionando —
 apenas sem propagação em tempo real (cada cliente vê seu estado após reload).
 
+### Ferramentas internas
+
+- `SMSDEV_API_KEY` (opcional): chave da API do SMS Dev usada pela ferramenta
+  em `/dashboard/ferramentas/sms-dev`. Quando definida, o time consulta o
+  saldo com um clique sem precisar colar a chave. Quando ausente, cada
+  pessoa pode colar a própria chave no formulário (fica salva apenas no
+  `localStorage` do navegador). Gere a chave no painel do SMS Dev em
+  Configurações → API.
+
 ## Comentários globais
 O sistema de comentários suporta:
 

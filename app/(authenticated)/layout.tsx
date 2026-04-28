@@ -22,6 +22,7 @@ const FULL_BLEED_PREFIXES = [
   "/dashboard/contribuir",
   "/dashboard/changelog",
   "/dashboard/comentarios",
+  "/dashboard/ferramentas",
 ];
 
 export default function AuthenticatedLayout({
