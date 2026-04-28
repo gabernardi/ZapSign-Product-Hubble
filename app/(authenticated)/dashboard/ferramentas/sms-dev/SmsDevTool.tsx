@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 
-const STORAGE_KEY = "smsdev_api_key_v1";
 const STORAGE_THRESHOLD = "smsdev_threshold_v1";
 
 type CheckResponse =
@@ -12,7 +11,6 @@ type CheckResponse =
       saldo: number;
       threshold: number;
       descricao?: string;
-      keySource?: "env" | "request";
     }
   | {
       status: "error";
@@ -21,26 +19,13 @@ type CheckResponse =
       httpStatus?: number;
     };
 
-interface SmsDevToolProps {
-  hasEnvKey: boolean;
-}
-
-export function SmsDevTool({ hasEnvKey }: SmsDevToolProps) {
-  const [apiKey, setApiKey] = useState("");
-  const [showKey, setShowKey] = useState(false);
-  const [remember, setRemember] = useState(true);
+export function SmsDevTool() {
   const [threshold, setThreshold] = useState(500);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CheckResponse | null>(null);
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setApiKey(saved);
-        setRemember(true);
-      }
       const t = localStorage.getItem(STORAGE_THRESHOLD);
       if (t) {
         const parsed = parseInt(t, 10);
@@ -48,27 +33,14 @@ export function SmsDevTool({ hasEnvKey }: SmsDevToolProps) {
       }
     } catch {
       /* ignore */
-    } finally {
-      setHydrated(true);
     }
   }, []);
 
-  const canSubmit = useMemo(() => {
-    if (loading) return false;
-    if (apiKey.trim()) return true;
-    return hasEnvKey;
-  }, [loading, apiKey, hasEnvKey]);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (loading) return;
 
     try {
-      if (apiKey.trim() && remember) {
-        localStorage.setItem(STORAGE_KEY, apiKey.trim());
-      } else if (!remember) {
-        localStorage.removeItem(STORAGE_KEY);
-      }
       localStorage.setItem(STORAGE_THRESHOLD, String(threshold));
     } catch {
       /* ignore */
@@ -80,76 +52,27 @@ export function SmsDevTool({ hasEnvKey }: SmsDevToolProps) {
       const resp = await fetch("/api/tools/smsdev-balance", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          apiKey: apiKey.trim() || undefined,
-          threshold,
-        }),
+        body: JSON.stringify({ threshold }),
       });
       const data = (await resp.json()) as CheckResponse;
       setResult(data);
     } catch {
       setResult({
         status: "error",
-        descricao: "Falha de rede ao chamar o servidor do Hubble.",
+        descricao: "Falha de rede ao chamar o servidor.",
       });
     } finally {
       setLoading(false);
     }
   }
 
-  function handleClearKey() {
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
-    setApiKey("");
-  }
-
   return (
     <div className={styles.toolWrap}>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.formGrid}>
-          <div className={styles.field}>
-            <label className={styles.fieldLabel} htmlFor="apiKey">
-              Chave da API
-              {hasEnvKey && (
-                <span className={styles.fieldHint}>
-                  · opcional — chave do servidor disponível
-                </span>
-              )}
-            </label>
-            <div className={styles.inputWrap}>
-              <input
-                id="apiKey"
-                type={showKey ? "text" : "password"}
-                className={`${styles.input} ${styles.inputMono} ${styles.inputWithToggle}`}
-                placeholder={
-                  hasEnvKey
-                    ? "deixe vazio para usar a chave do servidor"
-                    : "cole sua chave SMS Dev"
-                }
-                autoComplete="off"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
-              <button
-                type="button"
-                className={styles.inputToggle}
-                onClick={() => setShowKey((s) => !s)}
-                aria-label={showKey ? "Ocultar chave" : "Mostrar chave"}
-              >
-                {showKey ? "Ocultar" : "Mostrar"}
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.fieldLabel} htmlFor="threshold">
-              Limite de alerta
-            </label>
+        <div className={styles.formRow}>
+          <label className={styles.field}>
+            <span className={styles.fieldLabel}>Limite de alerta</span>
             <input
-              id="threshold"
               type="number"
               min={1}
               step={1}
@@ -159,29 +82,17 @@ export function SmsDevTool({ hasEnvKey }: SmsDevToolProps) {
                 const v = parseInt(e.target.value, 10);
                 setThreshold(Number.isFinite(v) && v > 0 ? v : 1);
               }}
+              aria-describedby="threshold-hint"
             />
-          </div>
-        </div>
-
-        {hydrated && apiKey.trim().length > 0 && (
-          <label className={styles.check}>
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-            />
-            <span>Salvar chave neste navegador</span>
-            <span className={styles.checkHint}>
-              · localStorage local, nunca enviada para terceiros
+            <span id="threshold-hint" className={styles.fieldHint}>
+              SMS — alerta dispara abaixo desse valor
             </span>
           </label>
-        )}
 
-        <div className={styles.actions}>
           <button
             type="submit"
-            className={`${styles.btn} ${styles.btnPrimary}`}
-            disabled={!canSubmit}
+            className={styles.btn}
+            disabled={loading}
           >
             {loading ? (
               <>
@@ -192,23 +103,7 @@ export function SmsDevTool({ hasEnvKey }: SmsDevToolProps) {
               <span>Verificar saldo</span>
             )}
           </button>
-          {apiKey.trim().length > 0 && (
-            <button
-              type="button"
-              className={`${styles.btn} ${styles.btnGhost}`}
-              onClick={handleClearKey}
-            >
-              Limpar chave salva
-            </button>
-          )}
         </div>
-
-        {!hasEnvKey && !apiKey.trim() && hydrated && (
-          <p className={styles.helper}>
-            Cole sua chave da API SMS Dev acima ou peça ao admin para definir{" "}
-            <code>SMSDEV_API_KEY</code> no servidor.
-          </p>
-        )}
       </form>
 
       {result && <ResultCard result={result} />}
@@ -238,7 +133,7 @@ function ResultCard({ result }: { result: CheckResponse }) {
 
   const low = result.status === "low";
   const cls = low ? styles.resultLow : styles.resultOk;
-  const title = low ? "Atenção: saldo baixo" : "Saldo OK";
+  const title = low ? "Saldo baixo" : "Saldo OK";
   return (
     <div className={`${styles.result} ${cls}`} role="status">
       <div className={styles.resultIco} aria-hidden="true">
@@ -253,28 +148,16 @@ function ResultCard({ result }: { result: CheckResponse }) {
         <p className={styles.resultMeta}>
           {low ? (
             <>
-              Está <strong>abaixo</strong> do seu limite de alerta (
-              {result.threshold} SMS). Considere recarregar antes que acabe.
+              Abaixo do limite de alerta ({result.threshold.toLocaleString("pt-BR")}{" "}
+              SMS). Considere recarregar antes que acabe.
             </>
           ) : (
             <>
-              Está acima do seu limite de alerta ({result.threshold} SMS).
+              Acima do limite de alerta ({result.threshold.toLocaleString("pt-BR")}{" "}
+              SMS).
             </>
           )}
         </p>
-        {result.descricao && (
-          <p className={styles.resultDescricao}>{result.descricao}</p>
-        )}
-        {result.keySource === "request" && (
-          <p className={styles.resultHint}>
-            Consultado com a chave deste navegador.
-          </p>
-        )}
-        {result.keySource === "env" && (
-          <p className={styles.resultHint}>
-            Consultado com a chave configurada no servidor.
-          </p>
-        )}
       </div>
     </div>
   );
@@ -283,9 +166,9 @@ function ResultCard({ result }: { result: CheckResponse }) {
 function hintFor(result: Extract<CheckResponse, { status: "error" }>) {
   switch (result.hint) {
     case "missing-key":
-      return "Cole sua chave da API ou peça ao admin para definir SMSDEV_API_KEY.";
+      return "Peça ao admin para configurar SMSDEV_API_KEY no painel da Vercel.";
     case "auth":
-      return "A chave está inválida ou foi revogada — gere uma nova no painel SMS Dev.";
+      return "A chave do servidor está inválida ou foi revogada — gere uma nova no painel SMS Dev.";
     case "upstream":
       return "API do SMS Dev fora do ar. Tente novamente em alguns minutos.";
     case "timeout":

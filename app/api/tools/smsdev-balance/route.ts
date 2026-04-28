@@ -22,7 +22,6 @@ type CheckResult =
       saldo: number;
       threshold: number;
       descricao: string;
-      keySource: "env" | "request";
     }
   | {
       status: "error";
@@ -45,43 +44,28 @@ async function ensureAuthorized(): Promise<NextResponse | null> {
   return null;
 }
 
-export async function GET() {
-  const unauthorized = await ensureAuthorized();
-  if (unauthorized) return unauthorized;
-
-  const hasEnvKey = Boolean(process.env.SMSDEV_API_KEY?.trim());
-  return NextResponse.json(
-    { hasEnvKey },
-    { headers: { "cache-control": "no-store" } },
-  );
-}
-
 export async function POST(req: Request) {
   const unauthorized = await ensureAuthorized();
   if (unauthorized) return unauthorized;
 
-  let body: { apiKey?: string; threshold?: number } = {};
+  let body: { threshold?: number } = {};
   try {
     body = await req.json();
   } catch {
     body = {};
   }
 
-  const requestKey = typeof body.apiKey === "string" ? body.apiKey.trim() : "";
-  const envKey = process.env.SMSDEV_API_KEY?.trim() ?? "";
-  const apiKey = requestKey || envKey;
-  const keySource: "env" | "request" = requestKey ? "request" : "env";
-
   const threshold =
     typeof body.threshold === "number" && Number.isFinite(body.threshold)
       ? Math.max(1, Math.floor(body.threshold))
       : DEFAULT_THRESHOLD;
 
+  const apiKey = process.env.SMSDEV_API_KEY?.trim() ?? "";
   if (!apiKey) {
     return NextResponse.json<CheckResult>({
       status: "error",
       descricao:
-        "Chave da API não configurada. Cole sua chave no formulário ou peça ao admin para definir SMSDEV_API_KEY no servidor.",
+        "SMSDEV_API_KEY não está configurada no servidor. Adicione a env var no painel de deploy e tente novamente.",
       hint: "missing-key",
     });
   }
@@ -162,6 +146,5 @@ export async function POST(req: Request) {
     threshold,
     descricao:
       (typeof data.descricao === "string" && data.descricao) || "",
-    keySource,
   });
 }
