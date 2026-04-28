@@ -25,17 +25,13 @@ function isAuthorized(req: Request): boolean {
   return header === `Bearer ${expected}`;
 }
 
-function resolveHubbleUrl(req: Request): string {
-  const fromEnv = (
-    process.env.APP_BASE_URL ||
-    process.env.NEXTAUTH_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
-  ).trim();
-  if (fromEnv) {
-    return `${fromEnv.replace(/\/$/, "")}/dashboard/ferramentas/sms-dev`;
-  }
-  const url = new URL(req.url);
-  return `${url.origin}/dashboard/ferramentas/sms-dev`;
+// Domínio canônico do Hubble. Hardcoded para evitar que o link no card
+// do Google Chat aponte para URLs internas da Vercel (ex: previews ou
+// *.vercel.app), que redirecionam para login e quebram a UX.
+const HUBBLE_CANONICAL_URL = "https://hubble.zapsign.com.br";
+
+function resolveHubbleUrl(): string {
+  return `${HUBBLE_CANONICAL_URL}/dashboard/ferramentas`;
 }
 
 async function runCron(req: Request) {
@@ -64,7 +60,7 @@ async function runCron(req: Request) {
     : SMSDEV_DEFAULT_THRESHOLD;
 
   const result = await checkSmsDevBalance({ threshold });
-  const hubbleUrl = resolveHubbleUrl(req);
+  const hubbleUrl = resolveHubbleUrl();
   const payload = buildSmsDevCard(result, { hubbleUrl });
   const post = await postToGoogleChat(webhookUrl, payload);
 
