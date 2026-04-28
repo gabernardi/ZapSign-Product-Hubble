@@ -7,9 +7,12 @@ import { NextResponse } from "next/server";
 export default auth((req) => {
   const isAuthenticated = Boolean(req.auth?.user);
   const isAuthRoute = req.nextUrl.pathname.startsWith("/api/auth");
+  // Cron endpoints autenticam via Bearer token (CRON_SECRET) dentro do
+  // próprio handler — não devem passar pelo gate de sessão Google.
+  const isCronRoute = req.nextUrl.pathname.startsWith("/api/cron");
   const isLoginPage = req.nextUrl.pathname === "/";
 
-  if (isAuthRoute) {
+  if (isAuthRoute || isCronRoute) {
     return NextResponse.next();
   }
 
