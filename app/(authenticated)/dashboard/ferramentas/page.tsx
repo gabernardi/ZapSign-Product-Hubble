@@ -1,11 +1,6 @@
 import Link from "next/link";
 import { Fraunces } from "next/font/google";
 import { GlasswingShell } from "@/components/glasswing/GlasswingShell";
-import { GlasswingHero } from "@/components/glasswing/GlasswingHero";
-import {
-  EditorialSection,
-  EditorialProse,
-} from "@/components/glasswing/EditorialSection";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
 import { Comments } from "@/components/comments/Comments";
 import { loadPageCommentsForSsr } from "@/lib/comments/ssr";
@@ -26,32 +21,71 @@ export const metadata = {
     "Utilitários internos do time de produto da ZapSign — consultas, atalhos e automações.",
 };
 
-interface ToolEntry {
-  number: string;
-  label: string;
-  title: string;
-  body: string;
+interface Tool {
+  name: string;
+  scope: string;
+  description: string;
   href?: string;
-  cta?: string;
   status: "ready" | "soon";
+  icon: React.ReactNode;
+  meta?: string;
 }
 
-const TOOLS: ToolEntry[] = [
+function MessageIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
+const TOOLS: Tool[] = [
   {
-    number: "01",
-    label: "SMS Dev · Consulta",
-    title: "Saldo SMS Dev",
-    body: "Consulta o saldo da conta SMS Dev e alerta quando está abaixo do limite configurado (padrão: 500 SMS). Útil antes de campanhas com volume alto.",
+    name: "Saldo SMS Dev",
+    scope: "SMS Dev",
+    description:
+      "Consulta o saldo da conta e alerta quando está abaixo do limite. Cron envia card no Google Chat 2x/dia.",
     href: "/dashboard/ferramentas/sms-dev",
-    cta: "Abrir ferramenta",
     status: "ready",
+    icon: <MessageIcon />,
+    meta: "auto · 09:00 e 21:00 BRT",
   },
   {
-    number: "02",
-    label: "Em breve",
-    title: "Próximas ferramentas",
-    body: "Outros utilitários do time entram aqui — sugira o seu via Laboratório.",
+    name: "Próxima ferramenta",
+    scope: "Em breve",
+    description:
+      "Sugira utilitários do dia a dia que valem ser automatizados.",
     status: "soon",
+    icon: <PlusIcon />,
   },
 ];
 
@@ -65,75 +99,81 @@ export default async function FerramentasIndexPage() {
           brand="ZapSign | Product Hubble"
           navItems={getGlasswingNav("ferramentas")}
         >
-          <GlasswingHero
-            eyebrow="Ferramentas"
-            title="Utilitários internos do time."
-            subtitle="Pequenos atalhos pra consultas e tarefas operacionais que aparecem no dia a dia. Cada ferramenta resolve uma coisa só, bem feita."
-            continueLabel="Ver ferramentas"
-            continueHref="#catalogo"
-          />
-
-          <EditorialSection
-            id="catalogo"
-            label="Catálogo de ferramentas."
-            eyebrow="01 · Catálogo"
-            wide
-          >
-            <EditorialProse>
-              <p data-comment-block="ferramentas.intro">
-                Comece pela consulta de saldo do SMS Dev. Outras ferramentas
-                serão adicionadas conforme o time precisar — se você tem uma
-                ideia, abra um experimento no Laboratório.
+          <main className={styles.container}>
+            <header className={styles.head}>
+              <div className={styles.headTop}>
+                <h1 className={styles.title}>Ferramentas</h1>
+                <span className={styles.count}>
+                  {TOOLS.filter((t) => t.status === "ready").length}{" "}
+                  {TOOLS.filter((t) => t.status === "ready").length === 1
+                    ? "ativa"
+                    : "ativas"}
+                </span>
+              </div>
+              <p className={styles.lede}>
+                Utilitários internos do time. Cada ferramenta resolve uma
+                coisa só, sem cerimônia.
               </p>
-            </EditorialProse>
+            </header>
 
-            <ol className={styles.entries}>
+            <ul className={styles.grid}>
               {TOOLS.map((tool) => {
                 const isSoon = tool.status === "soon";
-
-                const body = (
-                  <>
-                    <div className={styles.entryNumber}>{tool.number}</div>
-                    <div className={styles.entryBody}>
-                      <header className={styles.entryHead}>
-                        <span className={styles.entryLabel}>{tool.label}</span>
-                        <h3 className={styles.entryTitle}>{tool.title}</h3>
-                      </header>
-                      <p className={styles.entryText}>{tool.body}</p>
-                      {!isSoon && tool.cta && (
-                        <span className={styles.entryCta}>
-                          {tool.cta}
-                          <span aria-hidden="true" className={styles.entryArrow}>
-                            →
-                          </span>
+                const Card = (
+                  <article
+                    className={`${styles.card} ${isSoon ? styles.cardSoon : ""}`}
+                  >
+                    <div className={styles.cardHead}>
+                      <span className={styles.cardIcon} aria-hidden="true">
+                        {tool.icon}
+                      </span>
+                      <span
+                        className={`${styles.tag} ${isSoon ? styles.tagSoon : styles.tagReady}`}
+                      >
+                        {isSoon ? "Em breve" : "Ativa"}
+                      </span>
+                    </div>
+                    <div className={styles.cardBody}>
+                      <h2 className={styles.cardName}>{tool.name}</h2>
+                      <p className={styles.cardScope}>{tool.scope}</p>
+                      <p className={styles.cardDesc}>{tool.description}</p>
+                    </div>
+                    <footer className={styles.cardFoot}>
+                      {tool.meta && (
+                        <span className={styles.cardMeta}>{tool.meta}</span>
+                      )}
+                      {!isSoon && (
+                        <span className={styles.cardCta}>
+                          Abrir
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path d="M9 3.5l-1 1 2.8 2.8H2v1.4h8.8L8 11.5l1 1 4.5-4.5z" />
+                          </svg>
                         </span>
                       )}
-                    </div>
-                  </>
+                    </footer>
+                  </article>
                 );
 
-                if (isSoon || !tool.href) {
-                  return (
-                    <li
-                      key={tool.number}
-                      className={`${styles.entry} ${styles.entrySoon}`}
-                      aria-disabled="true"
-                    >
-                      {body}
-                    </li>
-                  );
-                }
-
                 return (
-                  <li key={tool.number} className={styles.entry}>
-                    <Link href={tool.href} className={styles.entryLink}>
-                      {body}
-                    </Link>
+                  <li key={tool.name} className={styles.gridItem}>
+                    {tool.href && !isSoon ? (
+                      <Link href={tool.href} className={styles.cardLink}>
+                        {Card}
+                      </Link>
+                    ) : (
+                      Card
+                    )}
                   </li>
                 );
               })}
-            </ol>
-          </EditorialSection>
+            </ul>
+          </main>
         </GlasswingShell>
       </Comments>
     </div>
