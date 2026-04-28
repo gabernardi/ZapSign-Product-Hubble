@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificador de saldo · SMS Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --blue-mid: #AECBFA;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.05);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 32px 64px;
+  }
+
+  /* ─── Header ─── */
+  .hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .hdr-left { display: flex; align-items: baseline; gap: 12px; }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .back {
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-3); text-decoration: none;
+    padding: 5px 10px; border-radius: var(--r-full);
+    border: 1px solid var(--border-lt);
+    transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
+  }
+  .back:hover { background: var(--bg-2); color: var(--ink); }
+
+  /* ─── Hero ─── */
+  .hero { margin: 16px 0 24px; }
+  .hero-eyebrow {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--purple); margin-bottom: 8px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .hero-eyebrow::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple);
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: 30px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .hero-sub {
+    font-size: 15px; color: var(--ink-3); line-height: 1.55;
+    max-width: 620px;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+    padding: 24px;
+  }
+  .card + .card { margin-top: 16px; }
+
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .card-hint {
+    font-size: 12px; color: var(--ink-4);
+  }
+
+  /* ─── Form ─── */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .form-row--single { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .input-wrap { position: relative; display: flex; }
+  .input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 14px; color: var(--ink);
+    padding: 10px 12px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    transition: border-color 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,115,232,.12);
+  }
+  .input--mono { font-family: var(--font-mono); font-size: 13px; }
+  .input--key { padding-right: 70px; }
+  .input-toggle {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    background: transparent; border: 0; cursor: pointer;
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-3);
+    padding: 4px 8px; border-radius: var(--r-sm);
+    transition: background 140ms var(--ease-out), color 140ms var(--ease-out);
+  }
+  .input-toggle:hover { background: var(--bg-2); color: var(--ink); }
+
+  .check {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink-2);
+    margin: 6px 0 16px;
+    cursor: pointer; user-select: none;
+  }
+  .check input {
+    appearance: none; -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--white);
+    cursor: pointer;
+    position: relative;
+    transition: border-color 140ms var(--ease-out), background 140ms var(--ease-out);
+    flex-shrink: 0;
+  }
+  .check input:checked {
+    background: var(--blue); border-color: var(--blue);
+  }
+  .check input:checked::after {
+    content: "";
+    position: absolute; left: 4px; top: 1px;
+    width: 4px; height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .check-hint { color: var(--ink-4); font-size: 12px; }
+
+  .actions {
+    display: flex; gap: 10px; align-items: center;
+    margin-top: 6px;
+  }
+  .btn {
+    font-family: var(--font-display);
+    font-size: 14px; font-weight: 600;
+    padding: 10px 18px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 160ms var(--ease-out), box-shadow 160ms var(--ease-out), transform 160ms var(--ease-out);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn--primary {
+    background: var(--blue); color: var(--white);
+  }
+  .btn--primary:hover:not(:disabled) {
+    background: #1765cc;
+    box-shadow: 0 1px 3px rgba(26,115,232,.3);
+  }
+  .btn--primary:disabled {
+    background: var(--bg-3); color: var(--ink-4);
+    cursor: not-allowed;
+  }
+  .btn--ghost {
+    background: transparent; color: var(--ink-3);
+    border-color: var(--border-lt);
+  }
+  .btn--ghost:hover { background: var(--bg-2); color: var(--ink); }
+
+  /* ─── Spinner ─── */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 700ms linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── Result ─── */
+  .result {
+    margin-top: 16px;
+    border-radius: var(--r-lg);
+    padding: 20px 22px;
+    display: flex; gap: 16px; align-items: flex-start;
+    border: 1px solid;
+    animation: fadeUp 260ms var(--ease-out);
+  }
+  .result--ok    { background: var(--green-lt); border-color: rgba(30,142,62,.18); }
+  .result--low   { background: var(--amber-lt); border-color: rgba(227,116,0,.20); }
+  .result--err   { background: var(--red-lt);   border-color: rgba(217,48,37,.18); }
+  .result-ico {
+    width: 36px; height: 36px;
+    border-radius: var(--r-md);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: var(--white);
+  }
+  .result--ok .result-ico  { color: var(--green); }
+  .result--low .result-ico { color: var(--amber); }
+  .result--err .result-ico { color: var(--red); }
+  .result-body { flex: 1; min-width: 0; }
+  .result-title {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 700;
+    color: var(--ink); margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .result-saldo {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1; margin: 8px 0 4px;
+  }
+  .result--ok  .result-saldo { color: var(--green); }
+  .result--low .result-saldo { color: var(--amber); }
+  .result-meta {
+    font-size: 13px; color: var(--ink-3);
+    line-height: 1.5;
+  }
+  .result-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* ─── Info section ─── */
+  .info-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .info-item {
+    padding: 14px 16px;
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-md);
+    background: var(--bg);
+  }
+  .info-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-4); margin-bottom: 6px;
+  }
+  .info-value {
+    font-size: 13px; color: var(--ink-2); line-height: 1.5;
+  }
+  .info-value code {
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--bg-2); color: var(--ink);
+    padding: 1px 6px; border-radius: 4px;
+  }
+
+  /* ─── Code block ─── */
+  .code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: #1f1f1f; color: #e8eaed;
+    padding: 14px 16px;
+    border-radius: var(--r-md);
+    overflow-x: auto;
+    line-height: 1.6;
+    position: relative;
+  }
+  .code-copy {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(255,255,255,.08); color: #e8eaed;
+    border: 0; cursor: pointer;
+    font-size: 11px; font-weight: 600; font-family: var(--font-body);
+    padding: 4px 10px; border-radius: var(--r-sm);
+    transition: background 140ms var(--ease-out);
+  }
+  .code-copy:hover { background: rgba(255,255,255,.16); }
+  .code-comment { color: #9aa0a6; }
+
+  /* ─── Foot ─── */
+  .foot {
+    margin-top: 36px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-lt);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--ink-4);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 360ms var(--ease-out) both; }
+  .a1 { animation-delay: 0ms; }
+  .a2 { animation-delay: 60ms; }
+  .a3 { animation-delay: 120ms; }
+  .a4 { animation-delay: 180ms; }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 24px 18px 48px; }
+    .form-row { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 24px; }
+    .result-saldo { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hdr anim a1">
+    <div class="hdr-left">
+      <a class="back" href="index.html">← Voltar</a>
+    </div>
+    <div class="hdr-mark">ZapSign · Ferramentas</div>
+  </div>
+
+  <div class="hero anim a1">
+    <div class="hero-eyebrow">Ferramenta 01 · SMS Dev</div>
+    <div class="hero-title">Verificador de saldo SMS Dev</div>
+    <div class="hero-sub">
+      Consulta o saldo de SMS na conta SMS Dev e alerta quando está abaixo do limite configurado. Sua chave de API fica salva apenas no <strong>localStorage</strong> deste navegador — nada sai daqui.
+    </div>
+  </div>
+
+  <!-- Form card -->
+  <div class="card anim a2">
+    <div class="card-head">
+      <div class="card-title">Consulta</div>
+      <div class="card-hint">GET <code style="font-family: var(--font-mono); font-size: 11px;">api.smsdev.com.br/v1/balance</code></div>
+    </div>
+
+    <form id="form">
+      <div class="form-row">
+        <div class="field">
+          <label class="field-label" for="apiKey">Chave de API</label>
+          <div class="input-wrap">
+            <input id="apiKey" type="password" class="input input--mono input--key" placeholder="cole sua chave SMS Dev" autocomplete="off" required>
+            <button type="button" class="input-toggle" id="toggleKey">Mostrar</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="threshold">Limite de alerta</label>
+          <input id="threshold" type="number" class="input" min="1" step="1" value="500">
+        </div>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="remember" checked>
+        <span>Salvar chave neste navegador</span>
+        <span class="check-hint">· apenas localStorage, nunca enviada para servidores externos</span>
+      </label>
+
+      <div class="actions">
+        <button type="submit" class="btn btn--primary" id="submitBtn">
+          <span id="btnLabel">Verificar saldo</span>
+        </button>
+        <button type="button" class="btn btn--ghost" id="clearBtn">Limpar chave salva</button>
+      </div>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <!-- About card -->
+  <div class="card anim a3">
+    <div class="card-head">
+      <div class="card-title">Sobre a ferramenta</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Quando usar</div>
+        <div class="info-value">Antes de campanhas com volume alto de SMS, ou de tempos em tempos para garantir que a conta não vai zerar.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Limite padrão</div>
+        <div class="info-value">Alerta de saldo baixo a partir de <code>500</code> SMS. Ajustável no campo acima.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Onde gerar a chave</div>
+        <div class="info-value">No painel do <a href="https://www.smsdev.com.br" target="_blank" rel="noopener" style="color: var(--blue); text-decoration: none;">SMS Dev</a>, em Configurações → API.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Privacidade</div>
+        <div class="info-value">A chave fica salva só no seu navegador (<code>localStorage</code>). A consulta é feita direto do seu browser para a API do SMS Dev.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fallback card -->
+  <div class="card anim a4">
+    <div class="card-head">
+      <div class="card-title">Alternativa via terminal</div>
+      <div class="card-hint">caso o navegador bloqueie a chamada (CORS)</div>
+    </div>
+
+    <div style="font-size: 13px; color: var(--ink-3); margin-bottom: 14px; line-height: 1.55;">
+      Se a consulta acima falhar com erro de rede, é provável que a API esteja bloqueando chamadas do navegador (política de CORS). Nesse caso, rode um destes comandos no terminal:
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <div class="info-label" style="margin-bottom: 8px;">curl</div>
+      <div class="code" id="curlBlock"><button type="button" class="code-copy" data-target="curlBlock">Copiar</button><span class="code-comment"># troque SUA_CHAVE pela sua chave SMS Dev</span>
+curl -s "https://api.smsdev.com.br/v1/balance?key=SUA_CHAVE"</div>
+    </div>
+
+    <div>
+      <div class="info-label" style="margin-bottom: 8px;">Python (script da skill)</div>
+      <div class="code" id="pyBlock"><button type="button" class="code-copy" data-target="pyBlock">Copiar</button><span class="code-comment"># exporta a chave e roda o script empacotado na skill</span>
+export SMSDEV_API_KEY="SUA_CHAVE"
+python &lt;SKILL_DIR&gt;/scripts/check_balance.py --threshold 500</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div>All Hands quinzenal · Produto ZapSign</div>
+    <div class="hdr-mark">ferramenta 01</div>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    const STORAGE_KEY = 'smsdev_api_key_v1';
+    const STORAGE_THRESHOLD = 'smsdev_threshold_v1';
+    const API_URL = 'https://api.smsdev.com.br/v1/balance';
+
+    const $ = (id) => document.getElementById(id);
+    const apiKeyEl = $('apiKey');
+    const thresholdEl = $('threshold');
+    const rememberEl = $('remember');
+    const toggleKeyBtn = $('toggleKey');
+    const submitBtn = $('submitBtn');
+    const btnLabel = $('btnLabel');
+    const clearBtn = $('clearBtn');
+    const resultEl = $('result');
+    const form = $('form');
+
+    // Restore saved key/threshold
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) { apiKeyEl.value = saved; rememberEl.checked = true; }
+      const t = localStorage.getItem(STORAGE_THRESHOLD);
+      if (t) thresholdEl.value = t;
+    } catch (_) { /* ignore */ }
+
+    toggleKeyBtn.addEventListener('click', () => {
+      const isPwd = apiKeyEl.type === 'password';
+      apiKeyEl.type = isPwd ? 'text' : 'password';
+      toggleKeyBtn.textContent = isPwd ? 'Ocultar' : 'Mostrar';
+    });
+
+    clearBtn.addEventListener('click', () => {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+      apiKeyEl.value = '';
+      apiKeyEl.focus();
+      renderInfo('Chave removida deste navegador.');
+    });
+
+    document.querySelectorAll('.code-copy').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const block = document.getElementById(btn.dataset.target);
+        const text = Array.from(block.childNodes)
+          .filter((n) => n !== btn)
+          .map((n) => n.textContent)
+          .join('');
+        try {
+          await navigator.clipboard.writeText(text.trim());
+          const orig = btn.textContent;
+          btn.textContent = 'Copiado';
+          setTimeout(() => { btn.textContent = orig; }, 1400);
+        } catch (_) { /* ignore */ }
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const key = apiKeyEl.value.trim();
+      const threshold = parseInt(thresholdEl.value, 10) || 500;
+      if (!key) return;
+
+      try {
+        if (rememberEl.checked) {
+          localStorage.setItem(STORAGE_KEY, key);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+        localStorage.setItem(STORAGE_THRESHOLD, String(threshold));
+      } catch (_) { /* ignore */ }
+
+      setLoading(true);
+      resultEl.innerHTML = '';
+
+      try {
+        const url = `${API_URL}?key=${encodeURIComponent(key)}`;
+        const resp = await fetch(url, { method: 'GET' });
+        if (!resp.ok) {
+          renderError(`HTTP ${resp.status} ao consultar SMS Dev: ${resp.statusText || 'erro'}.`,
+            httpHint(resp.status));
+          return;
+        }
+        const data = await resp.json();
+        const situacao = String(data.situacao || '').toUpperCase();
+        if (situacao !== 'OK') {
+          renderError(data.descricao || 'Erro retornado pela API SMS Dev.',
+            'Verifique se a chave é válida e está ativa no painel SMS Dev.');
+          return;
+        }
+        const saldo = parseInt(String(data.saldo_sms || '0').trim(), 10);
+        if (Number.isNaN(saldo)) {
+          renderError(`Saldo inesperado na resposta: ${JSON.stringify(data.saldo_sms)}`);
+          return;
+        }
+        renderBalance(saldo, threshold, data.descricao || '');
+      } catch (err) {
+        const msg = (err && err.message) || String(err);
+        const isNet = /failed to fetch|networkerror|load failed/i.test(msg);
+        renderError(
+          isNet
+            ? 'Falha de rede na chamada à API.'
+            : `Erro: ${msg}`,
+          isNet
+            ? 'Provavelmente é bloqueio de CORS no navegador. Use os comandos de terminal abaixo (curl ou Python).'
+            : 'Tente novamente em alguns segundos.'
+        );
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function setLoading(on) {
+      submitBtn.disabled = on;
+      btnLabel.parentElement.innerHTML = on
+        ? '<span class="spinner"></span><span>Consultando…</span>'
+        : '<span id="btnLabel">Verificar saldo</span>';
+    }
+
+    function renderInfo(msg) {
+      resultEl.innerHTML = `
+        <div class="result result--err" style="background: var(--bg-2); border-color: var(--border-lt);">
+          <div class="result-ico" style="color: var(--ink-3);">${iconInfo()}</div>
+          <div class="result-body">
+            <div class="result-title" style="color: var(--ink-2);">${escapeHtml(msg)}</div>
+          </div>
+        </div>`;
+    }
+
+    function renderBalance(saldo, threshold, descricao) {
+      const low = saldo < threshold;
+      const cls = low ? 'result--low' : 'result--ok';
+      const icon = low ? iconWarn() : iconCheck();
+      const title = low ? 'Atenção: saldo baixo' : 'Saldo OK';
+      const meta = low
+        ? `Está <strong>abaixo</strong> do seu limite de alerta (${threshold} SMS). Considere recarregar antes que acabe.`
+        : `Está acima do seu limite de alerta (${threshold} SMS).`;
+      resultEl.innerHTML = `
+        <div class="result ${cls}">
+          <div class="result-ico">${icon}</div>
+          <div class="result-body">
+            <div class="result-title">${title}</div>
+            <div class="result-saldo">${formatNumber(saldo)} <span style="font-size: 14px; font-weight: 500; color: var(--ink-3); letter-spacing: 0;">SMS</span></div>
+            <div class="result-meta">${meta}${descricao ? `<br><span style="color: var(--ink-4); font-size: 12px;">${escapeHtml(descricao)}</span>` : ''}</div>
+          </div>
+        </div>`;
+    }
+
+    function renderError(msg, hint) {
+      resultEl.innerHTML = `
+        <div class="result result--err">
+          <div class="result-ico">${iconError()}</div>
+          <div class="result-body">
+            <div class="result-title">Não consegui consultar o saldo</div>
+            <div class="result-meta" style="margin-top: 4px;">${escapeHtml(msg)}${hint ? `<br><span style="color: var(--ink-3);">${escapeHtml(hint)}</span>` : ''}</div>
+          </div>
+        </div>`;
+    }
+
+    function httpHint(code) {
+      if (code === 401 || code === 403) return 'Chave inválida ou revogada — gere uma nova no painel SMS Dev.';
+      if (code >= 500) return 'API fora do ar. Tente novamente em alguns minutos.';
+      return '';
+    }
+
+    function formatNumber(n) {
+      return n.toLocaleString('pt-BR');
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+    function iconCheck() {
+      return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    }
+    function iconWarn() {
+      return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    }
+    function iconError() {
+      return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+    }
+    function iconInfo() {
+      return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+    }
+  })();
+</script>
+
+</body>
+</html>

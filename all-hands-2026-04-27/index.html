@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Hands · 27 abr 2026 — ZapSign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --blue-mid: #AECBFA;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --teal: #0D7A6A;
+    --teal-lt: #E4F7F4;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.05);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 56px 32px 80px;
+  }
+
+  /* ─── Header ─── */
+  .hdr {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 32px;
+  }
+  .hdr-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .hdr-title {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1.1;
+  }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .hdr-meta {
+    display: flex; gap: 12px; align-items: center;
+    font-size: 13px; color: var(--ink-3); font-weight: 500;
+  }
+  .hdr-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: var(--r-full);
+    background: var(--blue-lt); color: var(--blue);
+    letter-spacing: 0.02em;
+  }
+  .hdr-pill-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+  }
+  .hdr-dot {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--ink-4);
+  }
+
+  /* ─── Section label ─── */
+  .sec-label {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 14px;
+  }
+
+  /* ─── Slides grid ─── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+    padding: 20px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+    text-decoration: none; color: inherit;
+    transition: box-shadow 200ms var(--ease-out), transform 200ms var(--ease-out), border-color 200ms var(--ease-out);
+    position: relative;
+  }
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--blue-mid);
+  }
+  .card--soon {
+    pointer-events: none;
+    background: transparent;
+    border-style: dashed;
+    box-shadow: none;
+  }
+  .card--soon .card-title { color: var(--ink-4); }
+
+  .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-num {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .pill {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: var(--r-full);
+  }
+  .pill--ready { background: var(--green-lt); color: var(--green); }
+  .pill--soon  { background: var(--bg-2);    color: var(--ink-4); }
+  .pill--tool  { background: var(--purple-lt); color: var(--purple); }
+
+  /* ─── Tool icon ─── */
+  .tool-ico {
+    width: 36px; height: 36px;
+    border-radius: var(--r-md);
+    background: var(--purple-lt); color: var(--purple);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .card--tool .card-top { align-items: flex-start; }
+  .card--tool .card-top-left {
+    display: flex; gap: 12px; align-items: center;
+  }
+
+  /* ─── Section spacing ─── */
+  .sec + .sec { margin-top: 36px; }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 19px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em; line-height: 1.25;
+  }
+  .card-desc {
+    font-size: 13px; color: var(--ink-3); line-height: 1.5;
+  }
+
+  .card-foot {
+    margin-top: 4px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--ink-4);
+  }
+  .card-cta {
+    font-family: var(--font-display);
+    font-size: 12px; font-weight: 600;
+    color: var(--blue);
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .card-cta svg {
+    transition: transform 160ms var(--ease-out);
+  }
+  .card:hover .card-cta svg {
+    transform: translateX(3px);
+  }
+
+  /* ─── Footer ─── */
+  .foot {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-lt);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--ink-4);
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 360ms var(--ease-out) both; }
+  .a1 { animation-delay: 0ms; }
+  .a2 { animation-delay: 60ms; }
+  .a3 { animation-delay: 120ms; }
+  .a4 { animation-delay: 180ms; }
+  .a5 { animation-delay: 240ms; }
+  .a6 { animation-delay: 300ms; }
+  .a7 { animation-delay: 360ms; }
+  .a8 { animation-delay: 420ms; }
+
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; }
+    .wrap { padding: 32px 20px 48px; }
+    .hdr-title { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hdr anim a1">
+    <div class="hdr-row">
+      <div class="hdr-title">All Hands · 27 abr 2026</div>
+      <div class="hdr-mark">ZapSign</div>
+    </div>
+    <div class="hdr-meta">
+      <span class="hdr-pill"><span class="hdr-pill-dot"></span>Quinzenal</span>
+      <span class="hdr-dot"></span>
+      <span>Slides do time de Produto</span>
+    </div>
+  </div>
+
+  <div class="sec">
+  <div class="sec-label anim a2">Slides</div>
+
+  <div class="grid">
+
+    <!-- Slide 1 -->
+    <a class="card anim a3" href="slide-01-pagarme.html">
+      <div class="card-top">
+        <div class="card-num">Slide 01</div>
+        <span class="pill pill--ready">Pronto</span>
+      </div>
+      <div class="card-title">Pagar.me — Migração</div>
+      <div class="card-desc">Status da migração: ~40% dos PLG pagos migrados, 5k contas/dia, 100% de contas novas na V2.</div>
+      <div class="card-foot">
+        <span>Atualizado · 27/04/2026</span>
+        <span class="card-cta">
+          Abrir slide
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M9 3.5l-1 1 2.8 2.8H2v1.4h8.8L8 11.5l1 1 4.5-4.5z"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- Slide 2 -->
+    <a class="card anim a4" href="slide-02-growth.html">
+      <div class="card-top">
+        <div class="card-num">Slide 02</div>
+        <span class="pill pill--ready">Pronto</span>
+      </div>
+      <div class="card-title">Growth — Experimentos</div>
+      <div class="card-desc">Paywall em 3 docs (01/04) e em modelos, relatórios e contatos (16/04). 1T26 bateu meta (1,91% vs 1,85%); 2T26 em curso a 2,10% rumo à meta de 2,50%.</div>
+      <div class="card-foot">
+        <span>Atualizado · 27/04/2026</span>
+        <span class="card-cta">
+          Abrir slide
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M9 3.5l-1 1 2.8 2.8H2v1.4h8.8L8 11.5l1 1 4.5-4.5z"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- Slide 3 -->
+    <a class="card anim a5" href="slide-03-sustentacao.html">
+      <div class="card-top">
+        <div class="card-num">Slide 03</div>
+        <span class="pill pill--ready">Pronto</span>
+      </div>
+      <div class="card-title">Sustentação</div>
+      <div class="card-desc">Bugs em queda (0,006%), SLA crítico em 14,3% — bem abaixo dos ~30% do 1T26 — e entrada do Gustavo Barbosa como APM focado em LATAM.</div>
+      <div class="card-foot">
+        <span>Atualizado · 27/04/2026</span>
+        <span class="card-cta">
+          Abrir slide
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M9 3.5l-1 1 2.8 2.8H2v1.4h8.8L8 11.5l1 1 4.5-4.5z"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- Slide 4 -->
+    <a class="card anim a6" href="slide-04-v2.html">
+      <div class="card-top">
+        <div class="card-num">Slide 04</div>
+        <span class="pill pill--ready">Pronto</span>
+      </div>
+      <div class="card-title">Status da V2</div>
+      <div class="card-desc">Status dos 6 fluxos V2 (criação de conta 100%, gestão de docs 70% upstream, checkout/assinatura 25%, planos 5%, modelos 0%) com plano da assinatura nas próximas 2 semanas.</div>
+      <div class="card-foot">
+        <span>Atualizado · 27/04/2026</span>
+        <span class="card-cta">
+          Abrir slide
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M9 3.5l-1 1 2.8 2.8H2v1.4h8.8L8 11.5l1 1 4.5-4.5z"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- Placeholder slide 5 -->
+    <div class="card card--soon anim a6">
+      <div class="card-top">
+        <div class="card-num">Slide 05</div>
+        <span class="pill pill--soon">A definir</span>
+      </div>
+      <div class="card-title">Em breve</div>
+      <div class="card-desc">Próximo slide será adicionado conforme o conteúdo for enviado.</div>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="sec">
+  <div class="sec-label anim a7">Ferramentas</div>
+
+  <div class="grid">
+
+    <!-- Tool 1: SMS Dev Balance Checker -->
+    <a class="card card--tool anim a7" href="tool-smsdev-balance.html">
+      <div class="card-top">
+        <div class="card-top-left">
+          <span class="tool-ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+          </span>
+          <div class="card-num">Ferramenta 01</div>
+        </div>
+        <span class="pill pill--tool">SMS Dev</span>
+      </div>
+      <div class="card-title">Verificador de saldo SMS Dev</div>
+      <div class="card-desc">Consulta o saldo da conta SMS Dev e alerta quando está abaixo do limite (padrão: 500 SMS). Chave fica salva localmente no navegador.</div>
+      <div class="card-foot">
+        <span>Atualizado · 28/04/2026</span>
+        <span class="card-cta">
+          Abrir ferramenta
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M9 3.5l-1 1 2.8 2.8H2v1.4h8.8L8 11.5l1 1 4.5-4.5z"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- Placeholder tool 2 -->
+    <div class="card card--soon anim a8">
+      <div class="card-top">
+        <div class="card-num">Ferramenta 02</div>
+        <span class="pill pill--soon">A definir</span>
+      </div>
+      <div class="card-title">Em breve</div>
+      <div class="card-desc">Próximas ferramentas serão adicionadas conforme a necessidade do time.</div>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="foot">
+    <div>All Hands quinzenal · Produto ZapSign</div>
+    <div class="hdr-mark">v1</div>
+  </div>
+
+</div>
+
+</body>
+</html>

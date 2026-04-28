@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sustentação · All Hands 27/04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --blue-mid: #AECBFA;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --green-mid: #A8DAB5;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --teal: #0D7A6A;
+    --teal-lt: #E4F7F4;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    padding: 22px 32px 16px;
+    gap: 14px;
+  }
+
+  /* ─── Header ─── */
+  .hdr { display: flex; align-items: center; justify-content: space-between; }
+  .hdr-left { display: flex; align-items: baseline; gap: 12px; }
+  .hdr-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1;
+  }
+  .hdr-sub { font-size: 13px; color: var(--ink-4); font-weight: 500; }
+  .hdr-right { display: flex; align-items: center; gap: 12px; }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .back {
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-3); text-decoration: none;
+    padding: 5px 10px; border-radius: var(--r-full);
+    border: 1px solid var(--border-lt);
+    transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
+  }
+  .back:hover { background: var(--bg-2); color: var(--ink); }
+
+  /* ─── KPI row (top, 2 cards) ─── */
+  .kpi-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .metric {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    padding: 16px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .metric-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .metric-title {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .pill {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 10px; border-radius: var(--r-full);
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .pill svg { width: 10px; height: 10px; }
+  .pill--good   { background: var(--green-lt); color: var(--green); }
+  .pill--alert  { background: var(--amber-lt); color: var(--amber); }
+  .pill--info   { background: var(--blue-lt);  color: var(--blue);  }
+  .pill--purple { background: var(--purple-lt);color: var(--purple);}
+
+  .metric-main {
+    display: flex; align-items: baseline; gap: 14px;
+    flex-wrap: wrap;
+  }
+  .metric-val {
+    font-family: var(--font-display);
+    font-size: 48px; font-weight: 700;
+    letter-spacing: -0.025em; line-height: 1;
+  }
+  .metric-trend {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: var(--r-full);
+  }
+  .metric-trend--down { background: var(--green-lt); color: var(--green); }
+  .metric-trend--up   { background: var(--red-lt);   color: var(--red);   }
+  .metric-trend svg { width: 12px; height: 12px; }
+
+  .metric-compare {
+    display: flex; gap: 18px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-lt);
+  }
+  .compare-item {
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  .compare-label {
+    font-size: 10.5px; font-weight: 600;
+    color: var(--ink-4); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .compare-val {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 700; color: var(--ink-2);
+    letter-spacing: -0.01em;
+  }
+
+  .metric-note {
+    font-size: 12.5px; color: var(--ink-3); line-height: 1.5;
+  }
+  .metric-note strong { color: var(--ink); font-weight: 600; }
+
+  /* ─── Main (causes + announcement) ─── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 14px;
+    min-height: 0;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    padding: 16px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 0;
+  }
+
+  /* causes list */
+  .causes { display: flex; flex-direction: column; gap: 8px; }
+  .cause {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: var(--r-md);
+  }
+  .cause-ic {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--amber-lt);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .cause-ic svg { width: 14px; height: 14px; fill: var(--amber); }
+  .cause-body { flex: 1; }
+  .cause-title {
+    font-size: 13.5px; color: var(--ink); font-weight: 600;
+    line-height: 1.35;
+  }
+  .cause-detail {
+    font-size: 12px; color: var(--ink-3); line-height: 1.45;
+    margin-top: 2px;
+  }
+
+  /* announcement card (Gustavo) — clean white card per design system */
+  .ann-card { gap: 8px; }
+  .ann-top {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ann-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--blue-lt);
+    color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+  .ann-meta { display: flex; flex-direction: column; gap: 0; flex: 1; min-width: 0; }
+  .ann-name {
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em; line-height: 1.2;
+  }
+  .ann-role {
+    font-size: 11.5px; color: var(--ink-4); font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .ann-mission {
+    font-size: 12px; color: var(--ink-3); line-height: 1.5;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-lt);
+  }
+  .ann-mission strong { color: var(--ink-2); font-weight: 600; }
+
+  .focus-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-4);
+    margin-top: 0;
+  }
+  .focus-list {
+    display: flex; flex-direction: column;
+  }
+  .focus-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border-lt);
+  }
+  .focus-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .focus-ic {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--blue-lt);
+    color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .focus-ic svg { width: 10px; height: 10px; fill: currentColor; }
+  .focus-text { font-size: 12px; color: var(--ink-2); line-height: 1.35; }
+  .focus-text strong { color: var(--ink); font-weight: 600; }
+
+  /* ─── Takeaway banner ─── */
+  .takeaway {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-md);
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0;
+  }
+  .tk-label {
+    font-family: var(--font-display);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4); white-space: nowrap;
+    padding-right: 14px;
+    border-right: 1px solid var(--border-lt);
+  }
+  .tk-text {
+    font-size: 13px; color: var(--ink-2); line-height: 1.4;
+  }
+  .tk-text strong { color: var(--ink); font-weight: 600; }
+
+  /* ─── Footer ─── */
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--ink-4);
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 380ms var(--ease-out) both; }
+  .a1 { animation-delay: 0ms; }
+  .a2 { animation-delay: 60ms; }
+  .a3 { animation-delay: 120ms; }
+  .a4 { animation-delay: 180ms; }
+  .a5 { animation-delay: 240ms; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr anim a1">
+    <div class="hdr-left">
+      <div class="hdr-title">Sustentação</div>
+      <div class="hdr-sub">All Hands · 27 abr 2026</div>
+    </div>
+    <div class="hdr-right">
+      <a class="back" href="index.html">← Voltar ao índice</a>
+      <div class="hdr-mark">ZapSign</div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+
+    <!-- Bug rate -->
+    <div class="metric anim a2">
+      <div class="metric-hdr">
+        <div class="metric-title">Taxa de bugs · clientes pagantes</div>
+        <span class="pill pill--good">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 12.5l-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4z"/></svg>
+          Próximo da meta
+        </span>
+      </div>
+      <div class="metric-main">
+        <div class="metric-val" style="color:var(--green)">0,006%</div>
+        <div class="metric-trend metric-trend--down">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 6l5 5 5-5H3z"/></svg>
+          Leve melhora
+        </div>
+      </div>
+      <div class="metric-compare">
+        <div class="compare-item">
+          <span class="compare-label">Última semana</span>
+          <span class="compare-val" style="color:var(--green)">0,006%</span>
+        </div>
+        <div class="compare-item">
+          <span class="compare-label">Últimos 15 dias</span>
+          <span class="compare-val">0,007%</span>
+        </div>
+      </div>
+      <div class="metric-note">Seguimos <strong>bem próximos da meta</strong> — taxa de bugs por clientes pagantes mantém tendência de queda.</div>
+    </div>
+
+    <!-- SLA -->
+    <div class="metric anim a3">
+      <div class="metric-hdr">
+        <div class="metric-title">SLAs críticos violados · R</div>
+        <span class="pill pill--good">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 10l5-5 5 5H3z" transform="rotate(180 8 8)"/></svg>
+          Reação positiva no 2T26
+        </span>
+      </div>
+      <div class="metric-main">
+        <div class="metric-val" style="color:var(--amber)">14,3%</div>
+        <div class="metric-trend metric-trend--down">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 6l5 5 5-5H3z"/></svg>
+          −15,7 p.p. vs 1T26
+        </div>
+      </div>
+      <div class="metric-compare">
+        <div class="compare-item">
+          <span class="compare-label">Esta semana</span>
+          <span class="compare-val" style="color:var(--amber)">14,3%</span>
+        </div>
+        <div class="compare-item">
+          <span class="compare-label">Semana anterior</span>
+          <span class="compare-val">13,3%</span>
+        </div>
+        <div class="compare-item">
+          <span class="compare-label">Fechamento 1T26</span>
+          <span class="compare-val" style="color:var(--red)">~30%</span>
+        </div>
+      </div>
+      <div class="metric-note">Pequena oscilação semanal puxada por <strong>cards direto em N3</strong> e pelo caso <strong>Babylon</strong> não replicável — mas o 2T26 já roda em <strong>menos da metade</strong> do patamar de fechamento do 1T26.</div>
+    </div>
+
+  </div>
+
+  <!-- Main: causes + announcement -->
+  <div class="main">
+
+    <!-- Por que o SLA subiu -->
+    <div class="card anim a4">
+      <div class="metric-hdr">
+        <div class="metric-title">Por que o SLA subiu</div>
+        <span class="pill pill--alert">2 fatores</span>
+      </div>
+      <div class="causes">
+        <div class="cause">
+          <div class="cause-ic">
+            <svg viewBox="0 0 16 16"><path d="M2 4h12v2H2zm0 3h12v2H2zm0 3h8v2H2z"/></svg>
+          </div>
+          <div class="cause-body">
+            <div class="cause-title">Cards entrando direto em N3</div>
+            <div class="cause-detail">Alguns cards pularam triagem inicial e foram direto para o terceiro nível, contando integralmente para o SLA crítico.</div>
+          </div>
+        </div>
+        <div class="cause">
+          <div class="cause-ic">
+            <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v4M8 10.5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <div class="cause-body">
+            <div class="cause-title">Caso Babylon — não conseguimos replicar</div>
+            <div class="cause-detail">Bug não-reproduzível puxou o tempo de resolução para cima e impactou diretamente a média da semana.</div>
+          </div>
+        </div>
+      </div>
+      <div class="metric-note" style="margin-top:auto;padding-top:8px;border-top:1px solid var(--border-lt)">
+        Causas pontuais. Mantemos foco em <strong>triagem mais cedo</strong> e em criar <strong>caminhos de investigação</strong> para casos não-reproduzíveis.
+      </div>
+    </div>
+
+    <!-- Anúncio Gustavo -->
+    <div class="card ann-card anim a5">
+      <div class="metric-hdr">
+        <div class="metric-title">Novidade no time</div>
+        <span class="pill pill--info">Foco LATAM</span>
+      </div>
+      <div class="ann-top">
+        <div class="ann-avatar">GB</div>
+        <div class="ann-meta">
+          <div class="ann-name">Gustavo Barbosa</div>
+          <div class="ann-role">APM · time de Produto · foco em LATAM</div>
+        </div>
+      </div>
+      <div class="ann-mission">
+        Entrada do Gustavo aumenta a <strong>velocidade de resposta</strong> e a <strong>resolução de tickets e bugs em LATAM</strong>, atacando as <strong>causas raízes</strong> (produto ou processo) para reduzir a <strong>incidência desproporcional</strong> de tickets na região frente ao tamanho da base, hoje bem menor que a do Brasil.
+      </div>
+      <div class="focus-label">Frentes de atuação</div>
+      <div class="focus-list">
+        <div class="focus-row">
+          <div class="focus-ic"><svg viewBox="0 0 16 16"><path d="M8 2v6h4.5l-5 6v-6H3l5-6z"/></svg></div>
+          <div class="focus-text"><strong>Velocidade</strong> de resposta em LATAM</div>
+        </div>
+        <div class="focus-row">
+          <div class="focus-ic"><svg viewBox="0 0 16 16"><path d="M3 8l3 3 7-7-1.4-1.4L6 8.2 4.4 6.6z"/></svg></div>
+          <div class="focus-text"><strong>Resolução</strong> de tickets &amp; bugs</div>
+        </div>
+        <div class="focus-row">
+          <div class="focus-ic"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2"/></svg></div>
+          <div class="focus-text"><strong>Causas raízes</strong> — produto e processo</div>
+        </div>
+        <div class="focus-row">
+          <div class="focus-ic"><svg viewBox="0 0 16 16"><path d="M3 11l5-5 5 5z"/></svg></div>
+          <div class="focus-text"><strong>Reduzir incidência</strong> de tickets na região</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Takeaway -->
+  <div class="takeaway anim a5">
+    <div class="tk-label">Resumo</div>
+    <div class="tk-text">
+      Bugs em <strong>tendência de queda</strong> e perto da meta · SLA com <strong>oscilação pontual</strong> por casos específicos · reforço do time com <strong>Gustavo Barbosa</strong> mirando LATAM e causas raízes.
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div style="font-weight:500">Atualizado em 27/04/2026</div>
+    <div class="hdr-mark">Slide 03 · All Hands 27/04</div>
+  </div>
+
+</div>
+
+</body>
+</html>

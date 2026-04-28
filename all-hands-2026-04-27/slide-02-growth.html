@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Growth — Experimentos · All Hands 27/04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --blue-mid: #AECBFA;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --purple-bar: #B49ADB;
+    --purple-bar-lt: #DCCBF1;
+    --orange: #F29B53;
+    --yellow: #E6B23A;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 32px 16px;
+    gap: 14px;
+  }
+
+  /* ─── Header ─── */
+  .hdr { display: flex; align-items: center; justify-content: space-between; }
+  .hdr-left { display: flex; align-items: baseline; gap: 12px; }
+  .hdr-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1;
+  }
+  .hdr-sub { font-size: 13px; color: var(--ink-4); font-weight: 500; }
+  .hdr-right { display: flex; align-items: center; gap: 12px; }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .back {
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-3); text-decoration: none;
+    padding: 5px 10px; border-radius: var(--r-full);
+    border: 1px solid var(--border-lt);
+    transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
+  }
+  .back:hover { background: var(--bg-2); color: var(--ink); }
+
+  /* ─── Top: KPI full width ─── */
+  .top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .kpi-card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    padding: 16px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .card-hdr { display: flex; align-items: center; justify-content: space-between; }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .pill {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 10px; border-radius: var(--r-full);
+  }
+  .pill--val   { background: var(--amber-lt);  color: var(--amber); }
+  .pill--purple{ background: var(--purple-lt); color: var(--purple); }
+
+  /* ─── Experiments inline strip (above chart SVG) ─── */
+  .exp-strip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    background: #FAF5FE;
+    border: 1px solid #E9D8F8;
+    border-radius: var(--r-md);
+    flex-wrap: wrap;
+  }
+  .exp-strip-label {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--purple);
+    margin-right: 4px;
+  }
+  .exp-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px 4px 4px;
+    background: var(--white);
+    border: 1px solid #E9D8F8;
+    border-radius: var(--r-full);
+    font-size: 12px; color: var(--ink-2); line-height: 1.3;
+  }
+  .exp-chip-date {
+    font-family: var(--font-display);
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    background: var(--purple);
+    padding: 3px 8px; border-radius: var(--r-full);
+  }
+  .exp-strip-tag {
+    margin-left: auto;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--amber);
+    background: var(--amber-lt);
+    padding: 3px 9px; border-radius: var(--r-full);
+  }
+
+  /* KPI hero */
+  .kpi-card { gap: 10px; align-items: stretch; padding: 14px 18px; }
+  .kpi-label-top {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; color: var(--ink-3);
+    text-transform: uppercase;
+  }
+  .kpi-tag {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--green);
+    background: var(--green-lt);
+    padding: 3px 9px; border-radius: var(--r-full);
+  }
+
+  /* Quarter side-by-side */
+  .q-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .q-cell {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: var(--r-md);
+    border: 1px solid var(--border-lt);
+  }
+  .q-cell--q1 { background: #FAF5FE; border-color: #E9D8F8; }
+  .q-cell--q2 { background: #F1F8F2; border-color: #D5EBDB; }
+  .q-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .q-name {
+    font-family: var(--font-display);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .q-status {
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: var(--r-full);
+  }
+  .q-status--hit  { color: var(--green);  background: var(--green-lt); }
+  .q-status--prog { color: var(--amber);  background: var(--amber-lt); }
+  .q-val {
+    font-family: var(--font-display);
+    font-size: 30px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.05;
+    color: var(--ink);
+  }
+  .q-meta {
+    display: flex; align-items: baseline; gap: 6px;
+    font-size: 11.5px; color: var(--ink-3);
+  }
+  .q-meta-num { font-weight: 600; color: var(--ink-2); }
+  .q-delta { font-size: 11px; font-weight: 700; }
+  .q-delta--up   { color: var(--green); }
+  .q-delta--gap  { color: var(--amber); }
+
+  .kpi-foot {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: var(--r-md);
+    font-size: 12px; color: var(--ink-2);
+  }
+  .kpi-foot strong { font-weight: 700; color: var(--green); }
+  .kpi-foot-ic {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--green-lt); color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px;
+  }
+
+  /* ─── Chart card ─── */
+  .chart-card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    padding: 14px 22px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+    flex: 1;
+    min-height: 360px;
+  }
+  .chart-hdr { display: flex; align-items: center; justify-content: space-between; }
+  .chart-title {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .chart-legend { display: flex; gap: 14px; align-items: center; }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-3); font-weight: 500; }
+  .leg-sw { width: 10px; height: 10px; border-radius: 2px; }
+  .leg-line { width: 16px; height: 2px; border-radius: 2px; position: relative; }
+  .leg-line::after {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    width: 5px; height: 5px; border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--yellow);
+  }
+
+  .chart-svg {
+    flex: 1; width: 100%;
+    min-height: 280px;
+    display: block;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--ink-4);
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes barRise {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+  }
+  .anim { animation: fadeUp 380ms var(--ease-out) both; }
+  .a1 { animation-delay: 0ms; }
+  .a2 { animation-delay: 60ms; }
+  .a3 { animation-delay: 120ms; }
+  .a4 { animation-delay: 180ms; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr anim a1">
+    <div class="hdr-left">
+      <div class="hdr-title">Growth, Experimentos</div>
+      <div class="hdr-sub">All Hands · 27 abr 2026</div>
+    </div>
+    <div class="hdr-right">
+      <a class="back" href="index.html">← Voltar ao índice</a>
+      <div class="hdr-mark">ZapSign</div>
+    </div>
+  </div>
+
+  <!-- Top row: KPI full width -->
+  <div class="top">
+
+    <!-- KPI hero -->
+    <div class="kpi-card anim a2">
+      <div class="card-hdr" style="width:100%">
+        <div class="kpi-label-top">Tx. conversão verificados · BR · meta vs realizado</div>
+        <span class="kpi-tag">+9,9% Q-over-Q</span>
+      </div>
+
+      <div class="q-grid">
+        <div class="q-cell q-cell--q1">
+          <div class="q-hdr">
+            <span class="q-name">1T26</span>
+            <span class="q-status q-status--hit">Bateu meta</span>
+          </div>
+          <div class="q-val">1,91%</div>
+          <div class="q-meta">
+            <span>Meta</span>
+            <span class="q-meta-num">1,85%</span>
+            <span class="q-delta q-delta--up">+0,06 p.p.</span>
+          </div>
+        </div>
+
+        <div class="q-cell q-cell--q2">
+          <div class="q-hdr">
+            <span class="q-name">2T26 · em curso</span>
+            <span class="q-status q-status--prog">84% da meta</span>
+          </div>
+          <div class="q-val">2,10%</div>
+          <div class="q-meta">
+            <span>Meta</span>
+            <span class="q-meta-num">2,50%</span>
+            <span class="q-delta q-delta--gap">−0,40 p.p.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-foot">
+        <span class="kpi-foot-ic">↑</span>
+        <span><strong>+0,19 p.p. vs 1T26</strong> — paywall (01/04 e 16/04) e ramp da V2 (27,5% das vendas em abr/26) puxando a curva. Falta fechar o gap até a meta de 2,5%.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-card anim a3">
+    <div class="chart-hdr">
+      <div class="chart-title">Tx. conversão verificados · Brasil · jun/25 — abr/26</div>
+      <div class="chart-legend">
+        <div class="leg"><span class="leg-line" style="background:var(--yellow)"></span>Tx. conversão</div>
+        <div class="leg"><span class="leg-sw" style="background:transparent;border:1.5px dashed var(--purple);border-radius:0;width:18px;height:0"></span>Meta trimestre</div>
+      </div>
+    </div>
+
+    <!-- Experiments inline strip -->
+    <div class="exp-strip">
+      <span class="exp-strip-label">Experimentos · 2T26</span>
+      <span class="exp-chip">
+        <span class="exp-chip-date">01/04</span>
+        Paywall a partir de <strong style="font-weight:600;color:var(--ink);margin-left:2px">3 documentos</strong>
+      </span>
+      <span class="exp-chip">
+        <span class="exp-chip-date">16/04</span>
+        Paywall em <strong style="font-weight:600;color:var(--ink);margin-left:2px">modelos, relatórios e contatos</strong>
+      </span>
+      <span class="exp-strip-tag">Em validação</span>
+    </div>
+    <svg class="chart-svg" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid meet">
+      <!-- Layout:
+           plot area x [70, 940], y [50, 310]   (260px tall)
+           y-axis: 1,4% — 2,6% (range 1,2; scale 216,67 px por p.p.)
+           y(conv%) = 310 - (conv - 1,4) * 216,67
+           Topo da plot (y=50) liberado 30px para badges/labels acima.
+           11 colunas (jun/25 — abr/26), centro xc = 70 + 79,09*(i+0,5)
+      -->
+
+      <!-- Quarter bands (cobrem toda a área desde o topo até labels do x-axis) -->
+      <rect x="623.64" y="6" width="237.27" height="320" fill="#F3E8FD" opacity="0.55"/>
+      <rect x="860.91" y="6" width="79.09" height="320" fill="#E6F4EA" opacity="0.75"/>
+
+      <!-- Separator -->
+      <line x1="860.91" y1="6" x2="860.91" y2="326" stroke="#DADCE0" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- Quarter top labels (realizado vs meta no chart) -->
+      <g font-family="'Google Sans'" font-weight="700">
+        <text x="742.27" y="22" text-anchor="middle" font-size="12" fill="#7B3FA0" letter-spacing="0.06em">1T26 · realizado 1,91%</text>
+        <text x="900.45" y="22" text-anchor="middle" font-size="12" fill="#1E8E3E" letter-spacing="0.06em">2T26 · 2,10%</text>
+      </g>
+
+      <!-- Y axis gridlines + labels (conversão %) — escala 1,4 a 2,6% -->
+      <!-- y(conv) = 310 - (conv - 1,4) * 216,67
+           1,4 → 310; 1,6 → 266,67; 1,8 → 223,33; 2,0 → 180; 2,2 → 136,67; 2,4 → 93,33; 2,6 → 50 -->
+      <g font-family="'Google Sans Text'" font-size="11" fill="#9AA0A6">
+        <line x1="70" y1="310"    x2="940" y2="310"    stroke="#E8EAED" stroke-width="1"/>
+        <text x="62" y="313" text-anchor="end">1,4%</text>
+
+        <line x1="70" y1="266.67" x2="940" y2="266.67" stroke="#E8EAED" stroke-width="1"/>
+        <text x="62" y="270" text-anchor="end">1,6%</text>
+
+        <line x1="70" y1="223.33" x2="940" y2="223.33" stroke="#E8EAED" stroke-width="1"/>
+        <text x="62" y="226.5" text-anchor="end">1,8%</text>
+
+        <line x1="70" y1="180"    x2="940" y2="180"    stroke="#E8EAED" stroke-width="1"/>
+        <text x="62" y="183" text-anchor="end">2,0%</text>
+
+        <line x1="70" y1="136.67" x2="940" y2="136.67" stroke="#E8EAED" stroke-width="1"/>
+        <text x="62" y="140" text-anchor="end">2,2%</text>
+
+        <line x1="70" y1="93.33"  x2="940" y2="93.33"  stroke="#E8EAED" stroke-width="1"/>
+        <text x="62" y="96.5" text-anchor="end">2,4%</text>
+
+        <line x1="70" y1="50"     x2="940" y2="50"     stroke="#E8EAED" stroke-width="1"/>
+        <text x="62" y="53" text-anchor="end">2,6%</text>
+      </g>
+
+      <!-- Meta Q1 (1,85%) → y = 212,50 -->
+      <line x1="623.64" y1="212.50" x2="860.91" y2="212.50"
+        stroke="#7B3FA0" stroke-width="1.8" stroke-dasharray="7,4" opacity="0.95"/>
+      <text x="630" y="226" text-anchor="start"
+        font-family="'Google Sans Text'" font-size="10.5" font-weight="700" fill="#7B3FA0"
+        letter-spacing="0.04em">META 1,85%</text>
+
+      <!-- Meta Q2 (2,50%) → y = 71,67 -->
+      <line x1="860.91" y1="71.67" x2="940" y2="71.67"
+        stroke="#1E8E3E" stroke-width="1.8" stroke-dasharray="7,4" opacity="0.95"/>
+      <text x="867" y="85" text-anchor="start"
+        font-family="'Google Sans Text'" font-size="10.5" font-weight="700" fill="#1E8E3E"
+        letter-spacing="0.04em">META 2,50%</text>
+
+      <!-- Conversion line (yellow) — pontos:
+           y(conv) = 310 - (conv - 1,4) * 216,67
+           jun/25 1,74 → 310 - 0,34*216,67 = 236,33
+           jul/25 1,58 → 310 - 0,18*216,67 = 271,00
+           ago/25 1,78 → 310 - 0,38*216,67 = 227,67
+           set/25 1,67 → 310 - 0,27*216,67 = 251,50
+           out/25 1,69 → 310 - 0,29*216,67 = 247,17
+           nov/25 1,81 → 310 - 0,41*216,67 = 221,17
+           dez/25 1,72 → 310 - 0,32*216,67 = 240,67
+           jan/26 1,92 → 310 - 0,52*216,67 = 197,33
+           fev/26 1,93 → 310 - 0,53*216,67 = 195,17
+           mar/26 1,77 → 310 - 0,37*216,67 = 229,83
+           abr/26 2,14 → 310 - 0,74*216,67 = 149,67
+      -->
+      <polyline
+        points="109.55,236.33 188.64,271.00 267.73,227.67 346.82,251.50 425.91,247.17 505.00,221.17 584.09,240.67 663.18,197.33 742.27,195.17 821.36,229.83 900.45,149.67"
+        fill="none" stroke="#E6B23A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Dots (white fill, yellow stroke) -->
+      <g fill="#FFFFFF" stroke="#E6B23A" stroke-width="2">
+        <circle cx="109.55" cy="236.33" r="4.5"/>
+        <circle cx="188.64" cy="271.00" r="4.5"/>
+        <circle cx="267.73" cy="227.67" r="4.5"/>
+        <circle cx="346.82" cy="251.50" r="4.5"/>
+        <circle cx="425.91" cy="247.17" r="4.5"/>
+        <circle cx="505.00" cy="221.17" r="4.5"/>
+        <circle cx="584.09" cy="240.67" r="4.5"/>
+        <circle cx="663.18" cy="197.33" r="4.5"/>
+        <circle cx="742.27" cy="195.17" r="4.5"/>
+        <circle cx="821.36" cy="229.83" r="4.5"/>
+      </g>
+
+      <!-- Highlight: ponto abril -->
+      <circle cx="900.45" cy="149.67" r="6.5" fill="#1E8E3E" stroke="#FFFFFF" stroke-width="2.5"/>
+
+      <!-- Value labels nos meses do 1T26 e 2T26 -->
+      <g font-family="'Google Sans'" font-weight="700" font-size="11">
+        <text x="663.18" y="186" text-anchor="middle" fill="#7B3FA0">1,92%</text>
+        <text x="742.27" y="184" text-anchor="middle" fill="#7B3FA0">1,93%</text>
+        <!-- mar/26 abaixo do dot, pra não conflitar com a linha de meta -->
+        <text x="821.36" y="247" text-anchor="middle" fill="#7B3FA0">1,77%</text>
+        <text x="900.45" y="138" text-anchor="middle" fill="#1E8E3E" font-size="13">2,14%</text>
+      </g>
+
+      <!-- X-axis month labels -->
+      <g font-family="'Google Sans Text'" font-size="11.5" fill="#5F6368">
+        <text x="109.55" y="338" text-anchor="middle">jun/25</text>
+        <text x="188.64" y="338" text-anchor="middle">jul/25</text>
+        <text x="267.73" y="338" text-anchor="middle">ago/25</text>
+        <text x="346.82" y="338" text-anchor="middle">set/25</text>
+        <text x="425.91" y="338" text-anchor="middle">out/25</text>
+        <text x="505.00" y="338" text-anchor="middle">nov/25</text>
+        <text x="584.09" y="338" text-anchor="middle">dez/25</text>
+        <text x="663.18" y="338" text-anchor="middle" font-weight="600" fill="#7B3FA0">jan/26</text>
+        <text x="742.27" y="338" text-anchor="middle" font-weight="600" fill="#7B3FA0">fev/26</text>
+        <text x="821.36" y="338" text-anchor="middle" font-weight="600" fill="#7B3FA0">mar/26</text>
+        <text x="900.45" y="338" text-anchor="middle" font-weight="700" fill="#1E8E3E">abr/26</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div style="font-weight:500">1T26 fechou acima da meta · 2T26 considera apenas abr/26 e segue em curso até a meta de 2,5% · Brasil</div>
+    <div class="hdr-mark">Slide 02 · All Hands 27/04</div>
+  </div>
+
+</div>
+
+</body>
+</html>

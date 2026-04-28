@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagar.me — Migração · All Hands 27/04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --bg-2: #F1F3F4;
+    --bg-3: #E8EAED;
+    --ink: #202124;
+    --ink-2: #3C4043;
+    --ink-3: #5F6368;
+    --ink-4: #9AA0A6;
+    --border: #DADCE0;
+    --border-lt: #E8EAED;
+    --blue: #1A73E8;
+    --blue-lt: #E8F0FE;
+    --blue-mid: #AECBFA;
+    --green: #1E8E3E;
+    --green-lt: #E6F4EA;
+    --green-mid: #A8DAB5;
+    --amber: #E37400;
+    --amber-lt: #FEF7E0;
+    --purple: #7B3FA0;
+    --purple-lt: #F3E8FD;
+    --red: #D93025;
+    --red-lt: #FCE8E6;
+    --font-display: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-full: 9999px;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    padding: 22px 32px 16px;
+    gap: 14px;
+  }
+
+  /* ─── Header ─── */
+  .hdr { display: flex; align-items: center; justify-content: space-between; }
+  .hdr-left { display: flex; align-items: baseline; gap: 12px; }
+  .hdr-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1;
+  }
+  .hdr-sub { font-size: 13px; color: var(--ink-4); font-weight: 500; }
+  .hdr-right { display: flex; align-items: center; gap: 12px; }
+  .hdr-mark {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .back {
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-3); text-decoration: none;
+    padding: 5px 10px; border-radius: var(--r-full);
+    border: 1px solid var(--border-lt);
+    transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
+  }
+  .back:hover { background: var(--bg-2); color: var(--ink); }
+
+  /* ─── Hero KPIs row ─── */
+  .hero {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .hero-kpi {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+    padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .hero-val {
+    font-family: var(--font-display);
+    font-size: 38px; font-weight: 700;
+    letter-spacing: -0.025em; line-height: 1;
+  }
+  .hero-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--ink-3); letter-spacing: 0.02em;
+    margin-top: 4px;
+  }
+  .hero-sub { font-size: 11.5px; color: var(--ink-4); line-height: 1.4; }
+
+  /* ─── Main split ─── */
+  .main {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 16px;
+    min-height: 0;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .card-top {
+    padding: 16px 24px 12px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .card-hdr { display: flex; align-items: center; justify-content: space-between; }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .pill {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 10px; border-radius: var(--r-full);
+  }
+  .card-divider { height: 1px; background: var(--border-lt); }
+  .card-body {
+    padding: 12px 24px 16px;
+    display: flex; flex-direction: column; gap: 12px;
+    flex: 1;
+  }
+
+  /* ─── Donut + meta ─── */
+  .donut-wrap { display: flex; align-items: center; gap: 18px; }
+  .donut-svg { width: 86px; height: 86px; flex-shrink: 0; }
+  .donut-ring { fill: none; stroke: var(--bg-3); stroke-width: 7; }
+  .donut-fill {
+    fill: none; stroke-width: 7;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dasharray 1s var(--ease-out);
+  }
+  .donut-center {
+    font-family: var(--font-display);
+    font-size: 9px; font-weight: 700;
+    fill: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .donut-meta { display: flex; flex-direction: column; gap: 2px; }
+  .donut-val {
+    font-family: var(--font-display);
+    font-size: 26px; font-weight: 700; line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .donut-label { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+  .donut-sub { font-size: 11px; color: var(--ink-4); }
+
+  /* ─── Progress bars ─── */
+  .progs { display: flex; flex-direction: column; gap: 14px; }
+  .prog { display: flex; flex-direction: column; gap: 6px; }
+  .prog-hdr { display: flex; justify-content: space-between; align-items: baseline; }
+  .prog-label { font-size: 12.5px; color: var(--ink-2); font-weight: 500; }
+  .prog-pct {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700;
+  }
+  .prog-track {
+    height: 9px; border-radius: 5px;
+    background: var(--bg-2); overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%; border-radius: 5px;
+    transition: width 1000ms var(--ease-out);
+  }
+  .prog-sub { font-size: 11px; color: var(--ink-4); }
+
+  /* ─── Items ─── */
+  .section-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-lt);
+  }
+  .item:last-child { border-bottom: none; }
+  .item-ic {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .item-body { flex: 1; }
+  .item-text { font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+  .item-detail { font-size: 11.5px; color: var(--ink-4); line-height: 1.4; margin-top: 2px; }
+
+  /* ─── Pace card (right column top) ─── */
+  .pace-card {
+    background: var(--white);
+    border: 1px solid var(--border-lt);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-xs);
+    padding: 16px 24px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .pace-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .pace-tile {
+    background: var(--bg);
+    border-radius: var(--r-md);
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .pace-val {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700; line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .pace-label {
+    font-size: 11px; font-weight: 600; color: var(--ink-4);
+    letter-spacing: 0.02em; margin-top: 4px;
+  }
+  .pace-sub { font-size: 11px; color: var(--ink-4); line-height: 1.4; }
+
+  /* ─── Right column stack ─── */
+  .right-col { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+  .right-col .card { flex: 1; }
+
+  /* ─── Forecast banner ─── */
+  .forecast {
+    background: var(--blue-lt);
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--r-md);
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0;
+  }
+  .fc-icon {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .fc-icon svg { width: 14px; height: 14px; fill: var(--white); }
+  .fc-body { flex: 1; display: flex; align-items: center; gap: 16px; }
+  .fc-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--blue); white-space: nowrap;
+  }
+  .fc-text { font-size: 14px; font-weight: 500; color: #174EA6; line-height: 1.3; }
+  .fc-date {
+    font-family: var(--font-display);
+    font-size: 12px; font-weight: 700;
+    color: var(--blue); white-space: nowrap;
+    padding: 5px 12px;
+    background: var(--white);
+    border-radius: var(--r-full);
+    border: 1px solid var(--blue-mid);
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--ink-4);
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 380ms var(--ease-out) both; }
+  .a1 { animation-delay: 0ms; }
+  .a2 { animation-delay: 60ms; }
+  .a3 { animation-delay: 120ms; }
+  .a4 { animation-delay: 180ms; }
+  .a5 { animation-delay: 240ms; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr anim a1">
+    <div class="hdr-left">
+      <div class="hdr-title">Pagar.me, Migração</div>
+      <div class="hdr-sub">All Hands · 27 abr 2026</div>
+    </div>
+    <div class="hdr-right">
+      <a class="back" href="index.html">← Voltar ao índice</a>
+      <div class="hdr-mark">ZapSign</div>
+    </div>
+  </div>
+
+  <!-- Hero KPIs -->
+  <div class="hero anim a2">
+    <div class="hero-kpi">
+      <div class="hero-val" style="color:var(--green)">~40%</div>
+      <div class="hero-label">PLG pagos migrados</div>
+      <div class="hero-sub">do total de clientes pagantes</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-val" style="color:var(--blue)">5,7%</div>
+      <div class="hero-label">Base total</div>
+      <div class="hero-sub">incluindo freemium</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-val" style="color:var(--ink)">5k<span style="font-size:18px;color:var(--ink-3);font-weight:500"> /dia</span></div>
+      <div class="hero-label">Pace de migração</div>
+      <div class="hero-sub">contas pagas por dia</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-val" style="color:var(--green)">100%</div>
+      <div class="hero-label">Contas novas na V2</div>
+      <div class="hero-sub">desde o go-live</div>
+    </div>
+  </div>
+
+  <!-- Main: Progresso (esq) + Pace + Casos restantes (dir) -->
+  <div class="main">
+
+    <!-- ═══ Progresso da migração (esquerda) ═══ -->
+    <div class="card anim a3">
+      <div class="card-top">
+        <div class="card-hdr">
+          <div class="card-title">Progresso da migração</div>
+          <span class="pill" style="background:var(--blue-lt);color:var(--blue)">Em curso</span>
+        </div>
+        <div class="donut-wrap">
+          <svg class="donut-svg" viewBox="0 0 40 40">
+            <circle class="donut-ring" cx="20" cy="20" r="16"/>
+            <circle class="donut-fill" id="donutFill" cx="20" cy="20" r="16"
+              stroke="var(--green)" stroke-dasharray="0, 100.53"/>
+            <text x="20" y="20" text-anchor="middle" dominant-baseline="middle"
+              style="font-family: var(--font-display); font-size: 9px; font-weight: 700; fill: var(--ink); letter-spacing: -0.02em;">~40%</text>
+            <text x="20" y="26" text-anchor="middle" dominant-baseline="middle"
+              style="font-family: var(--font-display); font-size: 3.6px; font-weight: 700; fill: var(--ink-4); letter-spacing: 0.08em;">PLG PAGOS</text>
+          </svg>
+          <div class="donut-meta">
+            <div class="donut-val" style="color:var(--green)">~40%</div>
+            <div class="donut-label">dos clientes PLG pagos migrados</div>
+            <div class="donut-sub">5,7% considerando a base total (com freemium)</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-body">
+        <div class="progs">
+          <div class="prog">
+            <div class="prog-hdr">
+              <span class="prog-label">PLG pagos</span>
+              <span class="prog-pct" style="color:var(--green)">~40%</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="prog1" style="background: linear-gradient(90deg, var(--green), var(--green-mid)); width: 0%;"></div>
+            </div>
+            <div class="prog-sub">Pace atual permite finalização em poucos dias úteis para casos simples.</div>
+          </div>
+          <div class="prog">
+            <div class="prog-hdr">
+              <span class="prog-label">Base total (inclui freemium)</span>
+              <span class="prog-pct" style="color:var(--blue)">5,7%</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="prog2" style="background: linear-gradient(90deg, var(--blue), var(--blue-mid)); width: 0%;"></div>
+            </div>
+            <div class="prog-sub">Volume puxado pela cauda de freemium — estratégia foca primeiro em pagantes.</div>
+          </div>
+          <div class="prog">
+            <div class="prog-hdr">
+              <span class="prog-label">Contas novas na V2</span>
+              <span class="prog-pct" style="color:var(--green)">100%</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="prog3" style="background: linear-gradient(90deg, var(--green), var(--green-mid)); width: 0%;"></div>
+            </div>
+            <div class="prog-sub">1.760 compras de novas contas na V2 desde o go-live em março.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Direita: Pace + Casos restantes ═══ -->
+    <div class="right-col">
+
+      <!-- Pace card -->
+      <div class="pace-card anim a4">
+        <div class="card-hdr">
+          <div class="card-title">Pace &amp; tração</div>
+          <span class="pill" style="background:var(--green-lt);color:var(--green)">Saudável</span>
+        </div>
+        <div class="pace-row">
+          <div class="pace-tile">
+            <div class="pace-val" style="color:var(--green)">5.000</div>
+            <div class="pace-label">Contas pagas / dia</div>
+            <div class="pace-sub">pace atual de migração</div>
+          </div>
+          <div class="pace-tile">
+            <div class="pace-val" style="color:var(--blue)">1.760</div>
+            <div class="pace-label">Compras V2</div>
+            <div class="pace-sub">desde o início, em março</div>
+          </div>
+        </div>
+        <div class="pace-sub" style="font-size:12px;color:var(--ink-3);line-height:1.5">
+          100% das contas novas já caem direto no fluxo V2. O dashboard interno tem o detalhamento completo de cohort e métricas de funil.
+        </div>
+      </div>
+
+      <!-- Casos restantes -->
+      <div class="card anim a5">
+        <div class="card-top">
+          <div class="card-hdr">
+            <div class="card-title">Casos restantes</div>
+            <span class="pill" style="background:var(--amber-lt);color:var(--amber)">Minoria da base</span>
+          </div>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-body">
+          <div class="section-label">Pendências específicas após casos simples</div>
+          <div class="item">
+            <div class="item-ic" style="background:var(--purple-lt)">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="var(--purple)"><path d="M2 4h12v2H2zm0 3h12v2H2zm0 3h8v2H2z"/></svg>
+            </div>
+            <div class="item-body">
+              <div class="item-text">Companies com add-ons</div>
+              <div class="item-detail">Combinações de produtos extras exigem tratativa caso a caso.</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="item-ic" style="background:var(--amber-lt)">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="var(--amber)"><path d="M8 1.5l7 13H1l7-13zm0 3.2L3.5 13h9L8 4.7zM7.25 8v2.5h1.5V8h-1.5zm0 3.5v1.5h1.5v-1.5h-1.5z"/></svg>
+            </div>
+            <div class="item-body">
+              <div class="item-text">Companies com planos desatualizados</div>
+              <div class="item-detail">Necessitam reenquadramento de plano antes da migração final.</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="item-ic" style="background:var(--blue-lt)">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="var(--blue)"><path d="M3 4h10v3H3zm0 5h10v3H3zM5.5 5.5h1v1h-1zm0 3.5h1v1h-1z"/></svg>
+            </div>
+            <div class="item-body">
+              <div class="item-text">Clientes com cupom de desconto</div>
+              <div class="item-detail">Migração precisa preservar o desconto vigente — exige tratativa específica no fluxo.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Forecast banner -->
+  <div class="forecast anim a5">
+    <div class="fc-icon">
+      <svg viewBox="0 0 16 16"><path d="M8 2v6h4.5l-5 6v-6H3l5-6z"/></svg>
+    </div>
+    <div class="fc-body">
+      <div class="fc-label">Previsão</div>
+      <div class="fc-text">+5 dias úteis para finalizar os casos simples · depois sobram apenas as exceções acima</div>
+    </div>
+    <div class="fc-date">~05 dias úteis</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div style="font-weight:500">Atualizado em 27/04/2026 · Mais detalhes no dashboard interno</div>
+    <div class="hdr-mark">Slide 01 · All Hands 27/04</div>
+  </div>
+
+</div>
+
+<script>
+requestAnimationFrame(() => {
+  setTimeout(() => {
+    document.getElementById('prog1').style.width = '40%';
+    document.getElementById('prog2').style.width = '5.7%';
+    document.getElementById('prog3').style.width = '100%';
+    const circ = 2 * Math.PI * 16;
+    document.getElementById('donutFill').setAttribute(
+      'stroke-dasharray', `${circ * 0.40}, ${circ}`
+    );
+  }, 250);
+});
+</script>
+
+</body>
+</html>
