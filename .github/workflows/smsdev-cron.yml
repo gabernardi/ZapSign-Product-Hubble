@@ -1,0 +1,47 @@
+name: SMS Dev — saldo no Google Chat
+
+# Roda 2x/dia (09:00 e 21:00 BRT). Plano Hobby da Vercel só permite cron
+# diário, então usamos GitHub Actions como agendador externo chamando o
+# endpoint /api/cron/smsdev-balance do Hubble.
+on:
+  schedule:
+    # 12:00 UTC = 09:00 BRT (manhã)
+    - cron: "0 12 * * *"
+    # 00:00 UTC = 21:00 BRT (fim do dia)
+    - cron: "0 0 * * *"
+  # Permite disparo manual via aba "Actions" no GitHub
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checa saldo SMS Dev e posta no Google Chat
+        env:
+          HUBBLE_BASE_URL: ${{ secrets.HUBBLE_BASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HUBBLE_BASE_URL:-}" ] || [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::HUBBLE_BASE_URL ou CRON_SECRET não configurados nos secrets do repo."
+            exit 1
+          fi
+          base="${HUBBLE_BASE_URL%/}"
+          echo "POST ${base}/api/cron/smsdev-balance"
+          # -f faz falhar em HTTP >= 400; -sS mostra erros mas esconde progresso
+          curl -fsS \
+            -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "content-type: application/json" \
+            "${base}/api/cron/smsdev-balance" \
+            | tee /tmp/response.json
+          echo
+          echo "---"
+          jq -r '
+            if .ok then
+              "OK · saldo=" + (.result.saldo|tostring) + " threshold=" + (.result.threshold|tostring) + " status=" + .result.status
+            else
+              "FAIL · " + (.error // (.result.descricao // "erro desconhecido"))
+            end
+          ' /tmp/response.json

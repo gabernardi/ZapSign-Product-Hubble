@@ -68,25 +68,36 @@ apenas sem propagação em tempo real (cada cliente vê seu estado após reload)
 
 #### Cron de saldo SMS Dev → Google Chat
 
-Uma vez por dia, o cron `/api/cron/smsdev-balance` consulta o saldo e
-posta um card no espaço do Google Chat configurado.
+Duas vezes por dia (**09:00 e 21:00 BRT**), o endpoint
+`/api/cron/smsdev-balance` consulta o saldo e posta um card no espaço
+do Google Chat configurado.
+
+O agendador é o **GitHub Actions** (workflow em
+`.github/workflows/smsdev-cron.yml`) — não a Vercel. O motivo é que o
+plano Hobby da Vercel limita cron jobs a 1x/dia; GitHub Actions é
+gratuito e ilimitado para repositórios públicos/privados padrão.
+
+Envs no Hubble (Vercel):
 
 - `GOOGLE_CHAT_WEBHOOK_URL` (obrigatório): webhook do espaço do Google
   Chat. Gere em **Apps & Integrações → Webhooks** dentro do espaço.
-- `CRON_SECRET` (obrigatório em produção): secret enviado pela Vercel
-  como `Authorization: Bearer <CRON_SECRET>` ao acionar o cron. Gere
-  com `openssl rand -hex 32`.
+- `CRON_SECRET` (obrigatório): secret que o GitHub Actions envia como
+  `Authorization: Bearer <CRON_SECRET>`. Gere com `openssl rand -hex 32`.
 
-O schedule está em `vercel.json` (`0 12 * * *` UTC = **09:00 BRT**).
-O plano Hobby da Vercel limita cron jobs a uma execução por dia — para
-rodar 2x/dia ou mais, é preciso plano Pro ou um agendador externo
-(GitHub Actions, cron-job.org) que chame o mesmo endpoint.
+Secrets no GitHub Actions (`Settings → Secrets and variables → Actions`):
+
+- `HUBBLE_BASE_URL`: URL pública do Hubble (ex: `https://hubble.zapsign.com.br`).
+- `CRON_SECRET`: mesmo valor configurado na Vercel.
 
 Para testar manualmente:
 
 ```bash
-curl -H "Authorization: Bearer $CRON_SECRET" \
+# Via terminal
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" \
   https://<host>/api/cron/smsdev-balance
+
+# Ou via GitHub: aba "Actions" → "SMS Dev — saldo no Google Chat"
+# → "Run workflow"
 ```
 
 ## Comentários globais
