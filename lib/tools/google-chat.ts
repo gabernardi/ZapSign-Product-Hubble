@@ -70,7 +70,7 @@ export function buildSmsDevCard(
             {
               text: "Recarregar SMS Dev",
               onClick: {
-                openLink: { url: "https://www.smsdev.com.br/v1/painel" },
+                openLink: { url: "https://www.smsdev.com.br/" },
               },
             },
           ],
