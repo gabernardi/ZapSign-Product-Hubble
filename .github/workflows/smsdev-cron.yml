@@ -63,11 +63,13 @@ jobs:
 
           # -s silencioso, -S mostra erro, -o salva body, -w imprime status + URL final.
           # -L segue redirects (Vercel pode redirecionar apex→www ou similar).
-          # --post-redir=all garante que POST continue como POST após 301/302/303.
+          # 307/308 mantêm o método (POST) automaticamente; --post-redir só
+          # seria preciso para 301/302/303, e a flag não é suportada em curl
+          # antigo do runner. Adicionamos GET como fallback no servidor.
           # Sem -f para não falhar imediatamente em 4xx/5xx — queremos ver o body.
           curl_exit=0
           curl_meta=$(
-            curl -sS -L --post-redir=all \
+            curl -sS -L \
               -o /tmp/response.body \
               -w "http_code=%{http_code}\nurl_effective=%{url_effective}\nnum_redirects=%{num_redirects}\n" \
               -X POST \
