@@ -58,12 +58,32 @@ apenas sem propagação em tempo real (cada cliente vê seu estado após reload)
 
 ### Ferramentas internas
 
-- `SMSDEV_API_KEY` (opcional): chave da API do SMS Dev usada pela ferramenta
-  em `/dashboard/ferramentas/sms-dev`. Quando definida, o time consulta o
-  saldo com um clique sem precisar colar a chave. Quando ausente, cada
-  pessoa pode colar a própria chave no formulário (fica salva apenas no
-  `localStorage` do navegador). Gere a chave no painel do SMS Dev em
-  Configurações → API.
+#### Saldo SMS Dev
+
+- `SMSDEV_API_KEY` (obrigatório para a ferramenta): chave da API usada
+  pela ferramenta em `/dashboard/ferramentas/sms-dev` e pelo cron de
+  alerta. Gere no painel do SMS Dev em Configurações → API.
+- `SMSDEV_THRESHOLD` (opcional, padrão `500`): saldo abaixo do qual a
+  ferramenta marca como "saldo baixo".
+
+#### Cron de saldo SMS Dev → Google Chat
+
+A cada 12h, o cron `/api/cron/smsdev-balance` consulta o saldo e posta
+um card no espaço do Google Chat configurado.
+
+- `GOOGLE_CHAT_WEBHOOK_URL` (obrigatório): webhook do espaço do Google
+  Chat. Gere em **Apps & Integrações → Webhooks** dentro do espaço.
+- `CRON_SECRET` (obrigatório em produção): secret enviado pela Vercel
+  como `Authorization: Bearer <CRON_SECRET>` ao acionar o cron. Gere
+  com `openssl rand -hex 32`.
+
+O schedule está em `vercel.json` (`0 12,0 * * *` UTC = 09:00 e 21:00
+BRT). Para testar manualmente:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" \
+  https://<host>/api/cron/smsdev-balance
+```
 
 ## Comentários globais
 O sistema de comentários suporta:
