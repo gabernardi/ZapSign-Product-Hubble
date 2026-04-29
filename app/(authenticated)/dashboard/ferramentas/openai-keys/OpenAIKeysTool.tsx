@@ -99,7 +99,11 @@ function classifyKey(
   return { status: "active", flagged: false, days };
 }
 
-export function OpenAIKeysTool() {
+export interface OpenAIKeysToolProps {
+  canDelete: boolean;
+}
+
+export function OpenAIKeysTool({ canDelete }: OpenAIKeysToolProps) {
   const [thresholdDays, setThresholdDays] = useState(60);
   const [includeNeverUsed, setIncludeNeverUsed] = useState(true);
   const [scanning, setScanning] = useState(false);
@@ -373,6 +377,8 @@ export function OpenAIKeysTool() {
         </button>
       </form>
 
+      {!canDelete && <ReadOnlyNotice />}
+
       {error && <ErrorCard error={error} />}
 
       {deleteSummary && !error && (
@@ -438,14 +444,17 @@ export function OpenAIKeysTool() {
               onClick={() => setFilter("active")}
             />
             <span className={styles.filterSpacer} />
-            <button
-              type="button"
-              className={`${styles.btn} ${styles.btnGhost}`}
-              onClick={selectAllFlagged}
-              disabled={counts.idle + (includeNeverUsed ? counts.never : 0) === 0}
-            >
-              Selecionar todas as ociosas{includeNeverUsed ? " + nunca usadas" : ""}
-            </button>
+            {canDelete && (
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnGhost}`}
+                onClick={selectAllFlagged}
+                disabled={counts.idle + (includeNeverUsed ? counts.never : 0) === 0}
+              >
+                Selecionar todas as ociosas
+                {includeNeverUsed ? " + nunca usadas" : ""}
+              </button>
+            )}
           </div>
 
           {filteredKeys.length === 0 ? (
@@ -458,17 +467,19 @@ export function OpenAIKeysTool() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th className={styles.cellCheckbox}>
-                        <input
-                          type="checkbox"
-                          aria-label="Selecionar todas visíveis"
-                          checked={allVisibleSelected}
-                          ref={(el) => {
-                            if (el) el.indeterminate = someVisibleSelected;
-                          }}
-                          onChange={toggleAllVisible}
-                        />
-                      </th>
+                      {canDelete && (
+                        <th className={styles.cellCheckbox}>
+                          <input
+                            type="checkbox"
+                            aria-label="Selecionar todas visíveis"
+                            checked={allVisibleSelected}
+                            ref={(el) => {
+                              if (el) el.indeterminate = someVisibleSelected;
+                            }}
+                            onChange={toggleAllVisible}
+                          />
+                        </th>
+                      )}
                       <th>Projeto</th>
                       <th>Key</th>
                       <th>Owner</th>
@@ -495,14 +506,16 @@ export function OpenAIKeysTool() {
                         .join(" ");
                       return (
                         <tr key={id} className={rowClass}>
-                          <td className={styles.cellCheckbox}>
-                            <input
-                              type="checkbox"
-                              aria-label={`Selecionar ${k.name ?? k.keyId}`}
-                              checked={isSelected}
-                              onChange={() => toggleRow(id)}
-                            />
-                          </td>
+                          {canDelete && (
+                            <td className={styles.cellCheckbox}>
+                              <input
+                                type="checkbox"
+                                aria-label={`Selecionar ${k.name ?? k.keyId}`}
+                                checked={isSelected}
+                                onChange={() => toggleRow(id)}
+                              />
+                            </td>
+                          )}
                           <td className={styles.cellProject} title={k.projectName}>
                             {k.projectName}
                           </td>
@@ -547,7 +560,7 @@ export function OpenAIKeysTool() {
             </div>
           )}
 
-          {selected.size > 0 && (
+          {canDelete && selected.size > 0 && (
             <div className={styles.selectionBar} role="region" aria-label="Seleção">
               <span className={styles.selectionCount}>
                 <strong>{selected.size}</strong>{" "}
@@ -575,7 +588,7 @@ export function OpenAIKeysTool() {
         </>
       )}
 
-      {confirmOpen && (
+      {canDelete && confirmOpen && (
         <ConfirmModal
           count={selected.size}
           confirmText={confirmText}
@@ -762,6 +775,22 @@ function DeleteBanner({
       >
         Fechar
       </button>
+    </div>
+  );
+}
+
+function ReadOnlyNotice() {
+  return (
+    <div className={styles.readonlyNotice} role="status">
+      <span className={styles.readonlyDot} aria-hidden="true" />
+      <div>
+        <strong>Modo somente-consulta.</strong>{" "}
+        <span>
+          Você consegue listar e revisar as API keys, mas a exclusão está
+          restrita ao admin do Hubble. Fale com ele se precisar remover alguma
+          key.
+        </span>
+      </div>
     </div>
   );
 }

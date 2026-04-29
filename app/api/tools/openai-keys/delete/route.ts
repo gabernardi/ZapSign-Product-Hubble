@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import {
+  canDeleteOpenAIKeys,
   deleteProjectApiKeys,
   OPENAI_KEYS_MAX_DELETE,
   type DeleteTarget,
@@ -12,18 +13,38 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-async function ensureAuthorized(): Promise<NextResponse | null> {
+async function ensureAuthorized(): Promise<
+  | { ok: true; email: string }
+  | { ok: false; response: NextResponse }
+> {
   const session = await auth();
-  const email = session?.user?.email ?? null;
-  const domain = email?.split("@")[1]?.toLowerCase();
+  const email = session?.user?.email?.toLowerCase() ?? null;
+  const domain = email?.split("@")[1];
   if (
     !email ||
     !domain ||
     !(ALLOWED_DOMAINS as readonly string[]).includes(domain)
   ) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return {
+      ok: false,
+      response: NextResponse.json({ error: "unauthorized" }, { status: 401 }),
+    };
   }
-  return null;
+  if (!canDeleteOpenAIKeys(email)) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        {
+          status: "error",
+          descricao:
+            "Sem permissão para excluir API keys. Fale com o admin se precisar liberar.",
+          hint: "auth",
+        },
+        { status: 403 },
+      ),
+    };
+  }
+  return { ok: true, email };
 }
 
 function parseTargets(body: unknown): DeleteTarget[] | null {
@@ -43,8 +64,8 @@ function parseTargets(body: unknown): DeleteTarget[] | null {
 }
 
 export async function POST(req: Request) {
-  const unauthorized = await ensureAuthorized();
-  if (unauthorized) return unauthorized;
+  const guard = await ensureAuthorized();
+  if (!guard.ok) return guard.response;
 
   let body: unknown;
   try {

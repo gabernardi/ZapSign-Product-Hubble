@@ -4,6 +4,8 @@ import { GlasswingShell } from "@/components/glasswing/GlasswingShell";
 import { getGlasswingNav } from "@/lib/data/glasswing-nav";
 import { Comments } from "@/components/comments/Comments";
 import { loadPageCommentsForSsr } from "@/lib/comments/ssr";
+import { auth } from "@/lib/auth";
+import { canDeleteOpenAIKeys } from "@/lib/tools/openai-keys";
 import { OpenAIKeysTool } from "./OpenAIKeysTool";
 import styles from "./page.module.css";
 
@@ -23,7 +25,12 @@ export const metadata = {
 };
 
 export default async function OpenAIKeysPage() {
-  const threads = await loadPageCommentsForSsr(PAGE_ID);
+  const [threads, session] = await Promise.all([
+    loadPageCommentsForSsr(PAGE_ID),
+    auth(),
+  ]);
+  const userEmail = session?.user?.email ?? null;
+  const canDelete = canDeleteOpenAIKeys(userEmail);
 
   return (
     <div className={`${styles.page} ${fraunces.variable}`}>
@@ -52,7 +59,7 @@ export default async function OpenAIKeysPage() {
               </p>
             </header>
 
-            <OpenAIKeysTool />
+            <OpenAIKeysTool canDelete={canDelete} />
           </main>
         </GlasswingShell>
       </Comments>

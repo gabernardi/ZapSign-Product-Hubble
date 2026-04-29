@@ -6,6 +6,22 @@ const DELETE_CONCURRENCY = 5;
 export const OPENAI_KEYS_DEFAULT_THRESHOLD_DAYS = 60;
 export const OPENAI_KEYS_MAX_DELETE = 200;
 
+/**
+ * Emails autorizados a EXCLUIR API keys da OpenAI.
+ * Qualquer outro usuário (mesmo do domínio zapsign.com.br) consegue
+ * apenas visualizar a listagem.
+ */
+export const OPENAI_KEYS_DELETE_ALLOWLIST: readonly string[] = [
+  "gabriel@zapsign.com.br",
+];
+
+export function canDeleteOpenAIKeys(
+  email: string | null | undefined,
+): boolean {
+  if (!email) return false;
+  return OPENAI_KEYS_DELETE_ALLOWLIST.includes(email.toLowerCase());
+}
+
 export type ScanErrorHint =
   | "missing-key"
   | "auth"
