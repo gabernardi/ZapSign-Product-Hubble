@@ -49,6 +49,27 @@ function MessageIcon() {
   );
 }
 
+function KeyIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="7.5" cy="15.5" r="4.5" />
+      <path d="M10.7 12.3 21 2" />
+      <path d="m17 7 3 3" />
+      <path d="m15 9 2 2" />
+    </svg>
+  );
+}
+
 function PlusIcon() {
   return (
     <svg
@@ -78,6 +99,16 @@ const TOOLS: Tool[] = [
     status: "ready",
     icon: <MessageIcon />,
     meta: "auto · 09:00 e 21:00 BRT",
+  },
+  {
+    name: "Limpeza de keys OpenAI",
+    scope: "OpenAI",
+    description:
+      "Lista todas as API keys de todos os projetos da org e remove em massa as que estão ociosas há mais de N dias.",
+    href: "/dashboard/ferramentas/openai-keys",
+    status: "ready",
+    icon: <KeyIcon />,
+    meta: "manual · scan + bulk delete",
   },
   {
     name: "Próxima ferramenta",

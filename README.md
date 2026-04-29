@@ -66,6 +66,23 @@ apenas sem propagação em tempo real (cada cliente vê seu estado após reload)
 - `SMSDEV_THRESHOLD` (opcional, padrão `500`): saldo abaixo do qual a
   ferramenta marca como "saldo baixo".
 
+#### Limpeza de API keys OpenAI
+
+Ferramenta em `/dashboard/ferramentas/openai-keys` que lista todas as
+API keys de todos os projetos da organização OpenAI, sinaliza as
+ociosas (não usadas há mais de N dias) e nunca usadas, e permite
+exclusão em massa via checkboxes (com confirmação digitando
+`EXCLUIR`).
+
+- `OPENAI_ADMIN_KEY` (obrigatório para a ferramenta): admin key da
+  organização OpenAI. Gere em **Settings → Admin keys** com os
+  escopos `api.management.read` e `api.management.write`. **Não
+  reaproveite** a `OPENAI_API_KEY` (essa é uma key de projeto sem
+  permissão de gestão).
+
+A exclusão é definitiva — qualquer aplicação que ainda use a key vai
+parar de funcionar. A ferramenta não tem cron; é manual, sob demanda.
+
 #### Cron de saldo SMS Dev → Google Chat
 
 Duas vezes por dia (**09:00 e 21:00 BRT**), o endpoint

@@ -11,7 +11,8 @@ type ActiveKey =
   | "contribuir"
   | "changelog"
   | "ferramentas"
-  | "ferramentas-sms-dev";
+  | "ferramentas-sms-dev"
+  | "ferramentas-openai-keys";
 
 export function getGlasswingNav(
   active: ActiveKey = "home",
@@ -95,7 +96,9 @@ export function getGlasswingNav(
     {
       label: "Ferramentas",
       active:
-        active === "ferramentas" || active === "ferramentas-sms-dev",
+        active === "ferramentas" ||
+        active === "ferramentas-sms-dev" ||
+        active === "ferramentas-openai-keys",
       children: [
         {
           label: "Todas as ferramentas",
@@ -110,6 +113,13 @@ export function getGlasswingNav(
           active: active === "ferramentas-sms-dev",
           description:
             "Consulta o saldo da conta SMS Dev e alerta quando está acabando.",
+        },
+        {
+          label: "Limpeza de keys OpenAI",
+          href: "/dashboard/ferramentas/openai-keys",
+          active: active === "ferramentas-openai-keys",
+          description:
+            "Lista e remove API keys da OpenAI inativas há mais de N dias.",
         },
       ],
     },
