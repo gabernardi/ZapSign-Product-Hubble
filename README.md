@@ -100,6 +100,53 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" \
 # → "Run workflow"
 ```
 
+## Internacionalização (PT-BR / EN / ES)
+
+O Hubble e a tela de login têm um seletor de idioma com bandeira no canto
+superior direito (PT, EN, ES). Ao mudar para inglês ou espanhol:
+
+1. Um motor client-side varre o DOM (text nodes + atributos `placeholder`,
+   `aria-label`, `title`, `alt`), ignorando blocos de código e elementos
+   marcados com `data-no-translate`.
+2. Os textos novos são enviados em batch para `POST /api/translate`, que
+   procura no cache e só chama a IA pelos que ainda não foram vistos.
+3. As traduções voltam, são aplicadas in-place e armazenadas em
+   `translations-cache.json` no Vercel Blob — a partir daí, qualquer
+   usuário que peça o mesmo texto recebe a tradução cacheada sem custo
+   de IA.
+
+### Variáveis
+
+- `OPENAI_API_KEY` (obrigatório p/ traduzir): a mesma chave já usada em
+  `scripts/generate-changelog.mjs`. Sem ela, o switcher continua
+  funcionando mas devolve a string original.
+- `OPENAI_TRANSLATE_MODEL` (opcional): override do modelo. Default
+  `gpt-4o-mini`.
+- `BLOB_READ_WRITE_TOKEN` (obrigatório em prod): o cache é gravado em
+  Vercel Blob via `lib/data/json-blob-store.ts`. Em dev sem o token, o
+  cache cai para o arquivo local `lib/data/translations-cache.json`.
+
+### Excluindo conteúdo da tradução
+
+Marque o elemento com `data-no-translate`:
+
+```tsx
+<code data-no-translate>{rawJson}</code>
+```
+
+O motor pula descendentes desse elemento e nunca toca em `<code>`,
+`<pre>`, `<script>`, `<style>`, `<textarea>` nem regiões marcadas como
+`aria-hidden="true"`.
+
+### Invalidando o cache
+
+O cache é "append-only" por design — cada `(locale, hash do texto)`
+mapeia para uma tradução. Para forçar regenerar:
+
+1. Delete o blob `translations-cache.json` no painel do Vercel Blob (ou
+   apague o arquivo local em `lib/data/`).
+2. A próxima visita refaz as chamadas à IA on-demand.
+
 ## Comentários globais
 O sistema de comentários suporta:
 

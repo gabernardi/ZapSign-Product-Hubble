@@ -1,5 +1,8 @@
 import { Fraunces } from "next/font/google";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
+import { getInitialLocale } from "@/lib/i18n/server";
 import styles from "./login.module.css";
 
 const fraunces = Fraunces({
@@ -36,24 +39,29 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       "Não foi possível entrar. Tente novamente."
     : null;
   const callbackUrl = params.callbackUrl ?? "/dashboard";
+  const initialLocale = await getInitialLocale();
 
   return (
+    <LocaleProvider initialLocale={initialLocale} isLoginContext>
     <div className={`${styles.page} ${fraunces.variable}`}>
       <header className={styles.top}>
-        <div className={styles.brand}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/zapsign-mark-white.png"
-            alt=""
-            className={styles.brandMark}
-          />
-          <span className={styles.brandText}>
-            <span className={styles.brandCompany}>ZapSign</span>
-            <span className={styles.brandSep} aria-hidden="true">
-              |
+        <div className={styles.topInner}>
+          <div className={styles.brand}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/zapsign-mark-white.png"
+              alt=""
+              className={styles.brandMark}
+            />
+            <span className={styles.brandText}>
+              <span className={styles.brandCompany}>ZapSign</span>
+              <span className={styles.brandSep} aria-hidden="true">
+                |
+              </span>
+              <span className={styles.brandProduct}>Product Hubble</span>
             </span>
-            <span className={styles.brandProduct}>Product Hubble</span>
-          </span>
+          </div>
+          <LocaleSwitcher variant="glasswing" />
         </div>
       </header>
 
@@ -101,6 +109,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
       </footer>
     </div>
+    </LocaleProvider>
   );
 }
 

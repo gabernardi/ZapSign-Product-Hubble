@@ -27,6 +27,13 @@
   border-bottom: 1px solid var(--gw-rule);
 }
 
+.topInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CommentsInboxLink } from "@/components/comments/CommentsInboxLink";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import styles from "./GlasswingShell.module.css";
 import { GlasswingNav } from "./GlasswingNav";
 import { GlasswingUserMenu } from "./GlasswingUserMenu";
@@ -41,6 +42,7 @@ export function GlasswingShell({
 
           <div className={styles.rightCluster}>
             {navItems.length > 0 && <GlasswingNav items={navItems} />}
+            <LocaleSwitcher variant="glasswing" />
             <CommentsInboxLink variant="glasswing" />
             <GlasswingUserMenu />
           </div>

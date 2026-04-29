@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { CommentsInboxLink } from "@/components/comments/CommentsInboxLink";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import styles from "./Header.module.css";
 
 const BREADCRUMB_MAP: Record<string, string> = {
@@ -93,6 +94,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       <div className={styles.right}>
+        <LocaleSwitcher variant="header" />
         <CommentsInboxLink variant="header" />
         <button className={styles.searchPill} aria-label="Buscar">
           <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
