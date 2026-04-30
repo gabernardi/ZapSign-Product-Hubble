@@ -231,10 +231,19 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
                         <span className={styles.navIcon}>{item.icon}</span>
                         <span className={styles.navText}>{item.label}</span>
                         <span className={styles.externalIcon} aria-hidden="true">
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M4.5 2.5h5v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M9.5 2.5L5 7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M8.5 6.5v3h-6v-6h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <path d="M15 3h6v6" />
+                            <path d="M10 14 21 3" />
                           </svg>
                         </span>
                         {item.badge && (
