@@ -11,6 +11,7 @@ interface NavItem {
   icon: React.ReactNode;
   comingSoon?: boolean;
   badge?: string;
+  external?: boolean;
 }
 
 interface NavGroup {
@@ -85,6 +86,26 @@ const NAV_GROUPS: NavGroup[] = [
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
             <path d="M10 2a4 4 0 014 4v1a4 4 0 01-8 0V6a4 4 0 014-4z" stroke="currentColor" strokeWidth="1.5" />
             <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        ),
+      },
+    ],
+  },
+  {
+    label: "Design",
+    items: [
+      {
+        label: "Design System",
+        href: "https://orbitads.figma.site/",
+        external: true,
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="10" cy="6" r="1.4" fill="currentColor" />
+            <circle cx="6.2" cy="9" r="1.2" fill="currentColor" />
+            <circle cx="7.4" cy="13.4" r="1.1" fill="currentColor" />
+            <circle cx="12.6" cy="13.4" r="1.1" fill="currentColor" />
+            <circle cx="13.8" cy="9" r="1.2" fill="currentColor" />
           </svg>
         ),
       },
@@ -193,6 +214,33 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
                         variant="sidebar"
                         onClick={onMobileClose}
                       />
+                    );
+                  }
+
+                  if (item.external) {
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.navItem}
+                        onClick={onMobileClose}
+                      >
+                        <span className={styles.navIndicator} aria-hidden="true" />
+                        <span className={styles.navIcon}>{item.icon}</span>
+                        <span className={styles.navText}>{item.label}</span>
+                        <span className={styles.externalIcon} aria-hidden="true">
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                            <path d="M4.5 2.5h5v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M9.5 2.5L5 7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M8.5 6.5v3h-6v-6h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </span>
+                        {item.badge && (
+                          <span className={styles.betaBadge}>{item.badge}</span>
+                        )}
+                      </a>
                     );
                   }
 

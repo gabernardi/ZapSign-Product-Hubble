@@ -217,6 +217,22 @@
   line-height: 1.4;
 }
 
+.externalIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-4);
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0.7;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.navItem:hover .externalIcon {
+  opacity: 1;
+  color: var(--ink-2);
+}
+
 /* ── Footer ────────────────────────── */
 .footer {
   flex-shrink: 0;
