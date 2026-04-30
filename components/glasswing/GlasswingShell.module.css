@@ -134,6 +134,18 @@
   transform: translateY(-1px);
 }
 
+.navExternal {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+.navItem:hover .navExternal {
+  opacity: 1;
+}
+
 /* ═════════════ Dropdown ═════════════ */
 
 .navDropdown {

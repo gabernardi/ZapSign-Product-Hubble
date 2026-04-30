@@ -16,30 +16,63 @@ function cx(...classes: Array<string | false | null | undefined>): string {
 export function GlasswingNav({ items }: GlasswingNavProps) {
   return (
     <nav className={styles.nav} aria-label="Navegação principal">
-      {items.map((item) =>
-        item.children && item.children.length > 0 ? (
-          <NavDropdown key={item.label} item={item} />
-        ) : (
-          <Link
-            key={item.href ?? item.label}
-            href={item.href ?? "#"}
-            className={cx(
-              styles.navItem,
-              item.active && styles.navItemActive,
-              item.flair === "lab" && styles.navItemLab,
-            )}
-            aria-current={item.active ? "page" : undefined}
-          >
+      {items.map((item) => {
+        if (item.children && item.children.length > 0) {
+          return <NavDropdown key={item.label} item={item} />;
+        }
+
+        const className = cx(
+          styles.navItem,
+          item.active && styles.navItemActive,
+          item.flair === "lab" && styles.navItemLab,
+        );
+
+        const inner = (
+          <>
             {item.flair === "lab" && (
               <span className={styles.navFlair} aria-hidden="true" />
             )}
             {item.label}
+            {item.external && (
+              <span className={styles.navExternal} aria-hidden="true">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                  <path d="M4.5 2.5h5v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9.5 2.5L5 7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M8.5 6.5v3h-6v-6h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            )}
             {item.badge && (
               <span className={styles.navBadge}>{item.badge}</span>
             )}
+          </>
+        );
+
+        if (item.external) {
+          return (
+            <a
+              key={item.href ?? item.label}
+              href={item.href ?? "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={className}
+            >
+              {inner}
+            </a>
+          );
+        }
+
+        return (
+          <Link
+            key={item.href ?? item.label}
+            href={item.href ?? "#"}
+            className={className}
+            aria-current={item.active ? "page" : undefined}
+          >
+            {inner}
           </Link>
-        )
-      )}
+        );
+      })}
     </nav>
   );
 }

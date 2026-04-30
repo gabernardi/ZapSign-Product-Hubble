@@ -12,6 +12,7 @@ export interface GlasswingNavItem {
   description?: string;
   badge?: string;
   flair?: "lab";
+  external?: boolean;
   children?: GlasswingNavItem[];
 }
 

@@ -123,5 +123,11 @@ export function getGlasswingNav(
         },
       ],
     },
+    {
+      label: "Design System",
+      href: "https://orbitads.figma.site/",
+      external: true,
+      description: "Orbit Ads — referência visual e de componentes do produto.",
+    },
   ];
 }
